@@ -1,0 +1,83 @@
+---
+// src/components/Faq.astro
+---
+
+<section id="faq" class="max-w-4xl mx-auto px-4 sm:px-6 py-16">
+  <div class="text-center mb-12">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-300 text-xs font-semibold uppercase tracking-wider mb-4">
+      Frequently Asked Questions
+    </div>
+    <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+      Everything You Need to Know
+    </h2>
+  </div>
+
+  <div class="space-y-4">
+    <!-- FAQ 1 -->
+    <details class="group rounded-2xl bg-slate-900/60 border border-slate-800 p-6 transition-all [&_svg]:open:rotate-180">
+      <summary class="flex items-center justify-between cursor-pointer list-none text-base sm:text-lg font-semibold text-white">
+        <span>How is Unklip completely free with no limits?</span>
+        <svg class="w-5 h-5 text-slate-400 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </summary>
+      <div class="mt-4 text-sm text-slate-400 leading-relaxed">
+        Traditional background removers like remove.bg run on expensive cloud GPU servers that cost thousands of dollars per month to maintain. That is why they charge per photo or restrict free cutouts to tiny 500px previews. 
+        <br /><br />
+        Unklip uses <strong class="text-slate-200">WebGPU</strong> to execute the neural network directly on your computer or phone’s GPU. Because we incur $0 in server inference costs, we can provide unlimited, uncompressed background removal to everyone for free.
+      </div>
+    </details>
+
+    <!-- FAQ 2 -->
+    <details class="group rounded-2xl bg-slate-900/60 border border-slate-800 p-6 transition-all [&_svg]:open:rotate-180">
+      <summary class="flex items-center justify-between cursor-pointer list-none text-base sm:text-lg font-semibold text-white">
+        <span>Are my images and photos private?</span>
+        <svg class="w-5 h-5 text-slate-400 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </summary>
+      <div class="mt-4 text-sm text-slate-400 leading-relaxed">
+        <strong class="text-emerald-400">Yes, 100% private.</strong> Your images never leave your browser. They are never uploaded to any cloud server, stored in a database, or shared with third parties. You can even disconnect your internet after the model loads, and Unklip will still work completely offline!
+      </div>
+    </details>
+
+    <!-- FAQ 3 -->
+    <details class="group rounded-2xl bg-slate-900/60 border border-slate-800 p-6 transition-all [&_svg]:open:rotate-180">
+      <summary class="flex items-center justify-between cursor-pointer list-none text-base sm:text-lg font-semibold text-white">
+        <span>Why does remove.bg charge for high resolution while Unklip doesn’t?</span>
+        <svg class="w-5 h-5 text-slate-400 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </summary>
+      <div class="mt-4 text-sm text-slate-400 leading-relaxed">
+        Remove.bg artificially limits free downloads to 0.25 megapixels (around 500×500 px) as a monetization strategy to force users to purchase credits for HD or 4K. Unklip preserves your original full-resolution image and applies the neural alpha mask directly to your native pixels, ensuring crisp print and web quality.
+      </div>
+    </details>
+
+    <!-- FAQ 4 -->
+    <details class="group rounded-2xl bg-slate-900/60 border border-slate-800 p-6 transition-all [&_svg]:open:rotate-180">
+      <summary class="flex items-center justify-between cursor-pointer list-none text-base sm:text-lg font-semibold text-white">
+        <span>Why was the first image slightly slower?</span>
+        <svg class="w-5 h-5 text-slate-400 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </summary>
+      <div class="mt-4 text-sm text-slate-400 leading-relaxed">
+        The first time you use Unklip, your browser downloads the AI neural weights (~40MB) and compiles the shader pipeline on your GPU. Once downloaded, the browser caches the model locally, so subsequent image cutouts process in ~0.3 to 0.8 seconds!
+      </div>
+    </details>
+
+    <!-- FAQ 5 -->
+    <details class="group rounded-2xl bg-slate-900/60 border border-slate-800 p-6 transition-all [&_svg]:open:rotate-180">
+      <summary class="flex items-center justify-between cursor-pointer list-none text-base sm:text-lg font-semibold text-white">
+        <span>Which browsers and devices are supported?</span>
+        <svg class="w-5 h-5 text-slate-400 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </summary>
+      <div class="mt-4 text-sm text-slate-400 leading-relaxed">
+        Unklip works in Google Chrome, Microsoft Edge, Brave, Safari, and Firefox on macOS, Windows, Linux, Android, and iOS. If your device has WebGPU enabled, it leverages hardware acceleration; if not, it automatically falls back to multi-threaded WebAssembly (WASM).
+      </div>
+    </details>
+  </div>
+</section>

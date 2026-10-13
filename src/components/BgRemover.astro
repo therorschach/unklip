@@ -1,0 +1,875 @@
+---
+// src/components/BgRemover.astro
+---
+
+<section id="tool" class="max-w-6xl mx-auto px-4 sm:px-6 py-6">
+  <!-- Container Card -->
+  <div class="relative rounded-3xl bg-slate-900/90 border border-slate-800/80 shadow-2xl backdrop-blur-xl overflow-hidden p-6 sm:p-10">
+    <!-- Ambient glowing gradients -->
+    <div class="absolute -top-32 -left-32 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-32 -right-32 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- STATE 1: UPLOAD / DROPZONE (Active by default) -->
+    <div id="upload-state" class="flex flex-col items-center">
+      <!-- Drag & Drop Area -->
+      <div
+        id="dropzone"
+        class="w-full max-w-3xl min-h-[320px] sm:min-h-[380px] rounded-2xl border-2 border-dashed border-slate-700 hover:border-cyan-500/80 bg-slate-950/60 hover:bg-slate-900/60 transition-all duration-300 flex flex-col items-center justify-center p-8 text-center cursor-pointer group relative overflow-hidden"
+      >
+        <input
+          type="file"
+          id="file-input"
+          accept="image/png, image/jpeg, image/webp, image/avif, image/bmp"
+          class="hidden"
+        />
+
+        <!-- Glowing border accent on hover -->
+        <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-indigo-500/5 to-fuchsia-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+
+        <!-- Upload Icon -->
+        <div class="w-20 h-20 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:border-cyan-500/40 group-hover:shadow-xl group-hover:shadow-cyan-500/10 transition-all duration-300">
+          <svg class="w-10 h-10 text-cyan-400 group-hover:text-cyan-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" x2="12" y1="3" y2="15"/>
+          </svg>
+        </div>
+
+        <h3 class="text-xl sm:text-2xl font-bold text-white mb-2">
+          Drop your image here, or <span class="text-cyan-400 underline underline-offset-4 decoration-cyan-400/50 group-hover:decoration-cyan-400">browse</span>
+        </h3>
+        <p class="text-sm text-slate-400 max-w-md mb-4">
+          Supports PNG, JPG, WEBP up to 50MB. Or simply paste (<kbd class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-xs text-slate-300 font-mono">Ctrl+V</kbd> / <kbd class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-xs text-slate-300 font-mono">Cmd+V</kbd>) from your clipboard.
+        </p>
+
+        <!-- Privacy & Resolution Tagline -->
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <span>100% Private • Processed locally • Never sent to any server</span>
+        </div>
+      </div>
+
+      <!-- Quick Sample Images -->
+      <div class="mt-8 w-full max-w-3xl">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">No image handy? Try these instant samples:</span>
+          <span class="text-[11px] text-slate-400">Click to run immediately</span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <!-- Sample 1: Portrait / Fine Hair -->
+          <button
+            type="button"
+            class="sample-btn group flex items-center gap-3 p-2 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-cyan-500/50 hover:bg-slate-800/60 transition-all text-left"
+            data-sample="/samples/portrait.webp"
+            data-name="Portrait (Hair)"
+          >
+            <img src="/samples/portrait.webp" alt="Portrait" class="w-12 h-12 rounded-lg object-cover bg-slate-900 border border-slate-700" />
+            <div>
+              <p class="text-xs font-semibold text-slate-200 group-hover:text-cyan-400 transition-colors">Portrait</p>
+              <p class="text-[10px] text-slate-400">Wispy hair</p>
+            </div>
+          </button>
+
+          <!-- Sample 2: Sneaker / Product -->
+          <button
+            type="button"
+            class="sample-btn group flex items-center gap-3 p-2 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-cyan-500/50 hover:bg-slate-800/60 transition-all text-left"
+            data-sample="/samples/sneaker.jpg"
+            data-name="Sneaker (Product)"
+          >
+            <img src="/samples/sneaker.jpg" alt="Sneaker" class="w-12 h-12 rounded-lg object-cover bg-slate-900 border border-slate-700" />
+            <div>
+              <p class="text-xs font-semibold text-slate-200 group-hover:text-cyan-400 transition-colors">Product</p>
+              <p class="text-[10px] text-slate-400">E-commerce</p>
+            </div>
+          </button>
+
+          <!-- Sample 3: Fluffy Cat / Fur -->
+          <button
+            type="button"
+            class="sample-btn group flex items-center gap-3 p-2 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-cyan-500/50 hover:bg-slate-800/60 transition-all text-left"
+            data-sample="/samples/cat.png"
+            data-name="Cat (Fluffy Fur)"
+          >
+            <img src="/samples/cat.png" alt="Cat" class="w-12 h-12 rounded-lg object-cover bg-slate-900 border border-slate-700" />
+            <div>
+              <p class="text-xs font-semibold text-slate-200 group-hover:text-cyan-400 transition-colors">Pet / Fur</p>
+              <p class="text-[10px] text-slate-400">Fluffy edges</p>
+            </div>
+          </button>
+
+          <!-- Sample 4: Sports / Athlete -->
+          <button
+            type="button"
+            class="sample-btn group flex items-center gap-3 p-2 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-cyan-500/50 hover:bg-slate-800/60 transition-all text-left"
+            data-sample="/samples/football.jpg"
+            data-name="Athlete (Sports)"
+          >
+            <img src="/samples/football.jpg" alt="Sports" class="w-12 h-12 rounded-lg object-cover bg-slate-900 border border-slate-700" />
+            <div>
+              <p class="text-xs font-semibold text-slate-200 group-hover:text-cyan-400 transition-colors">Sports</p>
+              <p class="text-[10px] text-slate-400">Complex background</p>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATE 2: PROCESSING / PROGRESS (Hidden by default) -->
+    <div id="processing-state" class="hidden flex-col items-center justify-center py-16 text-center max-w-md mx-auto">
+      <!-- Animated Shimmer Ring -->
+      <div class="relative w-24 h-24 mb-6">
+        <div class="absolute inset-0 rounded-full border-4 border-cyan-500/20"></div>
+        <div class="absolute inset-0 rounded-full border-4 border-cyan-400 border-t-transparent animate-spin"></div>
+        <div class="w-full h-full rounded-full flex items-center justify-center text-cyan-400">
+          <svg class="w-10 h-10 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+          </svg>
+        </div>
+      </div>
+
+      <h3 id="process-title" class="text-2xl font-bold text-white mb-2">Analyzing Image...</h3>
+      <p id="process-desc" class="text-sm text-slate-400 mb-6">Extracting subject and cutting out background with neural segmentation.</p>
+
+      <!-- Progress Bar Container -->
+      <div class="w-full bg-slate-950 rounded-full h-3 p-0.5 border border-slate-800 overflow-hidden mb-3">
+        <div id="progress-bar" class="bg-gradient-to-r from-cyan-500 to-indigo-500 h-full rounded-full transition-all duration-300 w-1/4"></div>
+      </div>
+      <div class="flex items-center justify-between w-full text-xs text-slate-400">
+        <span id="progress-text">Initializing AI engine...</span>
+        <span id="progress-percent">25%</span>
+      </div>
+
+      <div class="mt-6 text-[11px] text-slate-400">
+        Note: The first time you use Unklip, the AI model weights are downloaded and cached in your browser. Subsequent cuts will be near-instant!
+      </div>
+    </div>
+
+    <!-- STATE 3: STUDIO RESULTS VIEW (Hidden by default) -->
+    <div id="result-state" class="hidden flex-col gap-6">
+      <!-- Top Specs & Status Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-800">
+        <div class="flex items-center gap-3">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Background Removed
+          </span>
+          <span id="perf-badge" class="text-xs text-slate-400">Processed in 0.4s</span>
+          <span id="resolution-badge" class="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">1920 × 1080 px (100% Native)</span>
+        </div>
+
+        <!-- View Mode Switcher -->
+        <div class="flex items-center gap-1 p-1 bg-slate-950 border border-slate-800 rounded-xl text-xs font-medium text-slate-400">
+          <button id="view-slider-btn" class="px-3 py-1.5 rounded-lg bg-slate-800 text-white transition-colors">Before / After Slider</button>
+          <button id="view-cutout-btn" class="px-3 py-1.5 rounded-lg hover:text-slate-200 transition-colors">Cutout Only</button>
+          <button id="view-original-btn" class="px-3 py-1.5 rounded-lg hover:text-slate-200 transition-colors">Original</button>
+        </div>
+      </div>
+
+      <!-- Main Canvas / Image Comparison Display Area -->
+      <div class="relative w-full rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 min-h-[350px] sm:min-h-[500px] flex items-center justify-center p-4">
+        
+        <!-- Viewer Container -->
+        <div id="viewer-container" class="relative max-w-full max-h-[70vh] rounded-xl overflow-hidden shadow-2xl select-none">
+          
+          <!-- Background Layer (Solid, Blur, or Transparent Pattern) -->
+          <div id="custom-bg-layer" class="absolute inset-0 checkerboard-pattern pointer-events-none transition-all"></div>
+
+          <!-- Blurred original background (shown only when blur is active) -->
+          <img id="blur-bg-img" src="" alt="Blurred background" class="absolute inset-0 w-full h-full object-contain pointer-events-none filter blur-xl scale-110 hidden" />
+
+          <!-- Cutout Image Element (Transparent Foreground) -->
+          <img
+            id="cutout-img"
+            src=""
+            alt="Cutout result"
+            class="relative max-w-full max-h-[70vh] w-auto h-auto object-contain block"
+          />
+
+          <!-- Before / After Slider Overlay (Original Image) -->
+          <div id="slider-overlay" class="absolute inset-0 overflow-hidden pointer-events-none">
+            <img
+              id="original-img"
+              src=""
+              alt="Original image"
+              class="absolute top-0 left-0 max-w-none max-h-[70vh] object-contain"
+            />
+          </div>
+
+          <!-- Divider Line & Slider Handle -->
+          <div id="slider-handle" class="absolute top-0 bottom-0 w-1 bg-white shadow-2xl cursor-ew-resize flex items-center justify-center">
+            <div class="w-8 h-8 rounded-full bg-white text-slate-900 shadow-xl flex items-center justify-center font-bold text-xs select-none">
+              ↔
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Studio Custom Background Bar -->
+      <div class="bg-slate-950/80 rounded-2xl p-4 sm:p-5 border border-slate-800 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Studio Background:</span>
+          
+          <!-- Transparent Checkerboard -->
+          <button
+            type="button"
+            class="bg-choice-btn active-bg px-3 py-1.5 rounded-xl text-xs font-medium border border-cyan-500/80 bg-slate-800 text-white flex items-center gap-2"
+            data-bg="transparent"
+          >
+            <span class="w-4 h-4 rounded checkerboard-pattern-light border border-slate-600"></span>
+            Transparent
+          </button>
+
+          <!-- Solid White (Amazon/Shopify e-comm standard) -->
+          <button
+            type="button"
+            class="bg-choice-btn px-3 py-1.5 rounded-xl text-xs font-medium border border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-500 flex items-center gap-2"
+            data-bg="color"
+            data-color="#FFFFFF"
+          >
+            <span class="w-4 h-4 rounded bg-white border border-slate-300"></span>
+            White
+          </button>
+
+          <!-- Solid Black -->
+          <button
+            type="button"
+            class="bg-choice-btn px-3 py-1.5 rounded-xl text-xs font-medium border border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-500 flex items-center gap-2"
+            data-bg="color"
+            data-color="#000000"
+          >
+            <span class="w-4 h-4 rounded bg-black border border-slate-600"></span>
+            Black
+          </button>
+
+          <!-- Studio Gray -->
+          <button
+            type="button"
+            class="bg-choice-btn px-3 py-1.5 rounded-xl text-xs font-medium border border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-500 flex items-center gap-2"
+            data-bg="color"
+            data-color="#F3F4F6"
+          >
+            <span class="w-4 h-4 rounded bg-slate-200 border border-slate-400"></span>
+            Studio Gray
+          </button>
+
+          <!-- Blur Original -->
+          <button
+            type="button"
+            class="bg-choice-btn px-3 py-1.5 rounded-xl text-xs font-medium border border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-500 flex items-center gap-2"
+            data-bg="blur"
+          >
+            <span class="w-4 h-4 rounded bg-gradient-to-r from-cyan-500 to-indigo-500 blur-[1px]"></span>
+            Blur Background
+          </button>
+
+          <!-- Custom Color Picker -->
+          <div class="flex items-center gap-2 px-2.5 py-1 rounded-xl border border-slate-700 bg-slate-900">
+            <input type="color" id="custom-color-input" value="#3b82f6" class="w-5 h-5 rounded cursor-pointer bg-transparent border-0 p-0" />
+            <label for="custom-color-input" class="text-xs text-slate-300 cursor-pointer">Custom</label>
+          </div>
+        </div>
+
+        <!-- Download & Actions Group -->
+        <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+          <!-- Copy to Clipboard -->
+          <button
+            id="copy-btn"
+            type="button"
+            class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 hover:border-slate-600 transition-all flex items-center gap-2 shadow-sm"
+          >
+            <svg class="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+              <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+            </svg>
+            <span id="copy-btn-text">Copy PNG</span>
+          </button>
+
+          <!-- Download Full-Res Button -->
+          <button
+            id="download-btn"
+            type="button"
+            class="px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white shadow-lg shadow-cyan-500/25 transition-all flex items-center gap-2 group hover:scale-[1.02]"
+          >
+            <svg class="w-4 h-4 text-white group-hover:translate-y-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" x2="12" y1="15" y2="3"/>
+            </svg>
+            <span id="download-btn-text">Download Full Size (PNG)</span>
+          </button>
+
+          <!-- Reset / New Image Button -->
+          <button
+            id="reset-btn"
+            type="button"
+            class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 hover:border-slate-700 transition-all"
+            title="Remove another image"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+              <path d="M21 3v5h-5"/>
+              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+              <path d="M8 16H3v5"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ERROR STATE (Hidden by default) -->
+    <div id="error-state" class="hidden flex-col items-center justify-center py-12 text-center max-w-md mx-auto">
+      <div class="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mb-4">
+        <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" x2="12" y1="8" y2="12"/>
+          <line x1="12" x2="12.01" y1="16" y2="16"/>
+        </svg>
+      </div>
+      <h3 class="text-xl font-bold text-white mb-2">Processing Failed</h3>
+      <p id="error-message" class="text-sm text-slate-400 mb-6">Something went wrong while processing the image.</p>
+      <button
+        id="error-retry-btn"
+        type="button"
+        class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-white border border-slate-700"
+      >
+        Try Another Image
+      </button>
+    </div>
+
+  </div>
+</section>
+
+<!-- Client-side Engine Script -->
+<script>
+  // Elements
+  const uploadState = document.getElementById('upload-state');
+  const processingState = document.getElementById('processing-state');
+  const resultState = document.getElementById('result-state');
+  const errorState = document.getElementById('error-state');
+
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('file-input') as HTMLInputElement;
+  const sampleBtns = document.querySelectorAll('.sample-btn');
+
+  const processTitle = document.getElementById('process-title');
+  const processDesc = document.getElementById('process-desc');
+  const progressBar = document.getElementById('progress-bar');
+  const progressText = document.getElementById('progress-text');
+  const progressPercent = document.getElementById('progress-percent');
+
+  const perfBadge = document.getElementById('perf-badge');
+  const resolutionBadge = document.getElementById('resolution-badge');
+  const viewerContainer = document.getElementById('viewer-container');
+  const customBgLayer = document.getElementById('custom-bg-layer');
+  const blurBgImg = document.getElementById('blur-bg-img') as HTMLImageElement;
+  const cutoutImg = document.getElementById('cutout-img') as HTMLImageElement;
+  const originalImg = document.getElementById('original-img') as HTMLImageElement;
+  const sliderOverlay = document.getElementById('slider-overlay');
+  const sliderHandle = document.getElementById('slider-handle');
+
+  const viewSliderBtn = document.getElementById('view-slider-btn');
+  const viewCutoutBtn = document.getElementById('view-cutout-btn');
+  const viewOriginalBtn = document.getElementById('view-original-btn');
+
+  const bgChoiceBtns = document.querySelectorAll('.bg-choice-btn');
+  const customColorInput = document.getElementById('custom-color-input') as HTMLInputElement;
+
+  const copyBtn = document.getElementById('copy-btn');
+  const copyBtnText = document.getElementById('copy-btn-text');
+  const downloadBtn = document.getElementById('download-btn');
+  const downloadBtnText = document.getElementById('download-btn-text');
+  const resetBtn = document.getElementById('reset-btn');
+  const errorRetryBtn = document.getElementById('error-retry-btn');
+  const errorMessage = document.getElementById('error-message');
+
+  const hwText = document.getElementById('hw-text');
+  const hwDot = document.getElementById('hw-dot');
+  const hwPing = document.getElementById('hw-ping');
+
+  // Application State
+  let worker: Worker | null = null;
+  let currentFile: File | null = null;
+  let currentFilename = 'image';
+  let originalImageBlob: Blob | null = null;
+  let cutoutImageBlob: Blob | null = null;
+  let maskImageBlob: Blob | null = null;
+  let nativeWidth = 0;
+  let nativeHeight = 0;
+  let activeBgMode: 'transparent' | 'color' | 'blur' = 'transparent';
+  let activeBgColor = '#FFFFFF';
+  let sliderPosition = 50; // percentage
+  let isDraggingSlider = false;
+  let viewMode: 'slider' | 'cutout' | 'original' = 'slider';
+
+  // Initialize Web Worker
+  function initWorker() {
+    if (worker) return worker;
+
+    worker = new Worker(
+      new URL('../workers/rmbg.worker.ts', import.meta.url),
+      { type: 'module' }
+    );
+
+    worker.onmessage = (event) => {
+      const msg = event.data;
+
+      if (msg.type === 'device_info') {
+        updateHardwareBadge(msg.device);
+      } else if (msg.type === 'progress') {
+        handleProgress(msg.data);
+      } else if (msg.type === 'status') {
+        if (msg.status === 'loading_model') {
+          if (processTitle) processTitle.textContent = 'Loading AI Model...';
+          if (processDesc) processDesc.textContent = 'Fetching RMBG neural weights into WebGPU memory.';
+        } else if (msg.status === 'processing') {
+          if (processTitle) processTitle.textContent = 'Removing Background...';
+          if (processDesc) processDesc.textContent = 'Segmenting edges, subject, and transparent alpha mask.';
+          if (progressBar) progressBar.style.width = '85%';
+          if (progressPercent) progressPercent.textContent = '85%';
+          if (progressText) progressText.textContent = 'Performing neural inference...';
+        }
+      } else if (msg.type === 'success') {
+        handleSuccess(msg);
+      } else if (msg.type === 'error') {
+        handleError(msg.error);
+      }
+    };
+
+    // Ask worker for device info
+    worker.postMessage({ action: 'get_device' });
+    return worker;
+  }
+
+  // Pre-warm AI engine in background
+  function warmupWorker() {
+    const w = initWorker();
+    w.postMessage({ action: 'warmup' });
+  }
+
+  // Update navbar hardware badge
+  function updateHardwareBadge(device: 'webgpu' | 'wasm') {
+    if (!hwText || !hwDot || !hwPing) return;
+    if (device === 'webgpu') {
+      hwText.textContent = 'WebGPU (Hardware ⚡)';
+      hwDot.className = 'relative inline-flex rounded-full h-2 w-2 bg-emerald-400';
+      hwPing.className = 'animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75';
+    } else {
+      hwText.textContent = 'WASM (CPU)';
+      hwDot.className = 'relative inline-flex rounded-full h-2 w-2 bg-amber-400';
+      hwPing.className = 'animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75';
+    }
+  }
+
+  // Handle download progress for first-time model loading
+  function handleProgress(info: any) {
+    if (!info) return;
+    if (info.status === 'progress' && typeof info.progress === 'number') {
+      const pct = Math.min(Math.round(info.progress), 99);
+      if (progressBar) progressBar.style.width = `${pct}%`;
+      if (progressPercent) progressPercent.textContent = `${pct}%`;
+      if (progressText) {
+        const file = info.file ? ` (${info.file.split('/').pop()})` : '';
+        progressText.textContent = `Downloading neural weights${file}...`;
+      }
+    } else if (info.status === 'done') {
+      if (progressText) progressText.textContent = 'Neural model loaded into memory!';
+      if (progressBar) progressBar.style.width = '90%';
+    }
+  }
+
+  // Handle successful background removal
+  async function handleSuccess(msg: any) {
+    cutoutImageBlob = msg.cutoutBlob;
+    maskImageBlob = msg.maskBlob;
+    nativeWidth = msg.originalWidth;
+    nativeHeight = msg.originalHeight;
+
+    const timeSeconds = (msg.elapsedMs / 1000).toFixed(2);
+    if (perfBadge) perfBadge.textContent = `Processed in ${timeSeconds}s (${msg.device.toUpperCase()})`;
+    if (resolutionBadge) resolutionBadge.textContent = `${nativeWidth} × ${nativeHeight} px (100% Native)`;
+
+    // If worker returned cutoutBlob, use it. Otherwise composite on client canvas.
+    let cutoutUrl = '';
+    if (cutoutImageBlob) {
+      cutoutUrl = URL.createObjectURL(cutoutImageBlob);
+    } else if (maskImageBlob && originalImageBlob) {
+      // Client-side fallback composite
+      const compositeBlob = await createCompositeBlob(originalImageBlob, maskImageBlob);
+      cutoutImageBlob = compositeBlob;
+      cutoutUrl = URL.createObjectURL(compositeBlob);
+    }
+
+    if (cutoutImg) {
+      cutoutImg.src = cutoutUrl;
+    }
+
+    // Set up original image for slider and blur
+    if (originalImageBlob) {
+      const origUrl = URL.createObjectURL(originalImageBlob);
+      if (originalImg) originalImg.src = origUrl;
+      if (blurBgImg) blurBgImg.src = origUrl;
+    }
+
+    // Adjust slider dimensions once image loads
+    cutoutImg.onload = () => {
+      syncSliderDimensions();
+      updateSlider(50);
+    };
+
+    // Show result state
+    showState('result');
+  }
+
+  // Create composite on client canvas if worker only provided mask
+  async function createCompositeBlob(origBlob: Blob, maskBlob: Blob): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+      const origImg = new Image();
+      const mskImg = new Image();
+      let loaded = 0;
+
+      const onBothLoaded = () => {
+        loaded++;
+        if (loaded < 2) return;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = origImg.naturalWidth;
+        canvas.height = origImg.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return reject(new Error('Canvas context unavailable'));
+
+        ctx.drawImage(origImg, 0, 0);
+        ctx.globalCompositeOperation = 'destination-in';
+        ctx.drawImage(mskImg, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob((blob) => {
+          if (blob) resolve(blob);
+          else reject(new Error('Canvas blob generation failed'));
+        }, 'image/png');
+      };
+
+      origImg.onload = onBothLoaded;
+      mskImg.onload = onBothLoaded;
+      origImg.src = URL.createObjectURL(origBlob);
+      mskImg.src = URL.createObjectURL(maskBlob);
+    });
+  }
+
+  function handleError(err: string) {
+    if (errorMessage) errorMessage.textContent = err;
+    showState('error');
+  }
+
+  function showState(state: 'upload' | 'processing' | 'result' | 'error') {
+    if (uploadState) uploadState.classList.toggle('hidden', state !== 'upload');
+    if (processingState) processingState.classList.toggle('hidden', state !== 'processing');
+    if (resultState) resultState.classList.toggle('hidden', state !== 'result');
+    if (errorState) errorState.classList.toggle('hidden', state !== 'error');
+  }
+
+  // Process an image file or blob
+  async function processImage(fileOrBlob: File | Blob, nameHint = 'image') {
+    currentFilename = nameHint.replace(/\.[^/.]+$/, '');
+    originalImageBlob = fileOrBlob;
+
+    showState('processing');
+    if (progressBar) progressBar.style.width = '20%';
+    if (progressPercent) progressPercent.textContent = '20%';
+    if (progressText) progressText.textContent = 'Initializing neural segmenter...';
+
+    const w = initWorker();
+    w.postMessage({
+      action: 'remove_bg',
+      imageBlob: fileOrBlob,
+      id: Date.now(),
+    });
+  }
+
+  // Sync dimensions of original image overlay with cutout image
+  function syncSliderDimensions() {
+    if (!cutoutImg || !originalImg) return;
+    originalImg.style.width = `${cutoutImg.clientWidth}px`;
+    originalImg.style.height = `${cutoutImg.clientHeight}px`;
+  }
+
+  window.addEventListener('resize', syncSliderDimensions);
+
+  // Update slider position (0 to 100)
+  function updateSlider(percent: number) {
+    sliderPosition = Math.max(0, Math.min(100, percent));
+    if (sliderOverlay) {
+      sliderOverlay.style.clipPath = `polygon(${sliderPosition}% 0, 100% 0, 100% 100%, ${sliderPosition}% 100%)`;
+    }
+    if (sliderHandle) {
+      sliderHandle.style.left = `${sliderPosition}%`;
+    }
+  }
+
+  // Dragging slider interaction
+  function handleSliderMove(e: MouseEvent | TouchEvent) {
+    if (!isDraggingSlider || !viewerContainer) return;
+    const rect = viewerContainer.getBoundingClientRect();
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const offset = clientX - rect.left;
+    const pct = (offset / rect.width) * 100;
+    updateSlider(pct);
+  }
+
+  viewerContainer?.addEventListener('mousedown', (e) => {
+    isDraggingSlider = true;
+    handleSliderMove(e);
+  });
+  viewerContainer?.addEventListener('touchstart', (e) => {
+    isDraggingSlider = true;
+    handleSliderMove(e);
+  }, { passive: true });
+
+  window.addEventListener('mousemove', handleSliderMove);
+  window.addEventListener('touchmove', handleSliderMove, { passive: true });
+  window.addEventListener('mouseup', () => { isDraggingSlider = false; });
+  window.addEventListener('touchend', () => { isDraggingSlider = false; });
+
+  // View Mode Buttons
+  viewSliderBtn?.addEventListener('click', () => {
+    viewMode = 'slider';
+    if (sliderOverlay) sliderOverlay.style.display = 'block';
+    if (sliderHandle) sliderHandle.style.display = 'flex';
+    updateSlider(50);
+    setActiveViewBtn(viewSliderBtn);
+  });
+
+  viewCutoutBtn?.addEventListener('click', () => {
+    viewMode = 'cutout';
+    if (sliderOverlay) sliderOverlay.style.display = 'none';
+    if (sliderHandle) sliderHandle.style.display = 'none';
+    setActiveViewBtn(viewCutoutBtn);
+  });
+
+  viewOriginalBtn?.addEventListener('click', () => {
+    viewMode = 'original';
+    if (sliderOverlay) {
+      sliderOverlay.style.display = 'block';
+      sliderOverlay.style.clipPath = 'polygon(0 0, 100% 0, 100% 100%, 0 100%)';
+    }
+    if (sliderHandle) sliderHandle.style.display = 'none';
+    setActiveViewBtn(viewOriginalBtn);
+  });
+
+  function setActiveViewBtn(activeBtn: HTMLElement) {
+    [viewSliderBtn, viewCutoutBtn, viewOriginalBtn].forEach((btn) => {
+      if (!btn) return;
+      btn.className = btn === activeBtn
+        ? 'px-3 py-1.5 rounded-lg bg-slate-800 text-white transition-colors'
+        : 'px-3 py-1.5 rounded-lg hover:text-slate-200 transition-colors';
+    });
+  }
+
+  // Background Studio Buttons
+  bgChoiceBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      bgChoiceBtns.forEach((b) => b.classList.remove('border-cyan-500/80', 'bg-slate-800', 'text-white'));
+      btn.classList.add('border-cyan-500/80', 'bg-slate-800', 'text-white');
+
+      const bgType = btn.getAttribute('data-bg');
+      if (bgType === 'transparent') {
+        activeBgMode = 'transparent';
+        if (customBgLayer) {
+          customBgLayer.className = 'absolute inset-0 checkerboard-pattern pointer-events-none transition-all';
+          customBgLayer.style.backgroundColor = '';
+        }
+        if (blurBgImg) blurBgImg.classList.add('hidden');
+      } else if (bgType === 'color') {
+        activeBgMode = 'color';
+        activeBgColor = btn.getAttribute('data-color') || '#FFFFFF';
+        if (customBgLayer) {
+          customBgLayer.className = 'absolute inset-0 pointer-events-none transition-all';
+          customBgLayer.style.backgroundColor = activeBgColor;
+        }
+        if (blurBgImg) blurBgImg.classList.add('hidden');
+      } else if (bgType === 'blur') {
+        activeBgMode = 'blur';
+        if (customBgLayer) {
+          customBgLayer.className = 'absolute inset-0 pointer-events-none transition-all';
+          customBgLayer.style.backgroundColor = 'transparent';
+        }
+        if (blurBgImg) blurBgImg.classList.remove('hidden');
+      }
+    });
+  });
+
+  customColorInput?.addEventListener('input', (e) => {
+    const color = (e.target as HTMLInputElement).value;
+    activeBgMode = 'color';
+    activeBgColor = color;
+    if (customBgLayer) {
+      customBgLayer.className = 'absolute inset-0 pointer-events-none transition-all';
+      customBgLayer.style.backgroundColor = color;
+    }
+    if (blurBgImg) blurBgImg.classList.add('hidden');
+  });
+
+  // Generate Final High-Resolution Composite for Download or Copy
+  async function generateFinalComposite(): Promise<Blob> {
+    if (activeBgMode === 'transparent' && cutoutImageBlob) {
+      return cutoutImageBlob;
+    }
+
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = nativeWidth;
+      canvas.height = nativeHeight;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return reject(new Error('Canvas context failed'));
+
+      const cutImg = new Image();
+      cutImg.onload = () => {
+        if (activeBgMode === 'color') {
+          ctx.fillStyle = activeBgColor;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(cutImg, 0, 0);
+          canvas.toBlob((b) => b ? resolve(b) : reject(new Error('Blob error')), 'image/png');
+        } else if (activeBgMode === 'blur') {
+          const orig = new Image();
+          orig.onload = () => {
+            // Draw blurred background
+            ctx.save();
+            ctx.filter = 'blur(30px)';
+            ctx.drawImage(orig, -40, -40, canvas.width + 80, canvas.height + 80);
+            ctx.restore();
+            // Draw crisp subject
+            ctx.drawImage(cutImg, 0, 0);
+            canvas.toBlob((b) => b ? resolve(b) : reject(new Error('Blob error')), 'image/png');
+          };
+          orig.src = cutoutImg.src;
+        } else {
+          ctx.drawImage(cutImg, 0, 0);
+          canvas.toBlob((b) => b ? resolve(b) : reject(new Error('Blob error')), 'image/png');
+        }
+      };
+      cutImg.src = cutoutImg.src;
+    });
+  }
+
+  // Download Full-Res PNG
+  downloadBtn?.addEventListener('click', async () => {
+    if (!downloadBtnText) return;
+    const oldText = downloadBtnText.textContent;
+    downloadBtnText.textContent = 'Generating full resolution...';
+
+    try {
+      const finalBlob = await generateFinalComposite();
+      const url = URL.createObjectURL(finalBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${currentFilename}-unklip.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error('Download error:', e);
+    } finally {
+      downloadBtnText.textContent = oldText;
+    }
+  });
+
+  // Copy to Clipboard
+  copyBtn?.addEventListener('click', async () => {
+    if (!copyBtnText) return;
+    const oldText = copyBtnText.textContent;
+    copyBtnText.textContent = 'Copying...';
+
+    try {
+      const finalBlob = await generateFinalComposite();
+      // PNG is required by Clipboard API
+      await navigator.clipboard.write([
+        new ClipboardItem({ 'image/png': finalBlob })
+      ]);
+      copyBtnText.textContent = '✓ Copied to Clipboard!';
+      setTimeout(() => {
+        copyBtnText.textContent = oldText;
+      }, 2500);
+    } catch (e) {
+      console.warn('Clipboard write failed:', e);
+      copyBtnText.textContent = 'Copy unavailable';
+      setTimeout(() => {
+        copyBtnText.textContent = oldText;
+      }, 2500);
+    }
+  });
+
+  // Reset / Process Another
+  resetBtn?.addEventListener('click', () => {
+    showState('upload');
+    if (fileInput) fileInput.value = '';
+  });
+  errorRetryBtn?.addEventListener('click', () => {
+    showState('upload');
+    if (fileInput) fileInput.value = '';
+  });
+
+  // Dropzone drag & drop handlers
+  dropzone?.addEventListener('click', () => fileInput?.click());
+  fileInput?.addEventListener('change', (e) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (file) processImage(file, file.name);
+  });
+
+  dropzone?.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropzone.classList.add('border-cyan-400', 'bg-slate-900/80', 'scale-[1.01]');
+  });
+  dropzone?.addEventListener('dragleave', () => {
+    dropzone.classList.remove('border-cyan-400', 'bg-slate-900/80', 'scale-[1.01]');
+  });
+  dropzone?.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('border-cyan-400', 'bg-slate-900/80', 'scale-[1.01]');
+    const file = e.dataTransfer?.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      processImage(file, file.name);
+    }
+  });
+
+  // Global Paste listener (Ctrl+V / Cmd+V)
+  window.addEventListener('paste', (e) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.startsWith('image/')) {
+        const file = items[i].getAsFile();
+        if (file) {
+          processImage(file, 'clipboard-image.png');
+          break;
+        }
+      }
+    }
+  });
+
+  // Sample Images click handlers
+  sampleBtns.forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const sampleUrl = btn.getAttribute('data-sample');
+      const sampleName = btn.getAttribute('data-name') || 'sample';
+      if (!sampleUrl) return;
+
+      try {
+        const resp = await fetch(sampleUrl);
+        const blob = await resp.blob();
+        processImage(blob, sampleName);
+      } catch (err) {
+        console.error('Failed to load sample image:', err);
+      }
+    });
+  });
+
+  // Preload worker on page idle
+  if ('requestIdleCallback' in window) {
+    (window as any).requestIdleCallback(() => warmupWorker());
+  } else {
+    setTimeout(warmupWorker, 1500);
+  }
+</script>

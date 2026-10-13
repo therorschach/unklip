@@ -1,0 +1,137 @@
+---
+// src/components/ComparisonTable.astro
+---
+
+<section id="comparison" class="max-w-5xl mx-auto px-4 sm:px-6 py-16">
+  <div class="text-center mb-12">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold uppercase tracking-wider mb-4">
+      Honest Comparison
+    </div>
+    <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+      How Unklip Beats remove.bg
+    </h2>
+    <p class="mt-4 text-slate-400 max-w-xl mx-auto text-sm sm:text-base">
+      Now that Canva owns remove.bg and is deprecating free cutouts, see why thousands of designers, photographers, and e-commerce sellers are switching.
+    </p>
+  </div>
+
+  <div class="rounded-3xl border border-slate-800 bg-slate-900/60 overflow-hidden shadow-2xl backdrop-blur-xl">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-slate-800 bg-slate-950/70">
+            <th class="py-5 px-6 text-sm font-semibold text-slate-400 w-2/5">Feature</th>
+            <th class="py-5 px-6 text-sm font-bold text-cyan-400 w-3/10 bg-cyan-950/20 border-x border-cyan-500/20">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+                Unklip (Our Tool)
+              </div>
+            </th>
+            <th class="py-5 px-6 text-sm font-semibold text-slate-400 w-3/10">
+              remove.bg (Canva)
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-800 text-sm">
+          <!-- Price -->
+          <tr class="hover:bg-slate-800/20 transition-colors">
+            <td class="py-4 px-6 font-medium text-slate-200">
+              Pricing
+              <span class="block text-xs text-slate-400">Cost per image cutout</span>
+            </td>
+            <td class="py-4 px-6 font-bold text-emerald-400 bg-cyan-950/10 border-x border-cyan-500/10">
+              100% Free Forever ($0)
+            </td>
+            <td class="py-4 px-6 text-rose-400 font-medium">
+              Up to $0.20 – $1.99 / image
+            </td>
+          </tr>
+
+          <!-- Resolution -->
+          <tr class="hover:bg-slate-800/20 transition-colors">
+            <td class="py-4 px-6 font-medium text-slate-200">
+              Export Resolution
+              <span class="block text-xs text-slate-400">Retains original camera quality</span>
+            </td>
+            <td class="py-4 px-6 font-bold text-cyan-400 bg-cyan-950/10 border-x border-cyan-500/10">
+              Full Native 4K / 8K (100%)
+            </td>
+            <td class="py-4 px-6 text-slate-400">
+              Downsized to 0.25 MP on free tier
+            </td>
+          </tr>
+
+          <!-- Privacy -->
+          <tr class="hover:bg-slate-800/20 transition-colors">
+            <td class="py-4 px-6 font-medium text-slate-200">
+              Data Privacy & Security
+              <span class="block text-xs text-slate-400">Where image processing happens</span>
+            </td>
+            <td class="py-4 px-6 font-semibold text-emerald-400 bg-cyan-950/10 border-x border-cyan-500/10">
+              🔒 100% On-Device (Browser)
+            </td>
+            <td class="py-4 px-6 text-slate-400">
+              Uploaded to remote cloud servers
+            </td>
+          </tr>
+
+          <!-- Usage Limits -->
+          <tr class="hover:bg-slate-800/20 transition-colors">
+            <td class="py-4 px-6 font-medium text-slate-200">
+              Usage Limits
+              <span class="block text-xs text-slate-400">How many photos you can process</span>
+            </td>
+            <td class="py-4 px-6 font-bold text-cyan-400 bg-cyan-950/10 border-x border-cyan-500/10">
+              Unlimited (No caps)
+            </td>
+            <td class="py-4 px-6 text-slate-400">
+              1 free credit, then paywalled
+            </td>
+          </tr>
+
+          <!-- Account Required -->
+          <tr class="hover:bg-slate-800/20 transition-colors">
+            <td class="py-4 px-6 font-medium text-slate-200">
+              Account / Sign-Up
+              <span class="block text-xs text-slate-400">Hassle-free access</span>
+            </td>
+            <td class="py-4 px-6 font-semibold text-emerald-400 bg-cyan-950/10 border-x border-cyan-500/10">
+              None required
+            </td>
+            <td class="py-4 px-6 text-slate-400">
+              Required for HD & purchases
+            </td>
+          </tr>
+
+          <!-- Studio Tools -->
+          <tr class="hover:bg-slate-800/20 transition-colors">
+            <td class="py-4 px-6 font-medium text-slate-200">
+              Built-in Studio Tools
+              <span class="block text-xs text-slate-400">White background, blur, colors</span>
+            </td>
+            <td class="py-4 px-6 font-semibold text-cyan-400 bg-cyan-950/10 border-x border-cyan-500/10">
+              Included free (White, Blur, Color)
+            </td>
+            <td class="py-4 px-6 text-slate-400">
+              Requires Canva Pro bundle
+            </td>
+          </tr>
+
+          <!-- Speed -->
+          <tr class="hover:bg-slate-800/20 transition-colors">
+            <td class="py-4 px-6 font-medium text-slate-200">
+              Processing Speed
+              <span class="block text-xs text-slate-400">After model download</span>
+            </td>
+            <td class="py-4 px-6 font-semibold text-emerald-400 bg-cyan-950/10 border-x border-cyan-500/10">
+              ⚡ ~0.3s (WebGPU Accelerated)
+            </td>
+            <td class="py-4 px-6 text-slate-400">
+              1.5s – 3s (Network latency)
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
