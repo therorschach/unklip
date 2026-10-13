@@ -1,21 +1,23 @@
-import { pipeline, env, RawImage } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3';
+import { AutoModel, AutoProcessor, RawImage, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3';
 
-// Configure environment for browser execution
+// Configure environment for in-browser execution
 env.allowLocalModels = false;
 
-// We use the battle-tested state-of-the-art BRIA RMBG-1.4 model
 const MODEL_ID = 'briaai/RMBG-1.4';
 
-let segmenterPromise: Promise<any> | null = null;
+let modelPromise: Promise<any> | null = null;
+let model: any = null;
+let processor: any = null;
 let activeDevice: 'webgpu' | 'wasm' = 'wasm';
 
-async function initSegmenter() {
-  if (segmenterPromise) return segmenterPromise;
+async function initModel() {
+  if (model && processor) return { model, processor };
+  if (modelPromise) return modelPromise;
 
-  segmenterPromise = (async () => {
+  modelPromise = (async () => {
     let device: 'webgpu' | 'wasm' = 'wasm';
 
-    // Check for WebGPU support in worker context
+    // Check WebGPU availability
     if (typeof navigator !== 'undefined' && 'gpu' in navigator) {
       try {
         const adapter = await (navigator as any).gpu?.requestAdapter();
@@ -23,7 +25,7 @@ async function initSegmenter() {
           device = 'webgpu';
         }
       } catch (e) {
-        console.warn('WebGPU not available in worker context, falling back to WASM:', e);
+        console.warn('WebGPU request failed, falling back to WASM:', e);
         device = 'wasm';
       }
     }
@@ -31,39 +33,42 @@ async function initSegmenter() {
     activeDevice = device;
     self.postMessage({ type: 'device_info', device: activeDevice });
 
-    try {
-      const seg = await pipeline('image-segmentation', MODEL_ID, {
-        device,
-        progress_callback: (progressInfo: any) => {
-          self.postMessage({
-            type: 'progress',
-            data: progressInfo,
-          });
-        },
+    const progressCallback = (progressInfo: any) => {
+      self.postMessage({
+        type: 'progress',
+        data: progressInfo,
       });
-      return seg;
-    } catch (gpuError) {
+    };
+
+    try {
+      processor = await AutoProcessor.from_pretrained(MODEL_ID, {
+        progress_callback: progressCallback,
+      });
+
+      model = await AutoModel.from_pretrained(MODEL_ID, {
+        device,
+        progress_callback: progressCallback,
+      });
+
+      return { model, processor };
+    } catch (gpuErr) {
       if (device === 'webgpu') {
-        console.warn('WebGPU pipeline failed, retrying with WASM CPU fallback:', gpuError);
+        console.warn('WebGPU model load failed, retrying with WASM fallback:', gpuErr);
         activeDevice = 'wasm';
         self.postMessage({ type: 'device_info', device: activeDevice });
 
-        const seg = await pipeline('image-segmentation', MODEL_ID, {
+        model = await AutoModel.from_pretrained(MODEL_ID, {
           device: 'wasm',
-          progress_callback: (progressInfo: any) => {
-            self.postMessage({
-              type: 'progress',
-              data: progressInfo,
-            });
-          },
+          progress_callback: progressCallback,
         });
-        return seg;
+
+        return { model, processor };
       }
-      throw gpuError;
+      throw gpuErr;
     }
   })();
 
-  return segmenterPromise;
+  return modelPromise;
 }
 
 self.addEventListener('message', async (event: MessageEvent) => {
@@ -83,7 +88,7 @@ self.addEventListener('message', async (event: MessageEvent) => {
 
   if (action === 'warmup') {
     try {
-      await initSegmenter();
+      await initModel();
       self.postMessage({ type: 'warmup_complete', id, device: activeDevice });
     } catch (error: any) {
       self.postMessage({ type: 'warmup_error', id, error: error?.message || String(error) });
@@ -95,37 +100,37 @@ self.addEventListener('message', async (event: MessageEvent) => {
     const startTime = performance.now();
     try {
       self.postMessage({ type: 'status', id, status: 'loading_model' });
-      const segmenter = await initSegmenter();
+      const instances = await initModel();
+      const currentModel = instances.model;
+      const currentProcessor = instances.processor;
 
       self.postMessage({ type: 'status', id, status: 'processing' });
 
-      // Load raw image from the uploaded blob
+      // Load original image
       const rawImg = await RawImage.fromBlob(imageBlob);
       const originalWidth = rawImg.width;
       const originalHeight = rawImg.height;
 
-      // Run AI segmentation inference
-      const output = await segmenter(rawImg);
+      // Preprocess image
+      const { pixel_values } = await currentProcessor(rawImg);
 
-      // Extract mask
-      const maskRaw: RawImage = Array.isArray(output) && output[0]?.mask ? output[0].mask : output;
+      // Run inference on RMBG-1.4
+      const outputs = await currentModel({ input: pixel_values });
+      const outputName = Object.keys(outputs)[0];
+      const tensor = outputs[outputName];
 
-      let cutoutBlob: Blob | null = null;
-      let maskBlob: Blob | null = null;
+      // Convert output tensor to high-resolution alpha mask
+      const maskTensor = tensor[0].mul(255).to('uint8');
+      const maskRaw = await RawImage.fromTensor(maskTensor).resize(originalWidth, originalHeight);
 
-      try {
-        // High-precision cutout: apply mask to original full-size image pixels
-        const cutoutRaw = rawImg.clone().putAlpha(maskRaw);
-        cutoutBlob = await cutoutRaw.toBlob();
-      } catch (err) {
-        console.warn('Direct cutout conversion failed, falling back to mask export:', err);
-      }
+      // Composite original image pixels with high-res mask
+      const cutoutRaw = rawImg.clone().putAlpha(maskRaw);
 
-      try {
-        maskBlob = await maskRaw.toBlob();
-      } catch (err) {
-        console.warn('Mask conversion failed:', err);
-      }
+      // Convert to Blobs
+      const [cutoutBlob, maskBlob] = await Promise.all([
+        cutoutRaw.toBlob(),
+        maskRaw.toBlob(),
+      ]);
 
       const elapsedMs = Math.round(performance.now() - startTime);
 

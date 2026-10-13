@@ -1,51 +1,21 @@
 ---
+// src/components/Hero.astro
 ---
 
-<section class="relative pt-12 pb-8 overflow-hidden text-center">
-  <!-- Glow effect background -->
-  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-cyan-600/15 via-indigo-600/15 to-fuchsia-600/15 blur-[120px] pointer-events-none rounded-full"></div>
-
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
-    <!-- Announcement Banner -->
-    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900/90 border border-slate-700/60 shadow-lg mb-8 hover:border-slate-600 transition-colors">
-      <span class="flex h-2 w-2 rounded-full bg-amber-400"></span>
-      <span class="text-xs sm:text-sm font-medium text-slate-300">
-        Say goodbye to remove.bg paywalls & 0.25 MP limits
-      </span>
-      <span class="text-xs text-amber-400 font-semibold hidden sm:inline">→ Unlimited Free</span>
-    </div>
-
-    <!-- Main Title -->
-    <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.1]">
-      Remove Image Backgrounds.<br />
-      <span class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400">
-        Full 4K. Instant. 100% Free.
-      </span>
-    </h1>
-
-    <!-- Subtitle -->
-    <p class="mt-6 text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
-      Powered by cutting-edge neural segmentation running directly in your browser via <strong class="text-white font-semibold">WebGPU</strong>. Your photos never leave your device.
-    </p>
-
-    <!-- Key Advantage Badges -->
-    <div class="mt-8 flex flex-wrap items-center justify-center gap-3 text-xs sm:text-sm text-slate-300">
-      <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-slate-900/70 border border-slate-800">
-        <span class="text-cyan-400 font-bold">✓</span>
-        <span>Original Resolution Retained</span>
-      </div>
-      <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-slate-900/70 border border-slate-800">
-        <span class="text-emerald-400 font-bold">✓</span>
-        <span>100% Private (On-Device)</span>
-      </div>
-      <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-slate-900/70 border border-slate-800">
-        <span class="text-indigo-400 font-bold">✓</span>
-        <span>No Sign-Up or Credits</span>
-      </div>
-      <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-slate-900/70 border border-slate-800">
-        <span class="text-fuchsia-400 font-bold">✓</span>
-        <span>No Watermarks</span>
-      </div>
-    </div>
+<section class="pt-8 pb-3 text-center max-w-3xl mx-auto px-4 sm:px-6">
+  <!-- Minimal Badge -->
+  <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EFECE4] border border-[#DDD7CB] text-[#5C564E] text-xs font-semibold mb-3">
+    <span>Free Alternative to remove.bg</span>
+    <span class="text-[#8C542A]">• Full 4K Native Resolution</span>
   </div>
+
+  <!-- Compact Title -->
+  <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#24211E] leading-tight">
+    Instant Background Removal. Full Resolution.
+  </h1>
+
+  <!-- Short Subtitle -->
+  <p class="mt-2 text-sm sm:text-base text-[#6B655D] max-w-lg mx-auto">
+    No sign-ups, no cloud uploads, no 0.25 MP downscaling. Processed on your device via WebGPU.
+  </p>
 </section>
