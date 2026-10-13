@@ -104,32 +104,82 @@
     </div>
 
     <!-- STATE 2: PROCESSING / PROGRESS (Hidden by default) -->
-    <div id="processing-state" class="hidden flex-col items-center justify-center py-12 text-center max-w-md mx-auto">
-      <!-- Animated Shimmer Ring -->
-      <div class="relative w-16 h-16 mb-5">
-        <div class="absolute inset-0 rounded-full border-3 border-[#E6E1D6]"></div>
-        <div class="absolute inset-0 rounded-full border-3 border-[#24211E] border-t-transparent animate-spin"></div>
-        <div class="w-full h-full rounded-full flex items-center justify-center text-[#24211E]">
-          <svg class="w-6 h-6 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+    <div id="processing-state" class="hidden flex-col items-center justify-center py-8 text-center max-w-lg mx-auto w-full">
+      
+      <!-- Interactive Processing Ring with Image Preview -->
+      <div class="relative w-20 h-20 mb-5 flex items-center justify-center">
+        <!-- Outer Rotating Dashed Ring -->
+        <div class="absolute inset-0 rounded-2xl border-2 border-dashed border-[#24211E]/40 animate-[spin_10s_linear_infinite]"></div>
+        
+        <!-- Thumbnail Preview -->
+        <img
+          id="process-thumb"
+          src=""
+          alt="Processing thumbnail"
+          class="relative w-16 h-16 rounded-xl object-cover bg-white shadow-sm border border-[#DDD7CB]"
+        />
+
+        <!-- Active Neural Sparkle Badge -->
+        <div class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#24211E] text-[#F8F5F0] flex items-center justify-center shadow-sm">
+          <svg class="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/>
           </svg>
         </div>
       </div>
 
-      <h3 id="process-title" class="text-xl font-bold text-[#24211E] mb-1">Analyzing Image...</h3>
-      <p id="process-desc" class="text-xs text-[#736B61] mb-5">Extracting subject and cutting out background with neural segmentation.</p>
+      <!-- Live Title & Step Description -->
+      <h3 id="process-title" class="text-xl font-extrabold text-[#24211E] mb-1">Removing Background...</h3>
+      <p id="process-desc" class="text-xs text-[#736B61] mb-5 max-w-sm">Segmenting foreground subject and fine edges...</p>
 
-      <!-- Progress Bar Container -->
-      <div class="w-full bg-[#EFECE4] rounded-full h-2.5 p-0.5 border border-[#DDD7CB] overflow-hidden mb-2.5">
-        <div id="progress-bar" class="bg-[#24211E] h-full rounded-full transition-all duration-300 w-1/4"></div>
-      </div>
-      <div class="flex items-center justify-between w-full text-xs text-[#736B61]">
-        <span id="progress-text">Initializing AI engine...</span>
-        <span id="progress-percent">25%</span>
+      <!-- Step Indicators (4-Stage Pipeline) -->
+      <div class="grid grid-cols-4 gap-1.5 w-full mb-4 px-2 select-none">
+        <div id="step-pill-1" class="flex items-center justify-center gap-1 text-[11px] font-semibold text-[#24211E] bg-[#EFECE4] py-1.5 rounded-lg border border-[#DDD7CB] transition-all shadow-2xs">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#24211E]"></span>
+          <span>1. Input</span>
+        </div>
+        <div id="step-pill-2" class="flex items-center justify-center gap-1 text-[11px] font-medium text-[#8C847A] py-1.5 rounded-lg border border-transparent transition-all opacity-60">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#8C847A]"></span>
+          <span>2. AI Detect</span>
+        </div>
+        <div id="step-pill-3" class="flex items-center justify-center gap-1 text-[11px] font-medium text-[#8C847A] py-1.5 rounded-lg border border-transparent transition-all opacity-60">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#8C847A]"></span>
+          <span>3. Matting</span>
+        </div>
+        <div id="step-pill-4" class="flex items-center justify-center gap-1 text-[11px] font-medium text-[#8C847A] py-1.5 rounded-lg border border-transparent transition-all opacity-60">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#8C847A]"></span>
+          <span>4. 4K Export</span>
+        </div>
       </div>
 
-      <div class="mt-4 text-[11px] text-[#8C847A]">
-        Note: The first time you use Unklip, neural weights are cached in your browser. Subsequent cuts will be near-instant!
+      <!-- Main Interactive Progress Bar Container (0% - 100%) -->
+      <div class="w-full bg-[#EFECE4] rounded-full h-3.5 p-0.5 border border-[#DDD7CB] overflow-hidden shadow-inner mb-2.5 relative">
+        <div
+          id="progress-bar"
+          class="bg-[#24211E] h-full rounded-full transition-[width] duration-150 ease-out relative overflow-hidden"
+          style="width: 0%;"
+        >
+          <!-- Shimmer glow line -->
+          <div class="absolute inset-0 bg-white/20 animate-pulse w-full"></div>
+        </div>
+      </div>
+
+      <!-- Real-time Status Text & Digital Monospace Percentage -->
+      <div class="flex items-center justify-between w-full text-xs text-[#736B61] px-1">
+        <span id="progress-text" class="font-medium text-[#5C564E]">Initializing neural engine...</span>
+        <span id="progress-percent" class="font-mono text-xs font-bold text-[#24211E] bg-[#EFECE4] px-2 py-0.5 rounded-md border border-[#DDD7CB]">0%</span>
+      </div>
+
+      <!-- Cancel Action -->
+      <button
+        type="button"
+        id="process-cancel-btn"
+        class="mt-4 text-xs font-medium text-[#8C847A] hover:text-[#24211E] underline underline-offset-4 transition-colors cursor-pointer"
+      >
+        Cancel & try another image
+      </button>
+
+      <div class="mt-3 text-[11px] text-[#8C847A]">
+        Processed entirely in your browser with WebGPU/WASM • Never sent to any server
       </div>
     </div>
 
@@ -148,10 +198,10 @@
 
         <div class="flex flex-wrap items-center gap-2">
           <!-- Background Clutter Cleaning Slider -->
-          <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#FAF7F2] border border-[#DDD7CB] text-xs text-[#5C564E]">
-            <span class="font-medium text-[11px]">Clean Background:</span>
-            <input type="range" id="cutoff-slider" min="0.25" max="0.75" step="0.05" value="0.52" class="w-18 accent-[#24211E] cursor-pointer" title="Adjust to clean stubborn background ropes, nets, and pipes" />
-            <span id="cutoff-val" class="font-mono text-[10px] text-[#736B61] w-12 text-center">Clean</span>
+          <div class="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#FAF7F2] border border-[#DDD7CB] text-xs text-[#5C564E]">
+            <span class="font-medium text-[11px] whitespace-nowrap">Clean Clutter:</span>
+            <input type="range" id="cutoff-slider" min="0" max="100" step="5" value="55" class="w-18 accent-[#24211E] cursor-pointer" title="0% = soft edges, 100% = max background clean" />
+            <span id="cutoff-val" class="font-mono text-[10px] text-[#24211E] font-bold w-8 text-center">55%</span>
           </div>
 
           <!-- View Mode Switcher -->
@@ -195,8 +245,9 @@
 
           <!-- Divider Line & Slider Handle -->
           <div id="slider-handle" class="absolute top-0 bottom-0 w-1 bg-[#24211E] shadow-md cursor-ew-resize flex items-center justify-center">
-            <div class="w-7 h-7 rounded-full bg-[#24211E] text-[#F8F5F0] shadow-md flex items-center justify-center font-bold text-xs select-none">
+            <div class="w-7 h-7 rounded-full bg-[#24211E] text-[#F8F5F0] shadow-md flex items-center justify-center font-bold text-xs select-none relative">
               ↔
+              <span id="slider-pill" class="absolute -top-7 px-1.5 py-0.5 rounded bg-[#24211E] text-[#F8F5F0] text-[10px] font-mono font-medium shadow-xs whitespace-nowrap pointer-events-none">50%</span>
             </div>
           </div>
         </div>
@@ -300,15 +351,13 @@
           <button
             id="reset-btn"
             type="button"
-            class="p-2 rounded-xl bg-white hover:bg-[#F5F2EB] text-[#736B61] hover:text-[#24211E] border border-[#D5CDC0] transition-all cursor-pointer"
+            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-[#F5F2EB] text-[#4A453E] hover:text-[#24211E] border border-[#D5CDC0] text-xs font-semibold transition-all cursor-pointer shadow-2xs active:scale-95"
             title="Upload another image"
           >
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
-              <path d="M21 3v5h-5"/>
-              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
-              <path d="M8 16H3v5"/>
+            <svg class="w-3.5 h-3.5 text-[#4A453E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 5v14M5 12h14"/>
             </svg>
+            <span>New Image</span>
           </button>
         </div>
       </div>
@@ -364,6 +413,7 @@
   const originalImg = document.getElementById('original-img') as HTMLImageElement;
   const sliderOverlay = document.getElementById('slider-overlay');
   const sliderHandle = document.getElementById('slider-handle');
+  const sliderPill = document.getElementById('slider-pill');
 
   const viewSliderBtn = document.getElementById('view-slider-btn');
   const viewCutoutBtn = document.getElementById('view-cutout-btn');
@@ -379,6 +429,8 @@
   const resetBtn = document.getElementById('reset-btn');
   const errorRetryBtn = document.getElementById('error-retry-btn');
   const errorMessage = document.getElementById('error-message');
+  const processCancelBtn = document.getElementById('process-cancel-btn');
+  const processThumb = document.getElementById('process-thumb') as HTMLImageElement | null;
 
   const hwText = document.getElementById('hw-text');
   const hwDot = document.getElementById('hw-dot');
@@ -397,6 +449,100 @@
   let sliderPosition = 50;
   let isDraggingSlider = false;
 
+  // Smooth Interactive 0-100% Progress Engine
+  let progressAnimFrame: number | null = null;
+  let currentProgressVal = 0;
+  let targetProgressVal = 0;
+
+  function resetProgressUI() {
+    if (progressAnimFrame) {
+      cancelAnimationFrame(progressAnimFrame);
+      progressAnimFrame = null;
+    }
+    currentProgressVal = 0;
+    targetProgressVal = 0;
+    if (progressBar) progressBar.style.width = '0%';
+    if (progressPercent) progressPercent.textContent = '0%';
+    updateStepIndicators(1);
+  }
+
+  function startSmoothProgress(initialTarget = 18) {
+    resetProgressUI();
+    targetProgressVal = initialTarget;
+
+    const tick = () => {
+      if (currentProgressVal < targetProgressVal) {
+        const diff = targetProgressVal - currentProgressVal;
+        const step = Math.max(0.35, diff * 0.1);
+        currentProgressVal = Math.min(targetProgressVal, currentProgressVal + step);
+      } else if (targetProgressVal < 98) {
+        // Continuous gentle creeping motion so the bar is always lively and active
+        currentProgressVal = Math.min(96, currentProgressVal + 0.12);
+        targetProgressVal = Math.min(96, targetProgressVal + 0.12);
+      }
+
+      const rounded = Math.min(100, Math.round(currentProgressVal));
+      if (progressBar) progressBar.style.width = `${rounded}%`;
+      if (progressPercent) progressPercent.textContent = `${rounded}%`;
+
+      if (currentProgressVal < 100) {
+        progressAnimFrame = requestAnimationFrame(tick);
+      }
+    };
+
+    progressAnimFrame = requestAnimationFrame(tick);
+  }
+
+  function setProgressTarget(target: number, title?: string, desc?: string) {
+    targetProgressVal = Math.max(targetProgressVal, target);
+    if (title && processTitle) processTitle.textContent = title;
+    if (desc && processDesc) processDesc.textContent = desc;
+
+    if (targetProgressVal >= 90) updateStepIndicators(4);
+    else if (targetProgressVal >= 70) updateStepIndicators(3);
+    else if (targetProgressVal >= 35) updateStepIndicators(2);
+    else updateStepIndicators(1);
+  }
+
+  function updateStepIndicators(activeStep: number) {
+    for (let i = 1; i <= 4; i++) {
+      const stepEl = document.getElementById(`step-pill-${i}`);
+      if (!stepEl) continue;
+      if (i < activeStep) {
+        stepEl.className = 'flex items-center justify-center gap-1 text-[11px] font-semibold text-emerald-800 bg-emerald-50 py-1.5 rounded-lg border border-emerald-200 transition-all shadow-2xs';
+      } else if (i === activeStep) {
+        stepEl.className = 'flex items-center justify-center gap-1 text-[11px] font-semibold text-[#24211E] bg-[#EFECE4] py-1.5 rounded-lg border border-[#DDD7CB] transition-all shadow-2xs';
+      } else {
+        stepEl.className = 'flex items-center justify-center gap-1 text-[11px] font-medium text-[#8C847A] py-1.5 rounded-lg border border-transparent transition-all opacity-60';
+      }
+    }
+  }
+
+  function finishProgress(): Promise<void> {
+    return new Promise((resolve) => {
+      targetProgressVal = 100;
+      updateStepIndicators(4);
+      if (processTitle) processTitle.textContent = 'Background Removed!';
+      if (processDesc) processDesc.textContent = 'Preserving full resolution native output...';
+      if (progressText) progressText.textContent = '100% Complete';
+
+      const finishTick = () => {
+        if (currentProgressVal < 100) {
+          currentProgressVal = Math.min(100, currentProgressVal + 3.5);
+          const rounded = Math.round(currentProgressVal);
+          if (progressBar) progressBar.style.width = `${rounded}%`;
+          if (progressPercent) progressPercent.textContent = `${rounded}%`;
+          requestAnimationFrame(finishTick);
+        } else {
+          if (progressBar) progressBar.style.width = '100%';
+          if (progressPercent) progressPercent.textContent = '100%';
+          setTimeout(resolve, 220); // 220ms completion pause
+        }
+      };
+      finishTick();
+    });
+  }
+
   // Initialize Web Worker
   function initWorker() {
     if (worker) return worker;
@@ -413,17 +559,9 @@
         updateHardwareBadge(msg.device);
       } else if (msg.type === 'progress') {
         handleProgress(msg.data);
-      } else if (msg.type === 'status') {
-        if (msg.status === 'loading_model') {
-          if (processTitle) processTitle.textContent = 'Loading AI Model...';
-          if (processDesc) processDesc.textContent = 'Preparing RMBG weights into local memory.';
-        } else if (msg.status === 'processing') {
-          if (processTitle) processTitle.textContent = 'Removing Background...';
-          if (processDesc) processDesc.textContent = 'Segmenting edges and alpha transparency...';
-          if (progressBar) progressBar.style.width = '85%';
-          if (progressPercent) progressPercent.textContent = '85%';
-          if (progressText) progressText.textContent = 'Running neural segmentation...';
-        }
+      } else if (msg.type === 'step') {
+        setProgressTarget(msg.percent, msg.title, msg.detail);
+        if (progressText) progressText.textContent = msg.detail;
       } else if (msg.type === 'success') {
         handleSuccess(msg);
       } else if (msg.type === 'error') {
@@ -457,15 +595,14 @@
     if (!info) return;
     if (info.status === 'progress' && typeof info.progress === 'number') {
       const pct = Math.min(Math.round(info.progress), 99);
-      if (progressBar) progressBar.style.width = `${pct}%`;
-      if (progressPercent) progressPercent.textContent = `${pct}%`;
+      setProgressTarget(pct);
       if (progressText) {
         const file = info.file ? ` (${info.file.split('/').pop()})` : '';
         progressText.textContent = `Downloading neural weights${file}...`;
       }
     } else if (info.status === 'done') {
-      if (progressText) progressText.textContent = 'Model loaded!';
-      if (progressBar) progressBar.style.width = '90%';
+      if (progressText) progressText.textContent = 'Neural weights loaded!';
+      setProgressTarget(30);
     }
   }
 
@@ -497,6 +634,9 @@
       if (originalImg) originalImg.src = origUrl;
       if (blurBgImg) blurBgImg.src = origUrl;
     }
+
+    // Await smooth 100% finish
+    await finishProgress();
 
     cutoutImg.onload = () => {
       syncSliderDimensions();
@@ -540,6 +680,7 @@
   }
 
   function handleError(err: string) {
+    resetProgressUI();
     if (errorMessage) errorMessage.textContent = err;
     showState('error');
   }
@@ -556,16 +697,18 @@
   const cutoffVal = document.getElementById('cutoff-val');
 
   cutoffSlider?.addEventListener('input', (e) => {
-    const val = parseFloat((e.target as HTMLInputElement).value);
+    const val = parseInt((e.target as HTMLInputElement).value, 10);
     if (cutoffVal) {
-      cutoffVal.textContent = val > 0.58 ? 'Max Clean' : val < 0.45 ? 'Soft' : 'Clean';
+      cutoffVal.textContent = `${val}%`;
     }
   });
 
   cutoffSlider?.addEventListener('change', (e) => {
-    const val = parseFloat((e.target as HTMLInputElement).value);
+    const pct = parseInt((e.target as HTMLInputElement).value, 10);
+    // Map 0..100% to threshold 0.30..0.75
+    const thresholdVal = 0.30 + (pct / 100) * 0.45;
     if (originalImageBlob) {
-      processImage(originalImageBlob, currentFilename, val);
+      processImage(originalImageBlob, currentFilename, thresholdVal);
     }
   });
 
@@ -574,10 +717,13 @@
     originalImageBlob = fileOrBlob;
     currentThreshold = customThreshold;
 
+    // Display image preview immediately in processing card
+    if (processThumb) {
+      processThumb.src = URL.createObjectURL(fileOrBlob);
+    }
+
     showState('processing');
-    if (progressBar) progressBar.style.width = '20%';
-    if (progressPercent) progressPercent.textContent = '20%';
-    if (progressText) progressText.textContent = 'Cleaning background with neural segmentation...';
+    startSmoothProgress(18);
 
     const w = initWorker();
     w.postMessage({
@@ -587,6 +733,12 @@
       id: Date.now(),
     });
   }
+
+  processCancelBtn?.addEventListener('click', () => {
+    resetProgressUI();
+    showState('upload');
+    if (fileInput) fileInput.value = '';
+  });
 
   function syncSliderDimensions() {
     if (!cutoutImg || !originalImg) return;
@@ -603,6 +755,9 @@
     }
     if (sliderHandle) {
       sliderHandle.style.left = `${sliderPosition}%`;
+    }
+    if (sliderPill) {
+      sliderPill.textContent = `${Math.round(sliderPosition)}%`;
     }
   }
 

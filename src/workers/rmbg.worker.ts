@@ -92,10 +92,24 @@ self.addEventListener('message', async (event: MessageEvent) => {
   if (action === 'remove_bg') {
     const startTime = performance.now();
     try {
-      self.postMessage({ type: 'status', id, status: 'loading_model' });
+      self.postMessage({
+        type: 'step',
+        id,
+        stage: 'init',
+        percent: 12,
+        title: 'Initializing AI Engine',
+        detail: 'Loading RMBG weights into browser memory...',
+      });
       const currentModel = await initModel();
 
-      self.postMessage({ type: 'status', id, status: 'processing' });
+      self.postMessage({
+        type: 'step',
+        id,
+        stage: 'decoding',
+        percent: 28,
+        title: 'Decoding Image',
+        detail: 'Reading pixel channels and geometry...',
+      });
 
       // Load original image
       const rawImg = await RawImage.fromBlob(imageBlob);
@@ -103,6 +117,15 @@ self.addEventListener('message', async (event: MessageEvent) => {
       const originalHeight = rawImg.height;
 
       // 1. Resize to 1024x1024
+      self.postMessage({
+        type: 'step',
+        id,
+        stage: 'tensor',
+        percent: 42,
+        title: 'Preparing Neural Tensor',
+        detail: 'Rescaling to 1024×1024 RGB input...',
+      });
+
       const resized = await rawImg.clone().resize(1024, 1024);
       const rgb = resized.rgb();
       const { data } = rgb;
@@ -119,6 +142,15 @@ self.addEventListener('message', async (event: MessageEvent) => {
       const inputTensor = new Tensor('float32', floatData, [1, 3, 1024, 1024]);
 
       // 3. Run inference on RMBG-1.4
+      self.postMessage({
+        type: 'step',
+        id,
+        stage: 'inference',
+        percent: 65,
+        title: 'Neural Edge Detection',
+        detail: 'RMBG-1.4 segmenting subject and transparency...',
+      });
+
       const outputs = await currentModel({ input: inputTensor });
       const outputName = Object.keys(outputs)[0];
       const tensor = outputs[outputName];
@@ -126,6 +158,15 @@ self.addEventListener('message', async (event: MessageEvent) => {
 
       // 4. Smoothstep thresholding to cleanly cut away background ropes/nets/noise
       // while keeping fine edge transitions smooth
+      self.postMessage({
+        type: 'step',
+        id,
+        stage: 'matting',
+        percent: 86,
+        title: 'Refining Alpha Matting',
+        detail: 'Cleaning background clutter and smoothing fine edges...',
+      });
+
       const thresh = Math.max(0.1, Math.min(0.9, threshold));
       const edge0 = Math.max(0.02, thresh - 0.16);
       const edge1 = Math.min(0.98, thresh + 0.16);
@@ -145,6 +186,15 @@ self.addEventListener('message', async (event: MessageEvent) => {
       }
 
       // 5. Convert to high-resolution mask and composite with original full-size pixels
+      self.postMessage({
+        type: 'step',
+        id,
+        stage: 'composite',
+        percent: 95,
+        title: 'Generating Native Cutout',
+        detail: `Preserving full ${originalWidth} × ${originalHeight}px native resolution...`,
+      });
+
       const mask1024 = new RawImage(maskUint8, 1024, 1024, 1);
       const maskRaw = await mask1024.resize(originalWidth, originalHeight);
       const cutoutRaw = rawImg.clone().putAlpha(maskRaw);
@@ -156,6 +206,15 @@ self.addEventListener('message', async (event: MessageEvent) => {
       ]);
 
       const elapsedMs = Math.round(performance.now() - startTime);
+
+      self.postMessage({
+        type: 'step',
+        id,
+        stage: 'complete',
+        percent: 100,
+        title: 'Background Removed!',
+        detail: '100% Complete',
+      });
 
       self.postMessage({
         type: 'success',
