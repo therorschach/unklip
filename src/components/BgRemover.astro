@@ -155,11 +155,20 @@
           <span id="resolution-badge" class="text-xs px-2 py-0.5 rounded bg-[#EDE8DF] text-[#4A453E] font-mono border border-[#DDD7CB]">1920 × 1080 px (100% Native)</span>
         </div>
 
-        <!-- View Mode Switcher -->
-        <div class="flex items-center gap-1 p-1 bg-[#F5F2EB] border border-[#E0D9CD] rounded-xl text-xs font-medium text-[#736B61]">
-          <button id="view-slider-btn" class="px-2.5 py-1 rounded-lg bg-white text-[#24211E] shadow-2xs transition-colors cursor-pointer">Slider</button>
-          <button id="view-cutout-btn" class="px-2.5 py-1 rounded-lg hover:text-[#24211E] transition-colors cursor-pointer">Cutout</button>
-          <button id="view-original-btn" class="px-2.5 py-1 rounded-lg hover:text-[#24211E] transition-colors cursor-pointer">Original</button>
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Background Clutter Cleaning Slider -->
+          <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#FAF7F2] border border-[#DDD7CB] text-xs text-[#5C564E]">
+            <span class="font-medium text-[11px]">Clean Background:</span>
+            <input type="range" id="cutoff-slider" min="0.25" max="0.75" step="0.05" value="0.52" class="w-18 accent-[#24211E] cursor-pointer" title="Adjust to clean stubborn background ropes, nets, and pipes" />
+            <span id="cutoff-val" class="font-mono text-[10px] text-[#736B61] w-12 text-center">Clean</span>
+          </div>
+
+          <!-- View Mode Switcher -->
+          <div class="flex items-center gap-1 p-1 bg-[#F5F2EB] border border-[#E0D9CD] rounded-xl text-xs font-medium text-[#736B61]">
+            <button id="view-slider-btn" class="px-2.5 py-1 rounded-lg bg-white text-[#24211E] shadow-2xs transition-colors cursor-pointer">Slider</button>
+            <button id="view-cutout-btn" class="px-2.5 py-1 rounded-lg hover:text-[#24211E] transition-colors cursor-pointer">Cutout</button>
+            <button id="view-original-btn" class="px-2.5 py-1 rounded-lg hover:text-[#24211E] transition-colors cursor-pointer">Original</button>
+          </div>
         </div>
       </div>
 
@@ -551,19 +560,39 @@
     if (errorState) errorState.classList.toggle('hidden', state !== 'error');
   }
 
-  async function processImage(fileOrBlob: File | Blob, nameHint = 'image') {
+  let currentThreshold = 0.52;
+  const cutoffSlider = document.getElementById('cutoff-slider') as HTMLInputElement;
+  const cutoffVal = document.getElementById('cutoff-val');
+
+  cutoffSlider?.addEventListener('input', (e) => {
+    const val = parseFloat((e.target as HTMLInputElement).value);
+    if (cutoffVal) {
+      cutoffVal.textContent = val > 0.58 ? 'Max Clean' : val < 0.45 ? 'Soft' : 'Clean';
+    }
+  });
+
+  cutoffSlider?.addEventListener('change', (e) => {
+    const val = parseFloat((e.target as HTMLInputElement).value);
+    if (originalImageBlob) {
+      processImage(originalImageBlob, currentFilename, val);
+    }
+  });
+
+  async function processImage(fileOrBlob: File | Blob, nameHint = 'image', customThreshold = currentThreshold) {
     currentFilename = nameHint.replace(/\.[^/.]+$/, '');
     originalImageBlob = fileOrBlob;
+    currentThreshold = customThreshold;
 
     showState('processing');
     if (progressBar) progressBar.style.width = '20%';
     if (progressPercent) progressPercent.textContent = '20%';
-    if (progressText) progressText.textContent = 'Initializing neural engine...';
+    if (progressText) progressText.textContent = 'Cleaning background with neural segmentation...';
 
     const w = initWorker();
     w.postMessage({
       action: 'remove_bg',
       imageBlob: fileOrBlob,
+      threshold: currentThreshold,
       id: Date.now(),
     });
   }

@@ -1,4 +1,4 @@
-import { AutoModel, AutoProcessor, RawImage, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3';
+import { AutoModel, RawImage, Tensor, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3';
 
 // Configure environment for in-browser execution
 env.allowLocalModels = false;
@@ -7,11 +7,10 @@ const MODEL_ID = 'briaai/RMBG-1.4';
 
 let modelPromise: Promise<any> | null = null;
 let model: any = null;
-let processor: any = null;
 let activeDevice: 'webgpu' | 'wasm' = 'wasm';
 
 async function initModel() {
-  if (model && processor) return { model, processor };
+  if (model) return model;
   if (modelPromise) return modelPromise;
 
   modelPromise = (async () => {
@@ -41,16 +40,11 @@ async function initModel() {
     };
 
     try {
-      processor = await AutoProcessor.from_pretrained(MODEL_ID, {
-        progress_callback: progressCallback,
-      });
-
       model = await AutoModel.from_pretrained(MODEL_ID, {
         device,
         progress_callback: progressCallback,
       });
-
-      return { model, processor };
+      return model;
     } catch (gpuErr) {
       if (device === 'webgpu') {
         console.warn('WebGPU model load failed, retrying with WASM fallback:', gpuErr);
@@ -61,8 +55,7 @@ async function initModel() {
           device: 'wasm',
           progress_callback: progressCallback,
         });
-
-        return { model, processor };
+        return model;
       }
       throw gpuErr;
     }
@@ -72,7 +65,7 @@ async function initModel() {
 }
 
 self.addEventListener('message', async (event: MessageEvent) => {
-  const { action, id, imageBlob } = event.data;
+  const { action, id, imageBlob, threshold = 0.5 } = event.data;
 
   if (action === 'get_device') {
     let hasGpu = false;
@@ -100,9 +93,7 @@ self.addEventListener('message', async (event: MessageEvent) => {
     const startTime = performance.now();
     try {
       self.postMessage({ type: 'status', id, status: 'loading_model' });
-      const instances = await initModel();
-      const currentModel = instances.model;
-      const currentProcessor = instances.processor;
+      const currentModel = await initModel();
 
       self.postMessage({ type: 'status', id, status: 'processing' });
 
@@ -111,19 +102,51 @@ self.addEventListener('message', async (event: MessageEvent) => {
       const originalWidth = rawImg.width;
       const originalHeight = rawImg.height;
 
-      // Preprocess image
-      const { pixel_values } = await currentProcessor(rawImg);
+      // 1. Resize to 1024x1024
+      const resized = await rawImg.clone().resize(1024, 1024);
+      const rgb = resized.rgb();
+      const { data } = rgb;
 
-      // Run inference on RMBG-1.4
-      const outputs = await currentModel({ input: pixel_values });
+      // 2. Official RMBG-1.4 normalization: (pixel / 255.0) - 0.5, CHW format
+      const floatData = new Float32Array(3 * 1024 * 1024);
+      const channelSize = 1024 * 1024;
+      for (let i = 0; i < channelSize; i++) {
+        floatData[i] = (data[i * 3] / 255.0) - 0.5;
+        floatData[channelSize + i] = (data[i * 3 + 1] / 255.0) - 0.5;
+        floatData[2 * channelSize + i] = (data[i * 3 + 2] / 255.0) - 0.5;
+      }
+
+      const inputTensor = new Tensor('float32', floatData, [1, 3, 1024, 1024]);
+
+      // 3. Run inference on RMBG-1.4
+      const outputs = await currentModel({ input: inputTensor });
       const outputName = Object.keys(outputs)[0];
       const tensor = outputs[outputName];
+      const outData = tensor.data;
 
-      // Convert output tensor to high-resolution alpha mask
-      const maskTensor = tensor[0].mul(255).to('uint8');
-      const maskRaw = await RawImage.fromTensor(maskTensor).resize(originalWidth, originalHeight);
+      // 4. Smoothstep thresholding to cleanly cut away background ropes/nets/noise
+      // while keeping fine edge transitions smooth
+      const thresh = Math.max(0.1, Math.min(0.9, threshold));
+      const edge0 = Math.max(0.02, thresh - 0.16);
+      const edge1 = Math.min(0.98, thresh + 0.16);
+      const span = edge1 - edge0 || 0.01;
 
-      // Composite original image pixels with high-res mask
+      const maskUint8 = new Uint8Array(1024 * 1024);
+      for (let i = 0; i < outData.length; i++) {
+        const x = outData[i];
+        if (x <= edge0) {
+          maskUint8[i] = 0;
+        } else if (x >= edge1) {
+          maskUint8[i] = 255;
+        } else {
+          const t = (x - edge0) / span;
+          maskUint8[i] = Math.round(t * t * (3 - 2 * t) * 255);
+        }
+      }
+
+      // 5. Convert to high-resolution mask and composite with original full-size pixels
+      const mask1024 = new RawImage(maskUint8, 1024, 1024, 1);
+      const maskRaw = await mask1024.resize(originalWidth, originalHeight);
       const cutoutRaw = rawImg.clone().putAlpha(maskRaw);
 
       // Convert to Blobs
