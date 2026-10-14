@@ -106,8 +106,8 @@
     <!-- STATE 2: PROCESSING / PROGRESS (Hidden by default) -->
     <div id="processing-state" class="hidden flex-col items-center justify-center py-8 text-center max-w-lg mx-auto w-full">
       
-      <!-- Interactive Processing Ring with Image Preview -->
-      <div class="relative w-20 h-20 mb-5 flex items-center justify-center">
+      <!-- Interactive Processing Ring with Image Preview (Centered) -->
+      <div class="relative w-20 h-20 mb-5 mx-auto flex items-center justify-center">
         <!-- Outer Rotating Dashed Ring -->
         <div class="absolute inset-0 rounded-2xl border-2 border-dashed border-[#24211E]/40 animate-[spin_10s_linear_infinite]"></div>
         
@@ -129,7 +129,7 @@
 
       <!-- Live Title & Step Description -->
       <h3 id="process-title" class="text-xl font-extrabold text-[#24211E] mb-1">Removing Background...</h3>
-      <p id="process-desc" class="text-xs text-[#736B61] mb-6 max-w-sm">Segmenting foreground subject and fine edges...</p>
+      <p id="process-desc" class="text-xs text-[#736B61] mb-6 max-w-sm mx-auto">Segmenting foreground subject and fine edges...</p>
 
       <!-- Main Interactive Progress Bar Container (0% - 100%) -->
       <div class="w-full bg-[#EFECE4] rounded-full h-3.5 p-0.5 border border-[#DDD7CB] overflow-hidden shadow-inner mb-2.5 relative">
@@ -658,10 +658,22 @@
   }
 
   function showState(state: 'upload' | 'processing' | 'result' | 'error') {
-    if (uploadState) uploadState.classList.toggle('hidden', state !== 'upload');
-    if (processingState) processingState.classList.toggle('hidden', state !== 'processing');
-    if (resultState) resultState.classList.toggle('hidden', state !== 'result');
-    if (errorState) errorState.classList.toggle('hidden', state !== 'error');
+    if (uploadState) {
+      uploadState.classList.toggle('hidden', state !== 'upload');
+      uploadState.classList.toggle('flex', state === 'upload');
+    }
+    if (processingState) {
+      processingState.classList.toggle('hidden', state !== 'processing');
+      processingState.classList.toggle('flex', state === 'processing');
+    }
+    if (resultState) {
+      resultState.classList.toggle('hidden', state !== 'result');
+      resultState.classList.toggle('flex', state === 'result');
+    }
+    if (errorState) {
+      errorState.classList.toggle('hidden', state !== 'error');
+      errorState.classList.toggle('flex', state === 'error');
+    }
   }
 
   let currentThreshold = 0.52;
