@@ -233,80 +233,119 @@
         </div>
       </div>
 
-      <!-- Studio Custom Background Bar -->
-      <div class="bg-[#FAF7F2] rounded-xl p-3.5 sm:p-4 border border-[#E6E1D6] flex flex-wrap items-center justify-between gap-3">
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="text-xs font-semibold text-[#736B61] uppercase tracking-wider mr-1">Background:</span>
-          
-          <!-- Transparent Checkerboard -->
-          <button
-            type="button"
-            class="bg-choice-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[#24211E] bg-[#24211E] text-white flex items-center gap-1.5 cursor-pointer"
-            data-bg="transparent"
-          >
-            <span class="w-3.5 h-3.5 rounded checkerboard-pattern border border-white/30"></span>
-            Transparent
-          </button>
+      <!-- Studio Custom Background & Actions Bar -->
+      <div class="bg-[#FAF7F2] rounded-2xl p-3 sm:p-3.5 border border-[#E6E1D6] flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 shadow-2xs">
+        <!-- Left: Background Style Segmented Controls -->
+        <div class="flex flex-wrap items-center gap-2.5">
+          <div class="flex items-center gap-1.5 text-xs font-bold text-[#5C564E] uppercase tracking-wider select-none shrink-0 px-1">
+            <svg class="w-3.5 h-3.5 text-[#8C847A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="m4.93 4.93 4.24 4.24"/>
+              <path d="m14.83 9.17 4.24-4.24"/>
+              <path d="m14.83 14.83 4.24 4.24"/>
+              <path d="m9.17 14.83-4.24 4.24"/>
+              <circle cx="12" cy="12" r="4"/>
+            </svg>
+            <span>Background</span>
+          </div>
 
-          <!-- Solid White -->
-          <button
-            type="button"
-            class="bg-choice-btn px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[#D5CDC0] bg-white text-[#24211E] hover:border-[#24211E] flex items-center gap-1.5 cursor-pointer"
-            data-bg="color"
-            data-color="#FFFFFF"
-          >
-            <span class="w-3.5 h-3.5 rounded bg-white border border-[#D5CDC0]"></span>
-            White
-          </button>
+          <!-- Seamless Segmented Pill Container -->
+          <div class="bg-[#EDE8DF] p-1 rounded-xl border border-[#DDD7CB] inline-flex flex-wrap items-center gap-1 shadow-2xs">
+            <!-- Transparent Checkerboard -->
+            <button
+              type="button"
+              class="bg-choice-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-[#24211E] text-white shadow-2xs flex items-center gap-1.5 cursor-pointer transition-all"
+              data-bg="transparent"
+            >
+              <span class="w-3.5 h-3.5 rounded-full checkerboard-pattern border border-white/30 shadow-2xs"></span>
+              <span>Transparent</span>
+            </button>
 
-          <!-- Classical Soft Cream -->
-          <button
-            type="button"
-            class="bg-choice-btn px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[#D5CDC0] bg-white text-[#24211E] hover:border-[#24211E] flex items-center gap-1.5 cursor-pointer"
-            data-bg="color"
-            data-color="#F5F2EB"
-          >
-            <span class="w-3.5 h-3.5 rounded bg-[#F5F2EB] border border-[#D5CDC0]"></span>
-            Cream
-          </button>
+            <!-- Solid White -->
+            <button
+              type="button"
+              class="bg-choice-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#5C564E] hover:text-[#24211E] hover:bg-white/80 flex items-center gap-1.5 cursor-pointer transition-all"
+              data-bg="color"
+              data-color="#FFFFFF"
+            >
+              <span class="w-3.5 h-3.5 rounded-full bg-white border border-[#D5CDC0] shadow-2xs"></span>
+              <span>White</span>
+            </button>
 
-          <!-- Deep Charcoal -->
-          <button
-            type="button"
-            class="bg-choice-btn px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[#D5CDC0] bg-white text-[#24211E] hover:border-[#24211E] flex items-center gap-1.5 cursor-pointer"
-            data-bg="color"
-            data-color="#1C1917"
-          >
-            <span class="w-3.5 h-3.5 rounded bg-[#1C1917]"></span>
-            Black
-          </button>
+            <!-- Classical Soft Cream -->
+            <button
+              type="button"
+              class="bg-choice-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#5C564E] hover:text-[#24211E] hover:bg-white/80 flex items-center gap-1.5 cursor-pointer transition-all"
+              data-bg="color"
+              data-color="#F5F2EB"
+            >
+              <span class="w-3.5 h-3.5 rounded-full bg-[#F5F2EB] border border-[#D5CDC0] shadow-2xs"></span>
+              <span>Cream</span>
+            </button>
 
-          <!-- Blur Original -->
-          <button
-            type="button"
-            class="bg-choice-btn px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[#D5CDC0] bg-white text-[#24211E] hover:border-[#24211E] flex items-center gap-1.5 cursor-pointer"
-            data-bg="blur"
-          >
-            <span class="w-3.5 h-3.5 rounded bg-gradient-to-r from-amber-400 to-rose-400 blur-[1px]"></span>
-            Blur Original
-          </button>
+            <!-- Deep Charcoal -->
+            <button
+              type="button"
+              class="bg-choice-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#5C564E] hover:text-[#24211E] hover:bg-white/80 flex items-center gap-1.5 cursor-pointer transition-all"
+              data-bg="color"
+              data-color="#1C1917"
+            >
+              <span class="w-3.5 h-3.5 rounded-full bg-[#1C1917] shadow-2xs"></span>
+              <span>Black</span>
+            </button>
 
-          <!-- Custom Color Picker -->
-          <div class="flex items-center gap-1.5 px-2 py-1 rounded-lg border border-[#D5CDC0] bg-white">
-            <input type="color" id="custom-color-input" value="#E8E2D6" class="w-4 h-4 rounded cursor-pointer bg-transparent border-0 p-0" />
-            <label for="custom-color-input" class="text-xs text-[#5C564E] cursor-pointer">Custom</label>
+            <!-- Blur Original -->
+            <button
+              type="button"
+              class="bg-choice-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#5C564E] hover:text-[#24211E] hover:bg-white/80 flex items-center gap-1.5 cursor-pointer transition-all"
+              data-bg="blur"
+            >
+              <span class="w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-amber-400 via-rose-400 to-indigo-500 shadow-2xs"></span>
+              <span>Blur</span>
+            </button>
+
+            <!-- Custom Color Picker Swatch Button -->
+            <label
+              id="custom-color-btn"
+              for="custom-color-input"
+              class="bg-choice-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#5C564E] hover:text-[#24211E] hover:bg-white/80 flex items-center gap-1.5 cursor-pointer transition-all relative select-none"
+              data-bg="custom"
+            >
+              <span id="custom-color-dot" class="w-3.5 h-3.5 rounded-full border border-black/15 shadow-2xs transition-colors" style="background-color: #E8E2D6;"></span>
+              <span>Custom</span>
+              <input
+                type="color"
+                id="custom-color-input"
+                value="#E8E2D6"
+                class="sr-only"
+              />
+            </label>
           </div>
         </div>
 
-        <!-- Download & Actions Group -->
-        <div class="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+        <!-- Right: Actions Group -->
+        <div class="flex items-center gap-2 self-end lg:self-center shrink-0 w-full lg:w-auto justify-end pt-2 lg:pt-0 border-t lg:border-t-0 border-[#E6E1D6]">
+          <!-- Upload New Image Button -->
+          <button
+            id="reset-btn"
+            type="button"
+            class="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-[#F3EFE7] text-[#5C564E] hover:text-[#24211E] border border-[#DDD7CB] text-xs font-semibold transition-all cursor-pointer shadow-2xs active:scale-95"
+            title="Upload another image"
+          >
+            <svg class="w-3.5 h-3.5 text-[#5C564E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+            <span>New</span>
+          </button>
+
           <!-- Copy to Clipboard -->
           <button
             id="copy-btn"
             type="button"
-            class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white hover:bg-[#F5F2EB] text-[#24211E] border border-[#D5CDC0] transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+            class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white hover:bg-[#F3EFE7] text-[#24211E] border border-[#DDD7CB] transition-all cursor-pointer shadow-2xs active:scale-95"
+            title="Copy cutout to clipboard (Ctrl+C)"
           >
-            <svg class="w-4 h-4 text-[#736B61]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg class="w-4 h-4 text-[#5C564E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
               <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
             </svg>
@@ -317,7 +356,7 @@
           <button
             id="download-btn"
             type="button"
-            class="px-5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#24211E] hover:bg-[#38332E] text-[#F8F5F0] transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+            class="inline-flex items-center justify-center gap-2 px-5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#24211E] hover:bg-[#38332E] text-[#F8F5F0] transition-all cursor-pointer shadow-xs active:scale-95"
           >
             <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -325,19 +364,6 @@
               <line x1="12" x2="12" y1="15" y2="3"/>
             </svg>
             <span id="download-btn-text">Download (PNG)</span>
-          </button>
-
-          <!-- Reset / New Image Button -->
-          <button
-            id="reset-btn"
-            type="button"
-            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-[#F5F2EB] text-[#4A453E] hover:text-[#24211E] border border-[#D5CDC0] text-xs font-semibold transition-all cursor-pointer shadow-2xs active:scale-95"
-            title="Upload another image"
-          >
-            <svg class="w-3.5 h-3.5 text-[#4A453E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 5v14M5 12h14"/>
-            </svg>
-            <span>New Image</span>
           </button>
         </div>
       </div>
@@ -401,6 +427,8 @@
 
   const bgChoiceBtns = document.querySelectorAll('.bg-choice-btn');
   const customColorInput = document.getElementById('custom-color-input') as HTMLInputElement;
+  const customColorDot = document.getElementById('custom-color-dot');
+  const customColorBtn = document.getElementById('custom-color-btn');
 
   const copyBtn = document.getElementById('copy-btn');
   const copyBtnText = document.getElementById('copy-btn-text');
@@ -801,14 +829,32 @@
     });
   }
 
+  const bgActiveClasses = 'bg-choice-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-[#24211E] text-white shadow-2xs flex items-center gap-1.5 cursor-pointer transition-all';
+  const bgInactiveClasses = 'bg-choice-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#5C564E] hover:text-[#24211E] hover:bg-white/80 flex items-center gap-1.5 cursor-pointer transition-all';
+
+  function setBgBtnActive(activeBtn: Element | null) {
+    bgChoiceBtns.forEach((b) => {
+      b.className = (b === activeBtn) ? bgActiveClasses : bgInactiveClasses;
+    });
+  }
+
   bgChoiceBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
-      bgChoiceBtns.forEach((b) => {
-        b.className = 'bg-choice-btn px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[#D5CDC0] bg-white text-[#24211E] hover:border-[#24211E] flex items-center gap-1.5 cursor-pointer';
-      });
-      btn.className = 'bg-choice-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[#24211E] bg-[#24211E] text-white flex items-center gap-1.5 cursor-pointer';
-
       const bgType = btn.getAttribute('data-bg');
+      if (bgType === 'custom') {
+        activeBgMode = 'color';
+        activeBgColor = customColorInput ? customColorInput.value : '#E8E2D6';
+        setBgBtnActive(btn);
+        if (customBgLayer) {
+          customBgLayer.className = 'absolute inset-0 pointer-events-none transition-all';
+          customBgLayer.style.backgroundColor = activeBgColor;
+        }
+        if (blurBgImg) blurBgImg.classList.add('hidden');
+        return;
+      }
+
+      setBgBtnActive(btn);
+
       if (bgType === 'transparent') {
         activeBgMode = 'transparent';
         if (customBgLayer) {
@@ -839,6 +885,10 @@
     const color = (e.target as HTMLInputElement).value;
     activeBgMode = 'color';
     activeBgColor = color;
+    if (customColorDot) {
+      customColorDot.style.backgroundColor = color;
+    }
+    setBgBtnActive(customColorBtn);
     if (customBgLayer) {
       customBgLayer.className = 'absolute inset-0 pointer-events-none transition-all';
       customBgLayer.style.backgroundColor = color;
