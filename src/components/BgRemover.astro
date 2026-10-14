@@ -165,29 +165,29 @@
 
     <!-- STATE 3: STUDIO RESULTS VIEW (Hidden by default) -->
     <div id="result-state" class="hidden flex-col gap-5">
-      <!-- Top Specs & Status Bar -->
-      <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#E6E1D6]">
-        <!-- Left: Status & Controls -->
-        <div class="flex flex-wrap items-center gap-3">
+      <!-- Top Specs & Status Bar (Two-Column Layout: Left Controls, Right Download) -->
+      <div class="flex items-center justify-between gap-3 sm:gap-4 pb-3.5 border-b border-[#E6E1D6] w-full">
+        <!-- Left Column: Specs, Badges & View Controls -->
+        <div class="flex flex-col lg:flex-row lg:items-center gap-2 lg:gap-4 min-w-0 flex-1">
+          <!-- Row 1: Badges & Timing -->
           <div class="flex flex-wrap items-center gap-2">
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 shrink-0">
               <svg class="w-3.5 h-3.5 text-emerald-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
               Background Removed
             </span>
-            <span id="perf-badge" class="text-xs text-[#736B61]">Processed in 0.4s</span>
-            <span id="resolution-badge" class="text-xs px-2 py-0.5 rounded bg-[#EDE8DF] text-[#4A453E] font-mono border border-[#DDD7CB]">1920 × 1080 px (100% Native)</span>
+            <span id="perf-badge" class="text-xs text-[#736B61] whitespace-nowrap">Processed in 0.4s</span>
+            <span id="resolution-badge" class="text-xs px-2 py-0.5 rounded bg-[#EDE8DF] text-[#4A453E] font-mono border border-[#DDD7CB] whitespace-nowrap">1920 × 1080 px (100% Native)</span>
           </div>
 
-          <div class="flex flex-wrap items-center gap-2">
-            <!-- Background Clutter Cleaning Slider -->
-            <div class="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#FAF7F2] border border-[#DDD7CB] text-xs text-[#5C564E]">
+          <!-- Row 2: Clutter Slider & View Mode Switcher -->
+          <div class="flex flex-wrap items-center gap-2.5">
+            <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#FAF7F2] border border-[#DDD7CB] text-xs text-[#5C564E] shrink-0">
               <span class="font-medium text-[11px] whitespace-nowrap">Clean Clutter:</span>
               <input type="range" id="cutoff-slider" min="0" max="100" step="5" value="55" class="w-18 accent-[#24211E] cursor-pointer" title="0% = soft edges, 100% = max background clean" />
-              <span id="cutoff-val" class="font-mono text-[10px] text-[#24211E] font-bold w-8 text-center">55%</span>
+              <span id="cutoff-val" class="font-mono text-[10px] text-[#24211E] font-bold w-7 text-center">55%</span>
             </div>
 
-            <!-- View Mode Switcher -->
-            <div class="flex items-center gap-1 p-1 bg-[#F5F2EB] border border-[#E0D9CD] rounded-xl text-xs font-medium text-[#736B61]">
+            <div class="flex items-center gap-1 p-1 bg-[#F5F2EB] border border-[#E0D9CD] rounded-xl text-xs font-medium text-[#736B61] shrink-0">
               <button id="view-slider-btn" class="px-2.5 py-1 rounded-lg bg-white text-[#24211E] shadow-2xs transition-colors cursor-pointer">Slider</button>
               <button id="view-cutout-btn" class="px-2.5 py-1 rounded-lg hover:text-[#24211E] transition-colors cursor-pointer">Cutout</button>
               <button id="view-original-btn" class="px-2.5 py-1 rounded-lg hover:text-[#24211E] transition-colors cursor-pointer">Original</button>
@@ -195,12 +195,12 @@
           </div>
         </div>
 
-        <!-- Right: Primary Download Button -->
-        <div class="flex items-center gap-2 shrink-0">
+        <!-- Right Column: Download Button (Locked to Right) -->
+        <div class="shrink-0 flex items-center justify-end self-center">
           <button
             id="download-btn"
             type="button"
-            class="inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-[#24211E] hover:bg-[#38332E] text-[#F8F5F0] transition-all cursor-pointer shadow-xs active:scale-95 shrink-0"
+            class="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold bg-[#24211E] hover:bg-[#38332E] text-[#F8F5F0] transition-all cursor-pointer shadow-xs hover:shadow active:scale-95 whitespace-nowrap"
           >
             <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
