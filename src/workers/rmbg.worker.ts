@@ -42,6 +42,7 @@ async function initModel() {
     try {
       model = await AutoModel.from_pretrained(MODEL_ID, {
         device,
+        dtype: 'fp32',
         progress_callback: progressCallback,
       });
       return model;
@@ -53,6 +54,7 @@ async function initModel() {
 
         model = await AutoModel.from_pretrained(MODEL_ID, {
           device: 'wasm',
+          dtype: 'fp32',
           progress_callback: progressCallback,
         });
         return model;
@@ -167,22 +169,92 @@ self.addEventListener('message', async (event: MessageEvent) => {
         detail: 'Cleaning background clutter and smoothing fine edges...',
       });
 
+      // Min-max normalization as in official RMBG-1.4 pipeline
+      let minVal = Infinity;
+      let maxVal = -Infinity;
+      for (let i = 0; i < outData.length; i++) {
+        const val = outData[i];
+        if (!Number.isNaN(val)) {
+          if (val < minVal) minVal = val;
+          if (val > maxVal) maxVal = val;
+        }
+      }
+      if (minVal === Infinity) minVal = 0;
+      if (maxVal === -Infinity) maxVal = 1;
+      const range = (maxVal - minVal) > 0.0001 ? (maxVal - minVal) : 1;
+
       const thresh = Math.max(0.1, Math.min(0.9, threshold));
-      const edge0 = Math.max(0.02, thresh - 0.16);
-      const edge1 = Math.min(0.98, thresh + 0.16);
+      const edge0 = Math.max(0.01, thresh - 0.18);
+      const edge1 = Math.min(0.99, thresh + 0.18);
       const span = edge1 - edge0 || 0.01;
 
-      const maskUint8 = new Uint8Array(1024 * 1024);
+      const rawMask = new Uint8Array(1024 * 1024);
       for (let i = 0; i < outData.length; i++) {
-        const x = outData[i];
+        let raw = outData[i];
+        if (Number.isNaN(raw)) {
+          raw = i > 0 ? (rawMask[i - 1] / 255) : 0;
+        }
+        const x = Math.max(0, Math.min(1, (raw - minVal) / range));
         if (x <= edge0) {
-          maskUint8[i] = 0;
+          rawMask[i] = 0;
         } else if (x >= edge1) {
-          maskUint8[i] = 255;
+          rawMask[i] = 255;
         } else {
           const t = (x - edge0) / span;
-          maskUint8[i] = Math.round(t * t * (3 - 2 * t) * 255);
+          rawMask[i] = Math.round(t * t * (3 - 2 * t) * 255);
         }
+      }
+
+      // Morphological salt-and-pepper / pinhole cleanup pass:
+      // Fills isolated blank holes inside dark subjects (e.g. navy hoodies)
+      // and eliminates stray noise specks in the background while preserving natural edges.
+      const cleanedMask = new Uint8Array(1024 * 1024);
+      const w = 1024;
+      let currentMask = rawMask;
+      for (let pass = 0; pass < 2; pass++) {
+        const nextMask = (pass === 0) ? cleanedMask : rawMask;
+        for (let y = 0; y < w; y++) {
+          const row = y * w;
+          for (let x = 0; x < w; x++) {
+            const idx = row + x;
+            const v = currentMask[idx];
+            if (y === 0 || y === w - 1 || x === 0 || x === w - 1) {
+              nextMask[idx] = v;
+              continue;
+            }
+            let solidCount = 0;
+            let emptyCount = 0;
+            const n1 = currentMask[idx - w - 1];
+            const n2 = currentMask[idx - w];
+            const n3 = currentMask[idx - w + 1];
+            const n4 = currentMask[idx - 1];
+            const n5 = currentMask[idx + 1];
+            const n6 = currentMask[idx + w - 1];
+            const n7 = currentMask[idx + w];
+            const n8 = currentMask[idx + w + 1];
+
+            if (n1 > 200) solidCount++; else if (n1 < 50) emptyCount++;
+            if (n2 > 200) solidCount++; else if (n2 < 50) emptyCount++;
+            if (n3 > 200) solidCount++; else if (n3 < 50) emptyCount++;
+            if (n4 > 200) solidCount++; else if (n4 < 50) emptyCount++;
+            if (n5 > 200) solidCount++; else if (n5 < 50) emptyCount++;
+            if (n6 > 200) solidCount++; else if (n6 < 50) emptyCount++;
+            if (n7 > 200) solidCount++; else if (n7 < 50) emptyCount++;
+            if (n8 > 200) solidCount++; else if (n8 < 50) emptyCount++;
+
+            // If a pixel is transparent/low alpha (< 180) inside a solid subject (>= 6 solid neighbors), heal it
+            if (v < 180 && solidCount >= 6) {
+              nextMask[idx] = 255;
+            }
+            // If a pixel is opaque/semi-opaque (> 50) inside an empty background (>= 6 empty neighbors), clean it
+            else if (v > 50 && emptyCount >= 6) {
+              nextMask[idx] = 0;
+            } else {
+              nextMask[idx] = v;
+            }
+          }
+        }
+        currentMask = nextMask;
       }
 
       // 5. Convert to high-resolution mask and composite with original full-size pixels
@@ -195,7 +267,7 @@ self.addEventListener('message', async (event: MessageEvent) => {
         detail: `Preserving full ${originalWidth} × ${originalHeight}px native resolution...`,
       });
 
-      const mask1024 = new RawImage(maskUint8, 1024, 1024, 1);
+      const mask1024 = new RawImage(currentMask, 1024, 1024, 1);
       const maskRaw = await mask1024.resize(originalWidth, originalHeight);
       const cutoutRaw = rawImg.clone().putAlpha(maskRaw);
 

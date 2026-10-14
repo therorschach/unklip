@@ -214,7 +214,7 @@
           />
 
           <!-- Before / After Slider Overlay (Original Image) -->
-          <div id="slider-overlay" class="absolute inset-0 overflow-hidden pointer-events-none">
+          <div id="slider-overlay" class="absolute inset-0 overflow-hidden pointer-events-none" style="clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);">
             <img
               id="original-img"
               src=""
@@ -224,7 +224,7 @@
           </div>
 
           <!-- Divider Line & Slider Handle -->
-          <div id="slider-handle" class="absolute top-0 bottom-0 w-1 bg-[#24211E] shadow-md cursor-ew-resize flex items-center justify-center">
+          <div id="slider-handle" class="absolute top-0 bottom-0 w-1 bg-[#24211E] shadow-md cursor-ew-resize flex items-center justify-center -translate-x-1/2" style="left: 50%;">
             <div class="w-7 h-7 rounded-full bg-[#24211E] text-[#F8F5F0] shadow-md flex items-center justify-center font-bold text-xs select-none relative">
               ↔
               <span id="slider-pill" class="absolute -top-7 px-1.5 py-0.5 rounded bg-[#24211E] text-[#F8F5F0] text-[10px] font-mono font-medium shadow-xs whitespace-nowrap pointer-events-none">50%</span>
@@ -597,12 +597,25 @@
     // Await smooth 100% finish
     await finishProgress();
 
-    cutoutImg.onload = () => {
+    showState('result');
+
+    const initSlider = () => {
       syncSliderDimensions();
       updateSlider(50);
     };
 
-    showState('result');
+    if (cutoutImg && (cutoutImg as HTMLImageElement).complete) {
+      initSlider();
+    } else if (cutoutImg) {
+      cutoutImg.onload = initSlider;
+    }
+
+    requestAnimationFrame(() => {
+      initSlider();
+      requestAnimationFrame(() => {
+        initSlider();
+      });
+    });
   }
 
   async function createCompositeBlob(origBlob: Blob, maskBlob: Blob): Promise<Blob> {
@@ -701,8 +714,10 @@
 
   function syncSliderDimensions() {
     if (!cutoutImg || !originalImg) return;
-    originalImg.style.width = `${cutoutImg.clientWidth}px`;
-    originalImg.style.height = `${cutoutImg.clientHeight}px`;
+    if (cutoutImg.clientWidth > 0 && cutoutImg.clientHeight > 0) {
+      originalImg.style.width = `${cutoutImg.clientWidth}px`;
+      originalImg.style.height = `${cutoutImg.clientHeight}px`;
+    }
   }
 
   window.addEventListener('resize', syncSliderDimensions);
