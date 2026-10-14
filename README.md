@@ -288,6 +288,7 @@ unklip.yourdomain.com {
 - [x] Background clutter cleanup slider with smoothstep interpolation
 - [x] Preset studio backgrounds (White, Cream, Black, Custom Color, Blur)
 - [x] 1-Click direct clipboard PNG export
+- [ ] In-browser PNG optimization (TinyPNG-style compression)
 - [ ] Offline Progressive Web App (PWA) support with service worker caching
 - [ ] Batch image processing queue
 - [ ] Custom user image background insertion
