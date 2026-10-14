@@ -129,27 +129,7 @@
 
       <!-- Live Title & Step Description -->
       <h3 id="process-title" class="text-xl font-extrabold text-[#24211E] mb-1">Removing Background...</h3>
-      <p id="process-desc" class="text-xs text-[#736B61] mb-5 max-w-sm">Segmenting foreground subject and fine edges...</p>
-
-      <!-- Step Indicators (4-Stage Pipeline) -->
-      <div class="grid grid-cols-4 gap-1.5 w-full mb-4 px-2 select-none">
-        <div id="step-pill-1" class="flex items-center justify-center gap-1 text-[11px] font-semibold text-[#24211E] bg-[#EFECE4] py-1.5 rounded-lg border border-[#DDD7CB] transition-all shadow-2xs">
-          <span class="w-1.5 h-1.5 rounded-full bg-[#24211E]"></span>
-          <span>1. Input</span>
-        </div>
-        <div id="step-pill-2" class="flex items-center justify-center gap-1 text-[11px] font-medium text-[#8C847A] py-1.5 rounded-lg border border-transparent transition-all opacity-60">
-          <span class="w-1.5 h-1.5 rounded-full bg-[#8C847A]"></span>
-          <span>2. AI Detect</span>
-        </div>
-        <div id="step-pill-3" class="flex items-center justify-center gap-1 text-[11px] font-medium text-[#8C847A] py-1.5 rounded-lg border border-transparent transition-all opacity-60">
-          <span class="w-1.5 h-1.5 rounded-full bg-[#8C847A]"></span>
-          <span>3. Matting</span>
-        </div>
-        <div id="step-pill-4" class="flex items-center justify-center gap-1 text-[11px] font-medium text-[#8C847A] py-1.5 rounded-lg border border-transparent transition-all opacity-60">
-          <span class="w-1.5 h-1.5 rounded-full bg-[#8C847A]"></span>
-          <span>4. 4K Export</span>
-        </div>
-      </div>
+      <p id="process-desc" class="text-xs text-[#736B61] mb-6 max-w-sm">Segmenting foreground subject and fine edges...</p>
 
       <!-- Main Interactive Progress Bar Container (0% - 100%) -->
       <div class="w-full bg-[#EFECE4] rounded-full h-3.5 p-0.5 border border-[#DDD7CB] overflow-hidden shadow-inner mb-2.5 relative">
@@ -463,7 +443,6 @@
     targetProgressVal = 0;
     if (progressBar) progressBar.style.width = '0%';
     if (progressPercent) progressPercent.textContent = '0%';
-    updateStepIndicators(1);
   }
 
   function startSmoothProgress(initialTarget = 18) {
@@ -497,31 +476,11 @@
     targetProgressVal = Math.max(targetProgressVal, target);
     if (title && processTitle) processTitle.textContent = title;
     if (desc && processDesc) processDesc.textContent = desc;
-
-    if (targetProgressVal >= 90) updateStepIndicators(4);
-    else if (targetProgressVal >= 70) updateStepIndicators(3);
-    else if (targetProgressVal >= 35) updateStepIndicators(2);
-    else updateStepIndicators(1);
-  }
-
-  function updateStepIndicators(activeStep: number) {
-    for (let i = 1; i <= 4; i++) {
-      const stepEl = document.getElementById(`step-pill-${i}`);
-      if (!stepEl) continue;
-      if (i < activeStep) {
-        stepEl.className = 'flex items-center justify-center gap-1 text-[11px] font-semibold text-emerald-800 bg-emerald-50 py-1.5 rounded-lg border border-emerald-200 transition-all shadow-2xs';
-      } else if (i === activeStep) {
-        stepEl.className = 'flex items-center justify-center gap-1 text-[11px] font-semibold text-[#24211E] bg-[#EFECE4] py-1.5 rounded-lg border border-[#DDD7CB] transition-all shadow-2xs';
-      } else {
-        stepEl.className = 'flex items-center justify-center gap-1 text-[11px] font-medium text-[#8C847A] py-1.5 rounded-lg border border-transparent transition-all opacity-60';
-      }
-    }
   }
 
   function finishProgress(): Promise<void> {
     return new Promise((resolve) => {
       targetProgressVal = 100;
-      updateStepIndicators(4);
       if (processTitle) processTitle.textContent = 'Background Removed!';
       if (processDesc) processDesc.textContent = 'Preserving full resolution native output...';
       if (progressText) progressText.textContent = '100% Complete';
