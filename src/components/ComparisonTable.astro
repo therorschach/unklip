@@ -2,100 +2,100 @@
 // src/components/ComparisonTable.astro
 ---
 
-<section id="comparison" class="max-w-5xl mx-auto px-4 sm:px-6 py-12">
-  <div class="text-center mb-8">
-    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EFECE4] border border-[#DDD7CB] text-[#6B655D] text-xs font-semibold uppercase tracking-wider mb-2.5">
+<section id="comparison" class="max-w-5xl xl:max-w-7xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 xl:py-24">
+  <div class="text-center mb-8 sm:mb-10 lg:mb-12">
+    <div class="inline-flex items-center gap-1.5 px-3 lg:px-4 py-1 lg:py-1.5 rounded-full bg-[#EFECE4] border border-[#DDD7CB] text-[#6B655D] text-xs lg:text-sm font-semibold uppercase tracking-wider mb-2.5 sm:mb-3">
       Transparent Comparison
     </div>
-    <h2 class="text-2xl sm:text-3xl font-bold text-[#24211E] tracking-tight">
+    <h2 class="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-[#24211E] tracking-tight">
       Unklip vs remove.bg
     </h2>
-    <p class="mt-2 text-xs sm:text-sm text-[#6B655D] max-w-lg mx-auto">
+    <p class="mt-2 sm:mt-3 text-xs sm:text-sm lg:text-base xl:text-lg text-[#6B655D] max-w-lg sm:max-w-xl lg:max-w-2xl mx-auto">
       Why creators and businesses are leaving paywalled, low-resolution cutouts behind.
     </p>
   </div>
 
-  <div class="rounded-2xl border border-[#E6E1D6] bg-white overflow-hidden shadow-xs">
+  <div class="rounded-2xl lg:rounded-3xl border border-[#E6E1D6] bg-white overflow-hidden shadow-xs">
     <div class="overflow-x-auto">
       <table class="w-full text-left border-collapse">
         <thead>
           <tr class="border-b border-[#E6E1D6] bg-[#FAF7F2]">
-            <th class="py-3.5 px-5 text-xs font-bold text-[#736B61] w-2/5">Feature</th>
-            <th class="py-3.5 px-5 text-xs font-bold text-[#24211E] w-3/10 bg-[#F5F2EB] border-x border-[#E6E1D6]">
+            <th class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 text-xs sm:text-sm lg:text-base font-bold text-[#736B61] w-2/5">Feature</th>
+            <th class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 text-xs sm:text-sm lg:text-base font-bold text-[#24211E] w-3/10 bg-[#F5F2EB] border-x border-[#E6E1D6]">
               Unklip (Our Tool)
             </th>
-            <th class="py-3.5 px-5 text-xs font-medium text-[#736B61] w-3/10">
+            <th class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 text-xs sm:text-sm lg:text-base font-medium text-[#736B61] w-3/10">
               remove.bg (Canva)
             </th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-[#EFECE4] text-xs sm:text-sm">
+        <tbody class="divide-y divide-[#EFECE4] text-xs sm:text-sm lg:text-base">
           <!-- Price -->
           <tr class="hover:bg-[#FAF7F2]/60 transition-colors">
-            <td class="py-3.5 px-5 font-semibold text-[#24211E]">
+            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 font-semibold text-[#24211E]">
               Price
-              <span class="block text-[11px] font-normal text-[#8C847A]">Cost per cutout</span>
+              <span class="block text-[11px] sm:text-xs lg:text-sm font-normal text-[#8C847A]">Cost per cutout</span>
             </td>
-            <td class="py-3.5 px-5 font-bold text-emerald-800 bg-[#F5F2EB] border-x border-[#E6E1D6]">
+            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 font-bold text-emerald-800 bg-[#F5F2EB] border-x border-[#E6E1D6]">
               100% Free Forever ($0)
             </td>
-            <td class="py-3.5 px-5 text-rose-700 font-medium">
+            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 text-rose-700 font-medium">
               Up to $0.20 – $1.99 / image
             </td>
           </tr>
 
           <!-- Resolution -->
           <tr class="hover:bg-[#FAF7F2]/60 transition-colors">
-            <td class="py-3.5 px-5 font-semibold text-[#24211E]">
+            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 font-semibold text-[#24211E]">
               Output Resolution
-              <span class="block text-[11px] font-normal text-[#8C847A]">Camera quality retention</span>
+              <span class="block text-[11px] sm:text-xs lg:text-sm font-normal text-[#8C847A]">Camera quality retention</span>
             </td>
-            <td class="py-3.5 px-5 font-bold text-[#24211E] bg-[#F5F2EB] border-x border-[#E6E1D6]">
+            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 font-bold text-[#24211E] bg-[#F5F2EB] border-x border-[#E6E1D6]">
               Full 4K / 8K (100% Native)
             </td>
-            <td class="py-3.5 px-5 text-[#736B61]">
+            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 text-[#736B61]">
               Downsized to 0.25 MP (Free)
             </td>
           </tr>
 
           <!-- Privacy -->
           <tr class="hover:bg-[#FAF7F2]/60 transition-colors">
-            <td class="py-3.5 px-5 font-semibold text-[#24211E]">
+            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 font-semibold text-[#24211E]">
               Privacy & Security
-              <span class="block text-[11px] font-normal text-[#8C847A]">Where inference runs</span>
+              <span class="block text-[11px] sm:text-xs lg:text-sm font-normal text-[#8C847A]">Where inference runs</span>
             </td>
-            <td class="py-3.5 px-5 font-semibold text-emerald-800 bg-[#F5F2EB] border-x border-[#E6E1D6]">
+            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 font-semibold text-emerald-800 bg-[#F5F2EB] border-x border-[#E6E1D6]">
               100% In-Browser (WebGPU)
             </td>
-            <td class="py-3.5 px-5 text-[#736B61]">
+            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 text-[#736B61]">
               Uploaded to remote servers
             </td>
           </tr>
 
           <!-- Limits -->
           <tr class="hover:bg-[#FAF7F2]/60 transition-colors">
-            <td class="py-3.5 px-5 font-semibold text-[#24211E]">
+            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 font-semibold text-[#24211E]">
               Usage Limits
-              <span class="block text-[11px] font-normal text-[#8C847A]">Quantity allowance</span>
+              <span class="block text-[11px] sm:text-xs lg:text-sm font-normal text-[#8C847A]">Quantity allowance</span>
             </td>
-            <td class="py-3.5 px-5 font-bold text-[#24211E] bg-[#F5F2EB] border-x border-[#E6E1D6]">
+            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 font-bold text-[#24211E] bg-[#F5F2EB] border-x border-[#E6E1D6]">
               Unlimited
             </td>
-            <td class="py-3.5 px-5 text-[#736B61]">
+            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 text-[#736B61]">
               1 free credit, then paywall
             </td>
           </tr>
 
           <!-- Studio Tools -->
           <tr class="hover:bg-[#FAF7F2]/60 transition-colors">
-            <td class="py-3.5 px-5 font-semibold text-[#24211E]">
+            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 font-semibold text-[#24211E]">
               Studio Backgrounds
-              <span class="block text-[11px] font-normal text-[#8C847A]">White, blur, colors</span>
+              <span class="block text-[11px] sm:text-xs lg:text-sm font-normal text-[#8C847A]">White, blur, colors</span>
             </td>
-            <td class="py-3.5 px-5 font-semibold text-[#24211E] bg-[#F5F2EB] border-x border-[#E6E1D6]">
+            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 font-semibold text-[#24211E] bg-[#F5F2EB] border-x border-[#E6E1D6]">
               Included (White, Cream, Blur)
             </td>
-            <td class="py-3.5 px-5 text-[#736B61]">
+            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 text-[#736B61]">
               Locked behind Canva Pro
             </td>
           </tr>

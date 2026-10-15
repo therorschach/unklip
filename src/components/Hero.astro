@@ -2,20 +2,20 @@
 // src/components/Hero.astro
 ---
 
-<section class="pt-8 pb-3 text-center max-w-3xl mx-auto px-4 sm:px-6">
+<section class="pt-8 sm:pt-10 lg:pt-12 xl:pt-14 pb-4 sm:pb-6 lg:pb-8 text-center max-w-4xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
   <!-- Minimal Badge -->
-  <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EFECE4] border border-[#DDD7CB] text-[#5C564E] text-xs font-semibold mb-3">
+  <div class="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 lg:px-4 py-1 lg:py-1.5 rounded-full bg-[#EFECE4] border border-[#DDD7CB] text-[#5C564E] text-xs lg:text-sm font-semibold mb-3 sm:mb-4 lg:mb-5 shadow-2xs">
     <span>Free Alternative to remove.bg</span>
     <span class="text-[#8C542A]">• Full 4K Native Resolution</span>
   </div>
 
-  <!-- Compact Title -->
-  <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#24211E] leading-tight">
+  <!-- Title (Scales smoothly to large screens) -->
+  <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-[50px] xl:text-[56px] 2xl:text-[62px] font-extrabold tracking-tight text-[#24211E] leading-[1.12] max-w-3xl lg:max-w-4xl xl:max-w-5xl mx-auto">
     Instant Background Removal. Full Resolution.
   </h1>
 
-  <!-- Short Subtitle -->
-  <p class="mt-2 text-sm sm:text-base text-[#6B655D] max-w-lg mx-auto">
+  <!-- Subtitle -->
+  <p class="mt-2.5 sm:mt-3.5 lg:mt-4 text-sm sm:text-base lg:text-lg xl:text-xl text-[#6B655D] max-w-lg sm:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto leading-relaxed">
     No sign-ups, no cloud uploads, no 0.25 MP downscaling. Processed on your device via WebGPU.
   </p>
 </section>
