@@ -1,17 +1,80 @@
 ---
 // src/components/ComparisonTable.astro
+export interface ComparisonRow {
+  feature: string;
+  featureSub: string;
+  ourValue: string;
+  competitorValue: string;
+  highlight?: 'positive' | 'neutral';
+}
+
+interface Props {
+  badge?: string;
+  title?: string;
+  subtitle?: string;
+  ourName?: string;
+  competitorName?: string;
+  rows?: ComparisonRow[];
+}
+
+const defaultRows: ComparisonRow[] = [
+  {
+    feature: 'Price',
+    featureSub: 'Cost per cutout',
+    ourValue: '100% Free Forever ($0)',
+    competitorValue: 'Up to $0.20 – $1.99 / image',
+    highlight: 'positive',
+  },
+  {
+    feature: 'Output Resolution',
+    featureSub: 'Camera quality retention',
+    ourValue: 'Full 4K / 8K (100% Native)',
+    competitorValue: 'Downsized to 0.25 MP (Free)',
+    highlight: 'neutral',
+  },
+  {
+    feature: 'Privacy & Security',
+    featureSub: 'Where inference runs',
+    ourValue: '100% In-Browser (WebGPU)',
+    competitorValue: 'Uploaded to remote servers',
+    highlight: 'positive',
+  },
+  {
+    feature: 'Usage Limits',
+    featureSub: 'Quantity allowance',
+    ourValue: 'Unlimited',
+    competitorValue: '1 free credit, then paywall',
+    highlight: 'neutral',
+  },
+  {
+    feature: 'Studio Backgrounds',
+    featureSub: 'White, blur, colors',
+    ourValue: 'Included (White, Cream, Blur)',
+    competitorValue: 'Locked behind Canva Pro',
+    highlight: 'neutral',
+  },
+];
+
+const {
+  badge = 'Transparent Comparison',
+  title = 'Unklip vs remove.bg',
+  subtitle = 'Why creators and businesses are leaving paywalled, low-resolution cutouts behind.',
+  ourName = 'Unklip (Our Tool)',
+  competitorName = 'remove.bg (Canva)',
+  rows = defaultRows,
+} = Astro.props;
 ---
 
 <section id="comparison" class="max-w-5xl xl:max-w-[1180px] mx-auto px-4 sm:px-6 py-10 sm:py-14">
   <div class="text-center mb-8 sm:mb-10">
     <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EFECE4] border border-[#DDD7CB] text-[#6B655D] text-xs font-semibold uppercase tracking-wider mb-2.5">
-      Transparent Comparison
+      {badge}
     </div>
     <h2 class="text-2xl sm:text-3xl lg:text-[34px] font-bold text-[#24211E] tracking-tight">
-      Unklip vs remove.bg
+      {title}
     </h2>
     <p class="mt-2 text-xs sm:text-sm text-[#6B655D] max-w-lg mx-auto">
-      Why creators and businesses are leaving paywalled, low-resolution cutouts behind.
+      {subtitle}
     </p>
   </div>
 
@@ -22,83 +85,28 @@
           <tr class="border-b border-[#E6E1D6] bg-[#FAF7F2]">
             <th class="py-3.5 px-5 text-xs sm:text-sm font-bold text-[#736B61] w-2/5">Feature</th>
             <th class="py-3.5 px-5 text-xs sm:text-sm font-bold text-[#24211E] w-3/10 bg-[#F5F2EB] border-x border-[#E6E1D6]">
-              Unklip (Our Tool)
+              {ourName}
             </th>
             <th class="py-3.5 px-5 text-xs sm:text-sm font-medium text-[#736B61] w-3/10">
-              remove.bg (Canva)
+              {competitorName}
             </th>
           </tr>
         </thead>
         <tbody class="divide-y divide-[#EFECE4] text-xs sm:text-sm lg:text-base">
-          <!-- Price -->
-          <tr class="hover:bg-[#FAF7F2]/60 transition-colors">
-            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 font-semibold text-[#24211E]">
-              Price
-              <span class="block text-[11px] sm:text-xs lg:text-sm font-normal text-[#8C847A]">Cost per cutout</span>
-            </td>
-            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 font-bold text-emerald-800 bg-[#F5F2EB] border-x border-[#E6E1D6]">
-              100% Free Forever ($0)
-            </td>
-            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 text-rose-700 font-medium">
-              Up to $0.20 – $1.99 / image
-            </td>
-          </tr>
-
-          <!-- Resolution -->
-          <tr class="hover:bg-[#FAF7F2]/60 transition-colors">
-            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 font-semibold text-[#24211E]">
-              Output Resolution
-              <span class="block text-[11px] sm:text-xs lg:text-sm font-normal text-[#8C847A]">Camera quality retention</span>
-            </td>
-            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 font-bold text-[#24211E] bg-[#F5F2EB] border-x border-[#E6E1D6]">
-              Full 4K / 8K (100% Native)
-            </td>
-            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 text-[#736B61]">
-              Downsized to 0.25 MP (Free)
-            </td>
-          </tr>
-
-          <!-- Privacy -->
-          <tr class="hover:bg-[#FAF7F2]/60 transition-colors">
-            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 font-semibold text-[#24211E]">
-              Privacy & Security
-              <span class="block text-[11px] sm:text-xs lg:text-sm font-normal text-[#8C847A]">Where inference runs</span>
-            </td>
-            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 font-semibold text-emerald-800 bg-[#F5F2EB] border-x border-[#E6E1D6]">
-              100% In-Browser (WebGPU)
-            </td>
-            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 text-[#736B61]">
-              Uploaded to remote servers
-            </td>
-          </tr>
-
-          <!-- Limits -->
-          <tr class="hover:bg-[#FAF7F2]/60 transition-colors">
-            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 font-semibold text-[#24211E]">
-              Usage Limits
-              <span class="block text-[11px] sm:text-xs lg:text-sm font-normal text-[#8C847A]">Quantity allowance</span>
-            </td>
-            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 font-bold text-[#24211E] bg-[#F5F2EB] border-x border-[#E6E1D6]">
-              Unlimited
-            </td>
-            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 text-[#736B61]">
-              1 free credit, then paywall
-            </td>
-          </tr>
-
-          <!-- Studio Tools -->
-          <tr class="hover:bg-[#FAF7F2]/60 transition-colors">
-            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 font-semibold text-[#24211E]">
-              Studio Backgrounds
-              <span class="block text-[11px] sm:text-xs lg:text-sm font-normal text-[#8C847A]">White, blur, colors</span>
-            </td>
-            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 font-semibold text-[#24211E] bg-[#F5F2EB] border-x border-[#E6E1D6]">
-              Included (White, Cream, Blur)
-            </td>
-            <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 text-[#736B61]">
-              Locked behind Canva Pro
-            </td>
-          </tr>
+          {rows.map((row) => (
+            <tr class="hover:bg-[#FAF7F2]/60 transition-colors">
+              <td class="py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 font-semibold text-[#24211E]">
+                {row.feature}
+                <span class="block text-[11px] sm:text-xs lg:text-sm font-normal text-[#8C847A]">{row.featureSub}</span>
+              </td>
+              <td class={`py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 font-bold ${row.highlight === 'positive' ? 'text-emerald-800' : 'text-[#24211E]'} bg-[#F5F2EB] border-x border-[#E6E1D6]`}>
+                {row.ourValue}
+              </td>
+              <td class={`py-3.5 lg:py-4.5 xl:py-5 px-5 lg:px-7 ${row.competitorValue.includes('$') ? 'text-rose-700 font-medium' : 'text-[#736B61]'}`}>
+                {row.competitorValue}
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

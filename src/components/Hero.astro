@@ -1,21 +1,34 @@
 ---
 // src/components/Hero.astro
+interface Props {
+  badgeText?: string;
+  badgeHighlight?: string;
+  title?: string;
+  subtitle?: string;
+}
+
+const {
+  badgeText = "Free Alternative to remove.bg",
+  badgeHighlight = "• Full 4K Native Resolution",
+  title = "Instant Background Removal. Full Resolution.",
+  subtitle = "No sign-ups, no cloud uploads, no 0.25 MP downscaling. Processed on your device via WebGPU."
+} = Astro.props;
 ---
 
 <section class="pt-6 sm:pt-8 lg:pt-9 pb-3 sm:pb-4 text-center max-w-3xl lg:max-w-4xl mx-auto px-4 sm:px-6">
   <!-- Minimal Badge -->
   <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EFECE4] border border-[#DDD7CB] text-[#5C564E] text-xs font-semibold mb-2.5 sm:mb-3">
-    <span>Free Alternative to remove.bg</span>
-    <span class="text-[#8C542A]">• Full 4K Native Resolution</span>
+    <span>{badgeText}</span>
+    {badgeHighlight && <span class="text-[#8C542A]">{badgeHighlight}</span>}
   </div>
 
   <!-- Title -->
   <h1 class="text-3xl sm:text-4xl lg:text-[42px] font-extrabold tracking-tight text-[#24211E] leading-tight max-w-2xl lg:max-w-3xl mx-auto">
-    Instant Background Removal. Full Resolution.
+    {title}
   </h1>
 
   <!-- Subtitle -->
   <p class="mt-2 sm:mt-2.5 text-sm sm:text-base text-[#6B655D] max-w-lg sm:max-w-xl mx-auto leading-normal">
-    No sign-ups, no cloud uploads, no 0.25 MP downscaling. Processed on your device via WebGPU.
+    {subtitle}
   </p>
 </section>

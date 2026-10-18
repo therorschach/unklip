@@ -3,6 +3,7 @@ node_modules/
 
 # Production build output
 dist/
+public/vendor/
 
 # Astro cache and generated types
 .astro/

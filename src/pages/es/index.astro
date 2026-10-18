@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Hero from '../../components/Hero.astro';
+import BgRemover from '../../components/BgRemover.astro';
+import ComparisonTable, { type ComparisonRow } from '../../components/ComparisonTable.astro';
+import Features, { type FeatureItem } from '../../components/Features.astro';
+import Faq, { type FaqItem } from '../../components/Faq.astro';
+import Footer from '../../components/Footer.astro';
+
+const comparisonRows: ComparisonRow[] = [
+  {
+    feature: 'Precio',
+    featureSub: 'Coste por recorte',
+    ourValue: '100% Gratis Siempre ($0)',
+    competitorValue: 'Hasta $0.20 – $1.99 / imagen',
+    highlight: 'positive',
+  },
+  {
+    feature: 'Resolución de Salida',
+    featureSub: 'Calidad original de la cámara',
+    ourValue: '4K / 8K Completo (100% Nativo)',
+    competitorValue: 'Reducido a 0.25 MP (Versión gratis)',
+    highlight: 'neutral',
+  },
+  {
+    feature: 'Privacidad y Seguridad',
+    featureSub: 'Dónde se procesa la foto',
+    ourValue: '100% en el Navegador (WebGPU)',
+    competitorValue: 'Subido a servidores externos',
+    highlight: 'positive',
+  },
+  {
+    feature: 'Límites de Uso',
+    featureSub: 'Cantidad permitida',
+    ourValue: 'Ilimitado',
+    competitorValue: '1 crédito gratis, luego muro de pago',
+    highlight: 'neutral',
+  },
+  {
+    feature: 'Fondos de Estudio',
+    featureSub: 'Blanco, crema, desenfoque',
+    ourValue: 'Incluidos (Blanco, Crema, Desenfoque)',
+    competitorValue: 'Requiere Canva Pro',
+    highlight: 'neutral',
+  },
+];
+
+const featuresList: FeatureItem[] = [
+  {
+    iconType: '4k',
+    title: 'Resolución Total Preservada',
+    description: 'Unklip aplica la máscara alfa neuronal directamente sobre los píxeles originales de tu cámara para que nunca pierdas nitidez ni detalle.',
+  },
+  {
+    iconType: 'privacy',
+    title: '100% Privado en tu Dispositivo',
+    description: 'Tus fotos nunca tocan ningún servidor remoto. Todo se procesa dentro del navegador con aceleración por hardware WebGPU.',
+  },
+  {
+    iconType: 'gpu',
+    title: 'Aceleración por Hardware',
+    description: 'Ejecuta shaders de computación en paralelo en tu tarjeta gráfica para recortes rápidos y fluidos sin latencia de red.',
+  },
+];
+
+const faqItems: FaqItem[] = [
+  {
+    q: '¿Cómo es posible que Unklip sea completamente gratis y sin límites?',
+    a: 'Los eliminadores tradicionales funcionan en costosos clústeres en la nube. Unklip utiliza WebGPU para ejecutar el modelo de inteligencia artificial directamente en la GPU de tu ordenador o teléfono, eliminando los costes de servidor.',
+  },
+  {
+    q: '¿Mis imágenes y fotos son privadas?',
+    a: 'Sí, 100% privadas. Tus fotos nunca salen de tu navegador ni se almacenan en ninguna base de datos.',
+  },
+  {
+    q: '¿Por qué remove.bg cobra por la alta resolución mientras Unklip la ofrece gratis?',
+    a: 'Remove.bg reduce el tamaño de las imágenes gratuitas a 0.25 megapíxeles como estrategia comercial para vender créditos. Unklip conserva tu resolución original y aplica el recorte directamente a tus píxeles nativos.',
+  },
+];
+---
+
+<BaseLayout
+  title="Unklip - Eliminador de Fondos 4K Gratis (Alternativa a Remove.bg)"
+  description="Eliminador de fondos gratuito y 100% privado en el navegador con WebGPU. Resolución 4K nativa sin subir imágenes a ningún servidor."
+  canonicalUrl="https://unklip.pages.dev/es/"
+  lang="es"
+  ogLocale="es_ES"
+  schemaHeadline="Eliminador de Fondos 4K Gratis y Privado en Navegador con WebGPU"
+>
+  <Navbar
+    homeUrl="/es/"
+    labels={{
+      tool: 'Herramienta',
+      comparison: 'vs Remove.bg',
+      features: 'Ventajas',
+      faq: 'Preguntas Frecuentes',
+    }}
+  />
+
+  <main class="flex-grow">
+    <Hero
+      badgeText="Alternativa gratuita a remove.bg"
+      badgeHighlight="• Resolución 4K Nativa Completa"
+      title="Eliminación instantánea de fondos. Máxima resolución."
+      subtitle="Sin registros, sin subir fotos a la nube, sin reducciones a 0.25 MP. Procesado directamente en tu dispositivo con WebGPU."
+    />
+    <BgRemover />
+    <ComparisonTable
+      badge="Comparación Transparente"
+      title="Unklip vs remove.bg"
+      subtitle="Por qué creadores y empresas eligen eliminar fondos sin muros de pago ni pérdidas de calidad."
+      ourName="Unklip (Nuestra Herramienta)"
+      competitorName="remove.bg (Canva)"
+      rows={comparisonRows}
+    />
+    <Features
+      badge="Puntos Destacados"
+      title="Herramientas de Precisión para Resultados Profesionales"
+      features={featuresList}
+    />
+    <Faq
+      badge="Preguntas Frecuentes"
+      title="Todo lo que Necesitas Saber sobre Unklip"
+      items={faqItems}
+    />
+  </main>
+
+  <Footer currentLocale="es" />
+</BaseLayout>

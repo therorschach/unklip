@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "prebuild": "mkdir -p public/vendor && cp node_modules/@huggingface/transformers/dist/transformers.web.min.js public/vendor/",
+    "predev": "mkdir -p public/vendor && cp node_modules/@huggingface/transformers/dist/transformers.web.min.js public/vendor/",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview"
@@ -17,5 +19,8 @@
     "astro": "^7.3.8",
     "lucide-astro": "^0.556.0",
     "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@astrojs/sitemap": "^3.7.4"
   }
 }

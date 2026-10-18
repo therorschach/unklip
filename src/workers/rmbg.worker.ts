@@ -1,37 +1,79 @@
-import { AutoModel, RawImage, Tensor, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3';
+import { AutoModel, RawImage, Tensor, env } from '/vendor/transformers.web.min.js';
 
 // Configure environment for in-browser execution
 env.allowLocalModels = false;
+env.useBrowserCache = typeof caches !== 'undefined';
 
 const MODEL_ID = 'briaai/RMBG-1.4';
 
+type DeviceType = 'webgpu' | 'wasm';
+type DtypeType = 'fp16' | 'q8' | 'fp32';
+
 let modelPromise: Promise<any> | null = null;
 let model: any = null;
-let activeDevice: 'webgpu' | 'wasm' = 'wasm';
+let activeDevice: DeviceType = 'wasm';
+let activeDtype: DtypeType = 'q8';
+
+function isMobileOrLowMemory(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  const ua = navigator.userAgent || '';
+  const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+  const isMobileData = Boolean((navigator as any).userAgentData?.mobile);
+  const deviceMemory = (navigator as any).deviceMemory;
+  const isLowMemory = typeof deviceMemory === 'number' && deviceMemory <= 4;
+  return isMobileUA || isMobileData || isLowMemory;
+}
+
+interface ModelCandidate {
+  device: DeviceType;
+  dtype: DtypeType;
+}
+
+function getCandidateConfigs(gpuAdapter: any | null): ModelCandidate[] {
+  if (gpuAdapter) {
+    const supportsF16 = gpuAdapter.features?.has?.('shader-f16') ?? false;
+    const isConstrained = isMobileOrLowMemory();
+
+    if (supportsF16 && !isConstrained) {
+      return [
+        { device: 'webgpu', dtype: 'fp16' },
+        { device: 'webgpu', dtype: 'q8' },
+        { device: 'webgpu', dtype: 'fp32' },
+        { device: 'wasm', dtype: 'q8' },
+        { device: 'wasm', dtype: 'fp32' },
+      ];
+    } else {
+      return [
+        { device: 'webgpu', dtype: 'q8' },
+        { device: 'webgpu', dtype: 'fp32' },
+        { device: 'wasm', dtype: 'q8' },
+        { device: 'wasm', dtype: 'fp32' },
+      ];
+    }
+  }
+
+  // WASM fallback candidates
+  return [
+    { device: 'wasm', dtype: 'q8' },
+    { device: 'wasm', dtype: 'fp32' },
+  ];
+}
 
 async function initModel() {
   if (model) return model;
   if (modelPromise) return modelPromise;
 
   modelPromise = (async () => {
-    let device: 'webgpu' | 'wasm' = 'wasm';
-
-    // Check WebGPU availability
+    let adapter: any = null;
     if (typeof navigator !== 'undefined' && 'gpu' in navigator) {
       try {
-        const adapter = await (navigator as any).gpu?.requestAdapter();
-        if (adapter) {
-          device = 'webgpu';
-        }
+        adapter = await (navigator as any).gpu?.requestAdapter();
       } catch (e) {
-        console.warn('WebGPU request failed, falling back to WASM:', e);
-        device = 'wasm';
+        console.warn('WebGPU requestAdapter failed, falling back to WASM:', e);
       }
     }
 
-    activeDevice = device;
-    self.postMessage({ type: 'device_info', device: activeDevice });
-
+    const candidates = getCandidateConfigs(adapter);
     const progressCallback = (progressInfo: any) => {
       self.postMessage({
         type: 'progress',
@@ -39,28 +81,30 @@ async function initModel() {
       });
     };
 
-    try {
-      model = await AutoModel.from_pretrained(MODEL_ID, {
-        device,
-        dtype: 'fp32',
-        progress_callback: progressCallback,
-      });
-      return model;
-    } catch (gpuErr) {
-      if (device === 'webgpu') {
-        console.warn('WebGPU model load failed, retrying with WASM fallback:', gpuErr);
-        activeDevice = 'wasm';
-        self.postMessage({ type: 'device_info', device: activeDevice });
+    let lastError: any = null;
+    for (const candidate of candidates) {
+      try {
+        activeDevice = candidate.device;
+        activeDtype = candidate.dtype;
+        self.postMessage({
+          type: 'device_info',
+          device: activeDevice,
+          dtype: activeDtype,
+        });
 
         model = await AutoModel.from_pretrained(MODEL_ID, {
-          device: 'wasm',
-          dtype: 'fp32',
+          device: candidate.device,
+          dtype: candidate.dtype,
           progress_callback: progressCallback,
         });
         return model;
+      } catch (err) {
+        console.warn(`Failed loading RMBG-1.4 with [${candidate.device}, ${candidate.dtype}]:`, err);
+        lastError = err;
       }
-      throw gpuErr;
     }
+
+    throw lastError || new Error('Failed to load RMBG model with all available configurations');
   })();
 
   return modelPromise;
@@ -70,21 +114,32 @@ self.addEventListener('message', async (event: MessageEvent) => {
   const { action, id, imageBlob, threshold = 0.5 } = event.data;
 
   if (action === 'get_device') {
-    let hasGpu = false;
+    if (model) {
+      self.postMessage({ type: 'device_info', device: activeDevice, dtype: activeDtype });
+      return;
+    }
+
+    let adapter: any = null;
     if (typeof navigator !== 'undefined' && 'gpu' in navigator) {
       try {
-        const adapter = await (navigator as any).gpu?.requestAdapter();
-        hasGpu = !!adapter;
+        adapter = await (navigator as any).gpu?.requestAdapter();
       } catch {}
     }
-    self.postMessage({ type: 'device_info', device: hasGpu ? 'webgpu' : 'wasm' });
+
+    const candidates = getCandidateConfigs(adapter);
+    const primary = candidates[0];
+    self.postMessage({
+      type: 'device_info',
+      device: primary.device,
+      dtype: primary.dtype,
+    });
     return;
   }
 
   if (action === 'warmup') {
     try {
       await initModel();
-      self.postMessage({ type: 'warmup_complete', id, device: activeDevice });
+      self.postMessage({ type: 'warmup_complete', id, device: activeDevice, dtype: activeDtype });
     } catch (error: any) {
       self.postMessage({ type: 'warmup_error', id, error: error?.message || String(error) });
     }
@@ -113,32 +168,91 @@ self.addEventListener('message', async (event: MessageEvent) => {
         detail: 'Reading pixel channels and geometry...',
       });
 
-      // Load original image
-      const rawImg = await RawImage.fromBlob(imageBlob);
-      const originalWidth = rawImg.width;
-      const originalHeight = rawImg.height;
+      // Start full-resolution RawImage decoding concurrently for high-resolution compositing
+      const rawImgPromise = RawImage.fromBlob(imageBlob);
 
-      // 1. Resize to 1024x1024
-      self.postMessage({
-        type: 'step',
-        id,
-        stage: 'tensor',
-        percent: 42,
-        title: 'Preparing Neural Tensor',
-        detail: 'Rescaling to 1024×1024 RGB input...',
-      });
+      let originalWidth = 0;
+      let originalHeight = 0;
+      let floatData: Float32Array | null = null;
 
-      const resized = await rawImg.clone().resize(1024, 1024);
-      const rgb = resized.rgb();
-      const { data } = rgb;
+      // 1. Hardware-accelerated native downscale to 1024x1024 via createImageBitmap & OffscreenCanvas
+      const canUseOffscreen = typeof createImageBitmap === 'function' && typeof OffscreenCanvas !== 'undefined';
 
-      // 2. Official RMBG-1.4 normalization: (pixel / 255.0) - 0.5, CHW format
-      const floatData = new Float32Array(3 * 1024 * 1024);
-      const channelSize = 1024 * 1024;
-      for (let i = 0; i < channelSize; i++) {
-        floatData[i] = (data[i * 3] / 255.0) - 0.5;
-        floatData[channelSize + i] = (data[i * 3 + 1] / 255.0) - 0.5;
-        floatData[2 * channelSize + i] = (data[i * 3 + 2] / 255.0) - 0.5;
+      if (canUseOffscreen) {
+        try {
+          const [origBitmap, resizedBitmap] = await Promise.all([
+            createImageBitmap(imageBlob),
+            createImageBitmap(imageBlob, {
+              resizeWidth: 1024,
+              resizeHeight: 1024,
+              resizeQuality: 'high',
+            }),
+          ]);
+
+          originalWidth = origBitmap.width;
+          originalHeight = origBitmap.height;
+          if (typeof origBitmap.close === 'function') origBitmap.close();
+
+          self.postMessage({
+            type: 'step',
+            id,
+            stage: 'tensor',
+            percent: 42,
+            title: 'Preparing Neural Tensor',
+            detail: 'Rescaling to 1024×1024 RGB input...',
+          });
+
+          const canvas = new OffscreenCanvas(1024, 1024);
+          const ctx = canvas.getContext('2d', { willReadFrequently: true });
+          if (!ctx) throw new Error('Could not obtain OffscreenCanvas 2D context');
+
+          ctx.drawImage(resizedBitmap, 0, 0, 1024, 1024);
+          if (typeof resizedBitmap.close === 'function') resizedBitmap.close();
+
+          const imageData = ctx.getImageData(0, 0, 1024, 1024);
+          const { data } = imageData; // RGBA Uint8ClampedArray
+
+          // RMBG-1.4 normalization: (pixel / 255.0) - 0.5, CHW format
+          floatData = new Float32Array(3 * 1024 * 1024);
+          const channelSize = 1024 * 1024;
+          for (let i = 0; i < channelSize; i++) {
+            const offset = i * 4;
+            floatData[i] = (data[offset] / 255.0) - 0.5;
+            floatData[channelSize + i] = (data[offset + 1] / 255.0) - 0.5;
+            floatData[2 * channelSize + i] = (data[offset + 2] / 255.0) - 0.5;
+          }
+        } catch (downscaleErr) {
+          console.warn('Hardware downscaling failed, falling back to RawImage:', downscaleErr);
+          floatData = null;
+        }
+      }
+
+      // Fallback: CPU JavaScript array resizing via RawImage
+      if (!floatData) {
+        const rawImgFallback = await rawImgPromise;
+        originalWidth = rawImgFallback.width;
+        originalHeight = rawImgFallback.height;
+
+        self.postMessage({
+          type: 'step',
+          id,
+          stage: 'tensor',
+          percent: 42,
+          title: 'Preparing Neural Tensor',
+          detail: 'Rescaling to 1024×1024 RGB input...',
+        });
+
+        const resized = await rawImgFallback.clone().resize(1024, 1024);
+        const rgb = resized.rgb();
+        const { data } = rgb;
+
+        floatData = new Float32Array(3 * 1024 * 1024);
+        const channelSize = 1024 * 1024;
+        for (let i = 0; i < channelSize; i++) {
+          floatData[i] = (data[i * 3] / 255.0) - 0.5;
+          floatData[channelSize + i] = (data[i * 3 + 1] / 255.0) - 0.5;
+          floatData[2 * channelSize + i] = (data[i * 3 + 2] / 255.0) - 0.5;
+        }
       }
 
       const inputTensor = new Tensor('float32', floatData, [1, 3, 1024, 1024]);
@@ -269,6 +383,7 @@ self.addEventListener('message', async (event: MessageEvent) => {
 
       const mask1024 = new RawImage(currentMask, 1024, 1024, 1);
       const maskRaw = await mask1024.resize(originalWidth, originalHeight);
+      const rawImg = await rawImgPromise;
       const cutoutRaw = rawImg.clone().putAlpha(maskRaw);
 
       // Convert to Blobs
@@ -299,6 +414,7 @@ self.addEventListener('message', async (event: MessageEvent) => {
         originalHeight,
         elapsedMs,
         device: activeDevice,
+        dtype: activeDtype,
       });
     } catch (error: any) {
       console.error('Background removal error in worker:', error);

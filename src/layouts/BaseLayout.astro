@@ -1,0 +1,108 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonicalUrl?: string;
+  lang?: string;
+  ogLocale?: string;
+  ogImage?: string;
+  ogImageAlt?: string;
+  schemaType?: string | string[];
+  schemaHeadline?: string;
+}
+
+const {
+  title = 'Unklip - Free 4K Background Remover (Remove.bg Alternative)',
+  description = 'Free, 100% private in-browser background remover with WebGPU. Full 4K resolution preserved with zero server uploads.',
+  canonicalUrl = 'https://unklip.pages.dev/',
+  lang = 'en',
+  ogLocale = 'en_US',
+  ogImage = 'https://unklip.pages.dev/cover.jpg',
+  ogImageAlt = 'Unklip - Free 4K In-Browser Background Remover',
+  schemaHeadline,
+} = Astro.props;
+
+const schemaData = {
+  '@context': 'https://schema.org',
+  '@type': ['WebApplication', 'SoftwareApplication'],
+  name: 'Unklip',
+  url: canonicalUrl,
+  description: description,
+  headline: schemaHeadline ?? title,
+  applicationCategory: 'MultimediaApplication',
+  operatingSystem: 'Any (In-Browser, WebGPU / WASM)',
+  browserRequirements: 'Requires WebGPU or WASM support (Chrome, Edge, Safari, Firefox)',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  featureList: [
+    'Native 4K resolution',
+    '100% private on-device',
+    'WebGPU hardware acceleration',
+    'Zero server uploads',
+    'No credit card or subscription required',
+  ],
+  image: ogImage,
+  screenshot: ogImage,
+};
+---
+
+<!doctype html>
+<html lang={lang} class="scroll-smooth bg-[#F8F5F0] text-[#24211E] antialiased selection:bg-[#E6DFD3] selection:text-[#24211E]">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Primary Meta Tags -->
+    <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+
+    <!-- Hreflang alternates -->
+    <link rel="alternate" hreflang="en" href="https://unklip.pages.dev/" />
+    <link rel="alternate" hreflang="es" href="https://unklip.pages.dev/es/" />
+    <link rel="alternate" hreflang="pt" href="https://unklip.pages.dev/pt/" />
+    <link rel="alternate" hreflang="de" href="https://unklip.pages.dev/de/" />
+    <link rel="alternate" hreflang="ja" href="https://unklip.pages.dev/ja/" />
+    <link rel="alternate" hreflang="hi" href="https://unklip.pages.dev/hi/" />
+    <link rel="alternate" hreflang="zh" href="https://unklip.pages.dev/zh/" />
+    <link rel="alternate" hreflang="x-default" href="https://unklip.pages.dev/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Unklip" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogImageAlt} />
+    <meta property="og:locale" content={ogLocale} />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalUrl} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2324211E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z'/></svg>" />
+    <meta name="theme-color" content="#F8F5F0" />
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json" set:html={JSON.stringify(schemaData)} />
+  </head>
+  <body class="min-h-screen flex flex-col bg-[#F8F5F0] overflow-x-clip">
+    <slot />
+  </body>
+</html>

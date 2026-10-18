@@ -1,20 +1,100 @@
 ---
 // src/components/Footer.astro
+interface Props {
+  currentLocale?: string;
+}
+
+const { currentLocale = 'en' } = Astro.props;
+
+const useCases = [
+  { href: '/for-ecommerce', title: 'E-Commerce Photos' },
+  { href: '/for-id-photos', title: 'Passport & ID Photos' },
+  { href: '/for-signatures', title: 'Signatures & Stamps' },
+  { href: '/car-background-remover', title: 'Car Dealerships' },
+];
+
+const locales = [
+  { code: 'en', href: '/', label: 'English' },
+  { code: 'es', href: '/es/', label: 'Español' },
+  { code: 'pt', href: '/pt/', label: 'Português' },
+  { code: 'de', href: '/de/', label: 'Deutsch' },
+  { code: 'ja', href: '/ja/', label: '日本語' },
+  { code: 'hi', href: '/hi/', label: 'हिन्दी' },
+  { code: 'zh', href: '/zh/', label: '中文' },
+];
 ---
 
-<footer class="border-t border-[#E6E1D6] bg-[#FAF7F2] text-[#736B61] py-8 lg:py-10">
+<footer class="border-t border-[#E6E1D6] bg-[#FAF7F2] text-[#736B61] pt-10 pb-8 sm:py-12">
   <div class="max-w-5xl xl:max-w-[1180px] mx-auto px-4 sm:px-6">
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div class="flex items-center gap-2.5">
-        <div class="w-6 h-6 rounded-md bg-[#24211E] text-white flex items-center justify-center font-bold text-xs">
-          U
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 pb-8 border-b border-[#E6E1D6]/70">
+      <!-- Col 1: Brand & Privacy -->
+      <div class="md:col-span-2">
+        <div class="flex items-center gap-2.5 mb-3">
+          <div class="w-7 h-7 rounded-lg bg-[#24211E] text-white flex items-center justify-center font-bold text-xs shadow-xs">
+            U
+          </div>
+          <span class="text-base font-bold text-[#24211E] tracking-tight">Unklip</span>
+          <span class="text-[11px] px-2 py-0.5 rounded-full bg-[#EFECE4] border border-[#DDD7CB] text-[#736B61] font-semibold">
+            Free & Private
+          </span>
         </div>
-        <span class="text-sm font-bold text-[#24211E] tracking-tight">Unklip</span>
-        <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#EFECE4] border border-[#DDD7CB] text-[#736B61]">Free & Private</span>
+        <p class="text-xs sm:text-sm text-[#736B61] max-w-sm leading-relaxed mb-3">
+          100% private on-device background remover powered by WebGPU and modern neural models. No subscriptions, no cloud uploads, native 4K preserved.
+        </p>
+        <p class="text-[11px] text-[#8C847A]">
+          Built with open web standards • Zero server costs • Zero data harvesting
+        </p>
       </div>
 
-      <div class="text-[11px] sm:text-xs text-[#736B61] text-center sm:text-right">
-        <p>In-browser WebGPU inference • No cloud servers</p>
+      <!-- Col 2: Solutions / Use Cases -->
+      <div>
+        <h4 class="text-xs font-bold text-[#24211E] uppercase tracking-wider mb-3">
+          Solutions
+        </h4>
+        <ul class="space-y-2 text-xs sm:text-sm">
+          {useCases.map((item) => (
+            <li>
+              <a href={item.href} class="hover:text-[#24211E] transition-colors underline-offset-2 hover:underline">
+                {item.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Col 3: Languages -->
+      <div>
+        <h4 class="text-xs font-bold text-[#24211E] uppercase tracking-wider mb-3">
+          Languages (i18n)
+        </h4>
+        <div class="flex flex-wrap gap-2 text-xs">
+          {locales.map((loc) => (
+            <a
+              href={loc.href}
+              class={`px-2 py-1 rounded-md border text-[11px] font-medium transition-colors ${
+                currentLocale === loc.code
+                  ? 'bg-[#24211E] text-white border-[#24211E]'
+                  : 'bg-white border-[#E0D9CD] hover:border-[#24211E] text-[#5C564E] hover:text-[#24211E]'
+              }`}
+            >
+              {loc.label}
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Row -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] sm:text-xs text-[#8C847A]">
+      <div class="flex items-center gap-3">
+        <span>© {new Date().getFullYear()} Unklip</span>
+        <span>•</span>
+        <a href="https://github.com/therorschach/unklip" target="_blank" rel="noopener noreferrer" class="hover:text-[#24211E] underline">
+          GitHub Repository
+        </a>
+      </div>
+      <div>
+        <span>In-browser WebGPU inference • No cloud servers</span>
       </div>
     </div>
   </div>

@@ -1,53 +1,80 @@
 ---
 // src/components/Features.astro
+export interface FeatureItem {
+  iconText?: string;
+  iconType?: '4k' | 'privacy' | 'gpu' | 'star' | 'shield' | 'zap' | 'check';
+  title: string;
+  description: string;
+}
+
+interface Props {
+  badge?: string;
+  title?: string;
+  features?: FeatureItem[];
+}
+
+const defaultFeatures: FeatureItem[] = [
+  {
+    iconType: '4k',
+    title: 'Full Resolution Preserved',
+    description: 'Unklip applies the neural segmentation alpha matte directly onto your original camera pixels so you never lose clarity or detail.',
+  },
+  {
+    iconType: 'privacy',
+    title: '100% Private (On-Device)',
+    description: 'Your photos never touch any remote server. Everything is computed in your browser sandbox with WebGPU hardware acceleration.',
+  },
+  {
+    iconType: 'gpu',
+    title: 'Hardware Accelerated',
+    description: 'Runs parallel compute shaders on your GPU for fast, responsive cuts without server queues or network latency.',
+  },
+];
+
+const {
+  badge = 'Key Highlights',
+  title = 'Precision Tools for Quality Output',
+  features = defaultFeatures,
+} = Astro.props;
 ---
 
 <section id="features" class="max-w-5xl xl:max-w-[1180px] mx-auto px-4 sm:px-6 py-10 sm:py-14">
   <div class="text-center mb-8 sm:mb-10">
     <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EFECE4] border border-[#DDD7CB] text-[#6B655D] text-xs font-semibold uppercase tracking-wider mb-2.5">
-      Key Highlights
+      {badge}
     </div>
     <h2 class="text-2xl sm:text-3xl font-bold text-[#24211E] tracking-tight">
-      Precision Tools for Quality Output
+      {title}
     </h2>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-    <!-- Card 1 -->
-    <div class="rounded-2xl p-6 bg-white border border-[#E6E1D6] shadow-xs">
-      <div class="w-10 h-10 rounded-xl bg-[#FAF7F2] border border-[#DDD7CB] text-[#24211E] flex items-center justify-center mb-4 font-bold text-sm">
-        4K
+    {features.map((feature) => (
+      <div class="rounded-2xl p-6 bg-white border border-[#E6E1D6] shadow-xs">
+        <div class="w-10 h-10 rounded-xl bg-[#FAF7F2] border border-[#DDD7CB] text-[#24211E] flex items-center justify-center mb-4 font-bold text-sm">
+          {feature.iconText ? (
+            <span>{feature.iconText}</span>
+          ) : feature.iconType === 'privacy' || feature.iconType === 'shield' ? (
+            <svg class="w-5 h-5 text-[#4A453E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          ) : feature.iconType === 'gpu' || feature.iconType === 'zap' ? (
+            <svg class="w-5 h-5 text-[#4A453E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+          ) : feature.iconType === 'check' ? (
+            <svg class="w-5 h-5 text-[#4A453E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          ) : (
+            <span>4K</span>
+          )}
+        </div>
+        <h3 class="text-base font-bold text-[#24211E] mb-2">{feature.title}</h3>
+        <p class="text-xs sm:text-sm text-[#736B61] leading-relaxed">
+          {feature.description}
+        </p>
       </div>
-      <h3 class="text-base font-bold text-[#24211E] mb-2">Full Resolution Preserved</h3>
-      <p class="text-xs sm:text-sm text-[#736B61] leading-relaxed">
-        Unklip applies the neural segmentation alpha matte directly onto your original camera pixels so you never lose clarity or detail.
-      </p>
-    </div>
-
-    <!-- Card 2 -->
-    <div class="rounded-2xl p-6 bg-white border border-[#E6E1D6] shadow-xs">
-      <div class="w-10 h-10 rounded-xl bg-[#FAF7F2] border border-[#DDD7CB] text-[#24211E] flex items-center justify-center mb-4 font-bold text-sm">
-        <svg class="w-5 h-5 text-[#4A453E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        </svg>
-      </div>
-      <h3 class="text-base font-bold text-[#24211E] mb-2">100% Private (On-Device)</h3>
-      <p class="text-xs sm:text-sm text-[#736B61] leading-relaxed">
-        Your photos never touch any remote server. Everything is computed in your browser sandbox with WebGPU hardware acceleration.
-      </p>
-    </div>
-
-    <!-- Card 3 -->
-    <div class="rounded-2xl p-6 bg-white border border-[#E6E1D6] shadow-xs">
-      <div class="w-10 h-10 rounded-xl bg-[#FAF7F2] border border-[#DDD7CB] text-[#24211E] flex items-center justify-center mb-4 font-bold text-sm">
-        <svg class="w-5 h-5 text-[#4A453E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-        </svg>
-      </div>
-      <h3 class="text-base font-bold text-[#24211E] mb-2">Hardware Accelerated</h3>
-      <p class="text-xs sm:text-sm text-[#736B61] leading-relaxed">
-        Runs parallel compute shaders on your GPU for fast, responsive cuts without server queues or network latency.
-      </p>
-    </div>
+    ))}
   </div>
 </section>

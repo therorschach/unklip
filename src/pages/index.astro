@@ -1,5 +1,5 @@
 ---
-import '../styles/global.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
 import Navbar from '../components/Navbar.astro';
 import Hero from '../components/Hero.astro';
 import BgRemover from '../components/BgRemover.astro';
@@ -9,37 +9,24 @@ import Faq from '../components/Faq.astro';
 import Footer from '../components/Footer.astro';
 ---
 
-<!doctype html>
-<html lang="en" class="scroll-smooth bg-[#F8F5F0] text-[#24211E] antialiased selection:bg-[#E6DFD3] selection:text-[#24211E]">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    <!-- Primary Meta Tags -->
-    <title>Unklip - Free 4K Background Remover (Remove.bg Alternative)</title>
-    <meta name="title" content="Unklip - Free 4K Background Remover" />
-    <meta name="description" content="Free, 100% private in-browser background remover with WebGPU. Full 4K resolution preserved with zero server uploads." />
+<BaseLayout
+  title="Unklip - Free 4K Background Remover (Remove.bg Alternative)"
+  description="Free, 100% private in-browser background remover with WebGPU. Full 4K resolution preserved with zero server uploads."
+  canonicalUrl="https://unklip.pages.dev/"
+  lang="en"
+  ogLocale="en_US"
+  ogImage="https://unklip.pages.dev/cover.jpg"
+  ogImageAlt="Unklip - Free 4K In-Browser Background Remover"
+>
+  <Navbar />
 
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="Unklip - Free 4K Background Remover" />
-    <meta property="og:description" content="Remove image backgrounds in full native resolution with in-browser WebGPU AI. 100% private." />
+  <main class="flex-grow">
+    <Hero />
+    <BgRemover />
+    <ComparisonTable />
+    <Features />
+    <Faq />
+  </main>
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2324211E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z'/></svg>" />
-    <meta name="theme-color" content="#F8F5F0" />
-  </head>
-  <body class="min-h-screen flex flex-col bg-[#F8F5F0] overflow-x-clip">
-    <Navbar />
-
-    <main class="flex-grow">
-      <Hero />
-      <BgRemover />
-      <ComparisonTable />
-      <Features />
-      <Faq />
-    </main>
-
-    <Footer />
-  </body>
-</html>
+  <Footer currentLocale="en" />
+</BaseLayout>

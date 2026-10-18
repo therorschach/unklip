@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Hero from '../../components/Hero.astro';
+import BgRemover from '../../components/BgRemover.astro';
+import ComparisonTable, { type ComparisonRow } from '../../components/ComparisonTable.astro';
+import Features, { type FeatureItem } from '../../components/Features.astro';
+import Faq, { type FaqItem } from '../../components/Faq.astro';
+import Footer from '../../components/Footer.astro';
+
+const comparisonRows: ComparisonRow[] = [
+  {
+    feature: '利用料金',
+    featureSub: '1枚あたりの切り抜きコスト',
+    ourValue: '完全永久無料 (¥0)',
+    competitorValue: '1枚あたり最大約30円〜300円',
+    highlight: 'positive',
+  },
+  {
+    feature: '出力解像度',
+    featureSub: 'カメラ本来の画質保持',
+    ourValue: '4K / 8K ネイティブ維持 (100%)',
+    competitorValue: '0.25 MPに強制縮小 (無料版)',
+    highlight: 'neutral',
+  },
+  {
+    feature: 'プライバシーと安全性',
+    featureSub: 'AI処理が実行される場所',
+    ourValue: '100% ブラウザ完結 (WebGPU)',
+    competitorValue: '外部クラウドサーバーへ送信',
+    highlight: 'positive',
+  },
+  {
+    feature: '利用回数の制限',
+    featureSub: '処理できる画像の上限',
+    ourValue: '完全無制限',
+    competitorValue: '無料は1クレジットのみ、以降課金',
+    highlight: 'neutral',
+  },
+  {
+    feature: 'スタジオ背景機能',
+    featureSub: '白背景・ぼかし・単色',
+    ourValue: '標準搭載 (白・クリーム・ぼかし)',
+    competitorValue: '有料プラン限定',
+    highlight: 'neutral',
+  },
+];
+
+const featuresList: FeatureItem[] = [
+  {
+    iconType: '4k',
+    title: 'ネイティブ解像度を完全保持',
+    description: 'AIが生成した切り抜きマスクを元のカメラ解像度に直接適用するため、髪の毛の毛先や微細なテクスチャを損ないません。',
+  },
+  {
+    iconType: 'privacy',
+    title: '100% 端末内で安全に完結',
+    description: '画像データが外部サーバーへ送信されることは一切ありません。ブラウザの安全なサンドボックス環境でWebGPUにより処理されます。',
+  },
+  {
+    iconType: 'gpu',
+    title: 'ハードウェアアクセラレーション',
+    description: 'お使いのパソコンやスマートフォンのGPUを活用し、並列シェーダーで高速処理。サーバー待ち時間やネットワーク遅延はありません。',
+  },
+];
+
+const faqItems: FaqItem[] = [
+  {
+    q: 'なぜUnklipは完全無料で無制限に利用できるのですか？',
+    a: '従来の背景透過サービスは月額数千ドルのクラウドGPUサーバーを使用しています。UnklipはWebGPU技術を駆使し、利用者のPCやスマホのGPU上で直接ニューラルネットワークを実行するため、サーバー費用がかからず完全無料で開放しています。',
+  },
+  {
+    q: 'アップロードした画像や写真のプライバシーは安全ですか？',
+    a: 'はい、100%安全です。画像がお使いのブラウザの外に出ることは一切なく、外部サーバーに保存されることもありません。',
+  },
+  {
+    q: 'remove.bg は高解像度に料金がかかるのに、なぜUnklipは無料なのですか？',
+    a: 'remove.bg は有料クレジットを販売するビジネスモデルのため、無料版では画像を0.25メガピクセルに制限しています。Unklipはお客様のオリジナル解像度をそのまま維持します。',
+  },
+];
+---
+
+<BaseLayout
+  title="Unklip - 完全無料の4K背景透過ツール (Remove.bg代替)"
+  description="ブラウザ上でWebGPUを活用した100%プライベートな無料背景透過ツール。サーバーへのアップロード不要で4K解像度を維持。"
+  canonicalUrl="https://unklip.pages.dev/ja/"
+  lang="ja"
+  ogLocale="ja_JP"
+  schemaHeadline="ブラウザ完結型・無料4K画像背景透過ツール (WebGPU)"
+>
+  <Navbar
+    homeUrl="/ja/"
+    labels={{
+      tool: '背景透過ツール',
+      comparison: 'vs Remove.bg',
+      features: '主な機能',
+      faq: 'よくある質問',
+    }}
+  />
+
+  <main class="flex-grow">
+    <Hero
+      badgeText="remove.bg の無料代替ツール"
+      badgeHighlight="• ネイティブ4K解像度を完全維持"
+      title="一瞬で背景透過。最高解像度のまま。"
+      subtitle="登録不要・クラウド送信なし・0.25MPへの縮小なし。WebGPUによりお使いの端末上で安全に高速処理。"
+    />
+    <BgRemover />
+    <ComparisonTable
+      badge="透明な徹底比較"
+      title="Unklip vs remove.bg"
+      subtitle="有料クレジットや低解像度化に縛られない、新世代のローカルAIツール。"
+      ourName="Unklip (本ツール)"
+      competitorName="remove.bg (Canva)"
+      rows={comparisonRows}
+    />
+    <Features
+      badge="品質へのこだわり"
+      title="プロフェッショナルな仕上がりを実現する高精度ツール"
+      features={featuresList}
+    />
+    <Faq
+      badge="よくあるご質問"
+      title="Unklipに関するFAQ"
+      items={faqItems}
+    />
+  </main>
+
+  <Footer currentLocale="ja" />
+</BaseLayout>

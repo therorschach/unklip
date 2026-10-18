@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Hero from '../../components/Hero.astro';
+import BgRemover from '../../components/BgRemover.astro';
+import ComparisonTable, { type ComparisonRow } from '../../components/ComparisonTable.astro';
+import Features, { type FeatureItem } from '../../components/Features.astro';
+import Faq, { type FaqItem } from '../../components/Faq.astro';
+import Footer from '../../components/Footer.astro';
+
+const comparisonRows: ComparisonRow[] = [
+  {
+    feature: 'कीमत',
+    featureSub: 'प्रति फोटो खर्च',
+    ourValue: 'हमेशा के लिए 100% मुफ़्त (₹0)',
+    competitorValue: '₹15 – ₹150 प्रति इमेज',
+    highlight: 'positive',
+  },
+  {
+    feature: 'आउटपुट रिज़ॉल्यूशन',
+    featureSub: 'कैमरे की वास्तविक क्वालिटी',
+    ourValue: 'पूरा 4K / 8K (100% ओरिजिनल)',
+    competitorValue: '0.25 MP तक छोटा किया गया (फ्री)',
+    highlight: 'neutral',
+  },
+  {
+    feature: 'प्राइवेसी और सुरक्षा',
+    featureSub: 'फोटो कहाँ प्रोसेस होती है',
+    ourValue: '100% ब्राउज़र में (WebGPU)',
+    competitorValue: 'क्लाउड सर्वर पर अपलोड की जाती है',
+    highlight: 'positive',
+  },
+  {
+    feature: 'इस्तेमाल की सीमा',
+    featureSub: 'प्रति दिन फोटो की अनुमति',
+    ourValue: 'असीमित (Unlimited)',
+    competitorValue: 'सिर्फ 1 फ्री क्रेडिट, फिर शुल्क',
+    highlight: 'neutral',
+  },
+  {
+    feature: 'स्टूडियो बैकग्राउंड',
+    featureSub: 'सफेद, क्रीम, ब्लर विकल्प',
+    ourValue: 'मुफ़्त शामिल (सफेद, क्रीम, ब्लर)',
+    competitorValue: 'Canva Pro में बंद',
+    highlight: 'neutral',
+  },
+];
+
+const featuresList: FeatureItem[] = [
+  {
+    iconType: '4k',
+    title: 'ओरिजिनल रिज़ॉल्यूशन सुरक्षित',
+    description: 'Unklip आपके कैमरे के असली पिक्सल पर न्यूरल कटआउट लागू करता है, जिससे बालों की बारीकियाँ और बनावट धुंधली नहीं होती।',
+  },
+  {
+    iconType: 'privacy',
+    title: '100% निजी (आपके डिवाइस पर)',
+    description: 'आपकी तस्वीरें कभी किसी रिमोट सर्वर पर नहीं भेजी जातीं। सब कुछ आपके ब्राउज़र सैंडबॉक्स में WebGPU द्वारा प्रोसेस होता है।',
+  },
+  {
+    iconType: 'gpu',
+    title: 'हार्डवेयर एक्सेलरेटेड स्पीड',
+    description: 'आपके डिवाइस के GPU की शक्ति से बिना किसी सर्वर कतार या नेटवर्क देरी के तुरंत पारदर्शी कटआउट पाएं।',
+  },
+];
+
+const faqItems: FaqItem[] = [
+  {
+    q: 'Unklip पूरी तरह मुफ़्त और बिना किसी सीमा के कैसे है?',
+    a: 'पारंपरिक बैकग्राउंड रिमूवर महंगे क्लाउड सर्वर चलाते हैं। Unklip अत्याधुनिक WebGPU तकनीक की मदद से सीधे आपके कंप्यूटर या फोन के GPU पर मॉडल चलाता है। सर्वर का कोई खर्च न होने से हम इसे 100% मुफ़्त प्रदान करते हैं।',
+  },
+  {
+    q: 'क्या मेरी तस्वीरें और डेटा निजी हैं?',
+    a: 'हाँ, बिल्कुल 100% निजी। आपकी तस्वीरें आपके ब्राउज़र से बाहर नहीं जातीं और किसी भी सर्वर पर सेव नहीं की जातीं।',
+  },
+  {
+    q: 'remove.bg हाई रिज़ॉल्यूशन के पैसे क्यों लेता है जबकि Unklip इसे मुफ़्त देता है?',
+    a: 'Remove.bg क्रेडिट बेचने के लिए फ्री तस्वीरों का रिज़ॉल्यूशन घटाकर 0.25 MP कर देता है। Unklip आपकी पूरी ओरिजिनल क्वालिटी को सुरक्षित रखता है।',
+  },
+];
+---
+
+<BaseLayout
+  title="Unklip - मुफ़्त 4K बैकग्राउंड रिमूवर (Remove.bg का बेहतरीन विकल्प)"
+  description="WebGPU द्वारा संचालित 100% निजी और मुफ़्त इन-ब्राउज़र बैकग्राउंड रिमूवर। बिना किसी सर्वर अपलोड के ओरिजिनल 4K रिज़ॉल्यूशन सुरक्षित रखें।"
+  canonicalUrl="https://unklip.pages.dev/hi/"
+  lang="hi"
+  ogLocale="hi_IN"
+  schemaHeadline="मुफ़्त इन-ब्राउज़र 4K बैकग्राउंड रिमूवर (WebGPU)"
+>
+  <Navbar
+    homeUrl="/hi/"
+    labels={{
+      tool: 'टूल',
+      comparison: 'vs Remove.bg',
+      features: 'विशेषताएं',
+      faq: 'सामान्य प्रश्न',
+    }}
+  />
+
+  <main class="flex-grow">
+    <Hero
+      badgeText="remove.bg का मुफ़्त विकल्प"
+      badgeHighlight="• ओरिजिनल 4K हाई-रिज़ॉल्यूशन"
+      title="तुरंत बैकग्राउंड हटाएं। पूरी ओरिजिनल क्वालिटी में।"
+      subtitle="बिना किसी साइन-अप, बिना क्लाउड अपलोड और बिना रिज़ॉल्यूशन घटाए। WebGPU की मदद से सीधे आपके डिवाइस पर प्रोसेस्ड।"
+    />
+    <BgRemover />
+    <ComparisonTable
+      badge="पारदर्शी तुलना"
+      title="Unklip बनाम remove.bg"
+      subtitle="जानिए क्यों क्रिएटर्स और व्यवसाय महंगे और कम क्वालिटी वाले टूल्स को छोड़ रहे हैं।"
+      ourName="Unklip (हमारा टूल)"
+      competitorName="remove.bg (Canva)"
+      rows={comparisonRows}
+    />
+    <Features
+      badge="प्रमुख विशेषताएं"
+      title="प्रोफेशनल क्वालिटी आउटपुट के लिए सटीक टूल्स"
+      features={featuresList}
+    />
+    <Faq
+      badge="सामान्य प्रश्न"
+      title="Unklip के बारे में अक्सर पूछे जाने वाले सवाल"
+      items={faqItems}
+    />
+  </main>
+
+  <Footer currentLocale="hi" />
+</BaseLayout>

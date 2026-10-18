@@ -1,0 +1,125 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Hero from '../components/Hero.astro';
+import BgRemover from '../components/BgRemover.astro';
+import ComparisonTable, { type ComparisonRow } from '../components/ComparisonTable.astro';
+import Features, { type FeatureItem } from '../components/Features.astro';
+import Faq, { type FaqItem } from '../components/Faq.astro';
+import Footer from '../components/Footer.astro';
+
+const comparisonRows: ComparisonRow[] = [
+  {
+    feature: 'Legal Signature Confidentiality',
+    featureSub: 'Risk of signature theft or forgery',
+    ourValue: '100% On-Device (Zero server uploads)',
+    competitorValue: 'Sent to & cached on remote servers',
+    highlight: 'positive',
+  },
+  {
+    feature: 'Ink Stroke Precision',
+    featureSub: 'Fine pen line fidelity',
+    ourValue: 'Native 4K Ultra-Resolution',
+    competitorValue: 'Compressed, blurry lines',
+    highlight: 'neutral',
+  },
+  {
+    feature: 'Paper Texture & Shadow Erase',
+    featureSub: 'Uneven phone lighting correction',
+    ourValue: 'AI isolates ink from paper grain',
+    competitorValue: 'Harsh thresholding with noisy speckles',
+    highlight: 'neutral',
+  },
+  {
+    feature: 'Transparent PNG Export',
+    featureSub: 'Ready for PDF, Word & DocuSign',
+    ourValue: 'True Alpha Transparency',
+    competitorValue: 'Solid white or watermarked JPG',
+    highlight: 'neutral',
+  },
+  {
+    feature: 'Software Cost',
+    featureSub: 'Document utility price',
+    ourValue: '$0 Free Forever',
+    competitorValue: '$10.00 – $20.00 / month',
+    highlight: 'positive',
+  },
+];
+
+const featuresList: FeatureItem[] = [
+  {
+    iconType: 'privacy',
+    title: 'Zero-Risk Signature Security',
+    description: 'Your handwritten signature and corporate seals never leave your device. All isolation compute runs strictly in your local browser sandbox.',
+  },
+  {
+    iconType: '4k',
+    title: 'Shadow & Crease Elimination',
+    description: 'Separates pen ink, fountain pen shading, and stamp marks from uneven phone shadows, paper texture, and folded creases.',
+  },
+  {
+    iconType: 'gpu',
+    title: 'Ready for DocuSign & PDF Contracts',
+    description: 'Download crisp transparent PNG files ready to place seamlessly onto Adobe Acrobat PDFs, Google Docs, Word, or e-sign platforms.',
+  },
+];
+
+const faqItems: FaqItem[] = [
+  {
+    q: 'How do I take the best photo of my paper signature for extraction?',
+    a: 'Sign a clean, unlined white sheet of paper using a dark blue or black pen. Place the paper in a well-lit area without harsh overhead shadows, snap a straight-on photo with your phone, and upload it to Unklip.',
+  },
+  {
+    q: 'Will my signature be saved, transmitted, or logged anywhere?',
+    a: 'No. Unklip processes the entire neural cutout using WebGPU inside your local browser instance. Nothing is transmitted over the internet, preventing unauthorized signature harvesting or identity theft.',
+  },
+  {
+    q: 'Can I also extract rubber stamps, notary seals, and hand-drawn logos?',
+    a: 'Yes. Unklip handles ink stamps, notary embossment contours, and inked drawings just as cleanly as handwritten signatures.',
+  },
+  {
+    q: 'How do I insert the extracted signature into a PDF or Word document?',
+    a: 'After Unklip removes the paper background, click Download. You will receive a high-resolution PNG with a transparent alpha channel. In Acrobat, Word, or Google Docs, choose "Insert Image" and resize to fit your signature line.',
+  },
+];
+---
+
+<BaseLayout
+  title="Transparent Signature Extractor & Stamp Background Remover | Unklip"
+  description="Extract transparent digital signatures from paper photos and documents. Remove paper background, ink bleeds, and shadows for clean PDF and DocuSign contracts."
+  canonicalUrl="https://unklip.pages.dev/for-signatures"
+  ogLocale="en_US"
+  schemaHeadline="Transparent Signature Extractor and Stamp Background Remover"
+>
+  <Navbar />
+
+  <main class="flex-grow">
+    <Hero
+      badgeText="Transparent Signature Extractor"
+      badgeHighlight="• DocuSign & PDF Ready"
+      title="Extract Clean Transparent Signatures in Full Resolution"
+      subtitle="Snap a photo of your paper signature and isolate crisp, transparent vector-grade ink strokes for PDF contracts, DocuSign, and official documents."
+    />
+    <BgRemover />
+    <ComparisonTable
+      badge="Contract Confidentiality"
+      title="Unklip vs Online Document Converters"
+      subtitle="Why legal teams, accountants, and signatories trust local browser-based extraction."
+      ourName="Unklip (On-Device WebGPU)"
+      competitorName="Cloud Conversion Services"
+      rows={comparisonRows}
+    />
+    <Features
+      badge="Signature Precision"
+      title="Professional Digital Signatures Without Scanner Hardware"
+      features={featuresList}
+    />
+    <Faq
+      badge="Signature Extraction FAQ"
+      title="Frequently Asked Questions on Digital Signatures"
+      items={faqItems}
+    />
+  </main>
+
+  <Footer currentLocale="en" />
+</BaseLayout>

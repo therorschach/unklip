@@ -1,0 +1,125 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Hero from '../components/Hero.astro';
+import BgRemover from '../components/BgRemover.astro';
+import ComparisonTable, { type ComparisonRow } from '../components/ComparisonTable.astro';
+import Features, { type FeatureItem } from '../components/Features.astro';
+import Faq, { type FaqItem } from '../components/Faq.astro';
+import Footer from '../components/Footer.astro';
+
+const comparisonRows: ComparisonRow[] = [
+  {
+    feature: 'Inventory Cost (30 photos / car)',
+    featureSub: 'Cost per full vehicle listing',
+    ourValue: '$0 Free Forever',
+    competitorValue: '$15.00 – $45.00 per vehicle',
+    highlight: 'positive',
+  },
+  {
+    feature: 'Processing Speed',
+    featureSub: 'Time to live marketplace listing',
+    ourValue: 'Instant (In-Browser GPU)',
+    competitorValue: 'Hours or 24-hr manual queue',
+    highlight: 'positive',
+  },
+  {
+    feature: 'Paint & Wheel Rim Clarity',
+    featureSub: 'Buyer inspection zoom resolution',
+    ourValue: 'Native 4K / 8K Camera Quality',
+    competitorValue: 'Compressed 1080p web cutouts',
+    highlight: 'neutral',
+  },
+  {
+    feature: 'Lot Clutter & Pole Isolation',
+    featureSub: 'Separating fences, asphalt & lights',
+    ourValue: 'Deep neural vehicle segmentation',
+    competitorValue: 'Requires complex masking tools',
+    highlight: 'neutral',
+  },
+  {
+    feature: 'Contract Commitments',
+    featureSub: 'Subscription requirements',
+    ourValue: 'Zero (No credit card or login)',
+    competitorValue: 'Annual dealer software contracts',
+    highlight: 'neutral',
+  },
+];
+
+const featuresList: FeatureItem[] = [
+  {
+    iconType: '4k',
+    title: 'Showroom-Ready Isolation',
+    description: 'Cleanly extracts car silhouettes from cluttered dealer parking lots, neighboring inventory, utility poles, and distracting asphalt backgrounds.',
+  },
+  {
+    iconType: 'gpu',
+    title: '4K Metallic Paint & Rim Fidelity',
+    description: 'Maintains camera-native sharpness so online car shoppers can inspect alloy wheels, brake rotors, and body lines with complete confidence.',
+  },
+  {
+    iconType: 'privacy',
+    title: 'Zero Per-Vehicle Fees',
+    description: 'Whether listing 5 cars or 500 vehicles a month on Autotrader, Cars.com, or Bring a Trailer, enjoy unlimited cutouts without credit meter anxiety.',
+  },
+];
+
+const faqItems: FaqItem[] = [
+  {
+    q: 'Can Unklip handle reflective car paint, side mirrors, and tinted windshields?',
+    a: 'Yes. The underlying neural vision model has been trained on complex vehicular contours. It cleanly separates side mirrors, spoilers, roof racks, and glass edges while preserving the car body interior seen through tinted windows.',
+  },
+  {
+    q: 'How does a clean studio background improve vehicle sales?',
+    a: 'Industry studies show vehicle listings with consistent, distraction-free studio backgrounds receive up to 40% higher click-through rates and sell faster by establishing professional dealership trust.',
+  },
+  {
+    q: 'Can I use this for motorcycles, trucks, vans, and boats?',
+    a: 'Yes. Unklip works smoothly across sedans, sports cars, lifted pickup trucks, commercial vans, motorcycles, and classic collector vehicles.',
+  },
+  {
+    q: 'What is the best way to photograph vehicles before removing the background?',
+    a: 'Park the vehicle with wheels turned slightly toward the camera (showing the wheel face). Shoot in even outdoor lighting (morning or overcast afternoon) from a slight 3/4 front and rear angle, then drop the full-res photos into Unklip.',
+  },
+];
+---
+
+<BaseLayout
+  title="Car Photo Studio Background Remover (Auto Dealerships) | Unklip"
+  description="Isolate car and vehicle photos for dealership inventory and marketplace listings. Remove messy parking lot backgrounds in 4K resolution with zero per-car fees."
+  canonicalUrl="https://unklip.pages.dev/car-background-remover"
+  ogLocale="en_US"
+  schemaHeadline="Car Photo Studio Background Remover for Auto Dealerships"
+>
+  <Navbar />
+
+  <main class="flex-grow">
+    <Hero
+      badgeText="Automotive Dealership Tool"
+      badgeHighlight="• Virtual Showroom Ready"
+      title="Instant Car Background Remover for Dealerships & Marketplaces"
+      subtitle="Transform cluttered dealer lots and driveway photos into professional studio showroom listings. 100% free, 4K native clarity, zero monthly limits."
+    />
+    <BgRemover />
+    <ComparisonTable
+      badge="Dealer Inventory Economics"
+      title="Unklip vs Automotive Photo Services"
+      subtitle="Why independent auto dealerships and private sellers are saving thousands on vehicle listing preparation."
+      ourName="Unklip (Free WebGPU)"
+      competitorName="Dealership Photo APIs"
+      rows={comparisonRows}
+    />
+    <Features
+      badge="Dealership Advantages"
+      title="Virtual Showroom Photography Without the $50k Turntable"
+      features={featuresList}
+    />
+    <Faq
+      badge="Car Photo FAQ"
+      title="Frequently Asked Questions by Car Sellers"
+      items={faqItems}
+    />
+  </main>
+
+  <Footer currentLocale="en" />
+</BaseLayout>

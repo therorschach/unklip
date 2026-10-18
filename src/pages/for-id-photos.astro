@@ -1,0 +1,125 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Hero from '../components/Hero.astro';
+import BgRemover from '../components/BgRemover.astro';
+import ComparisonTable, { type ComparisonRow } from '../components/ComparisonTable.astro';
+import Features, { type FeatureItem } from '../components/Features.astro';
+import Faq, { type FaqItem } from '../components/Faq.astro';
+import Footer from '../components/Footer.astro';
+
+const comparisonRows: ComparisonRow[] = [
+  {
+    feature: 'Biometric Face Privacy',
+    featureSub: 'Where facial recognition runs',
+    ourValue: '100% On-Device (Never leaves your browser)',
+    competitorValue: 'Uploaded to 3rd-party cloud servers',
+    highlight: 'positive',
+  },
+  {
+    feature: 'Print Resolution (300 DPI)',
+    featureSub: 'Passport photo verification clarity',
+    ourValue: 'Native 4K / 8K Camera Quality',
+    competitorValue: 'Downscaled low-res previews',
+    highlight: 'neutral',
+  },
+  {
+    feature: 'Wispy Hair & Glasses Cutout',
+    featureSub: 'Natural biometric edge detection',
+    ourValue: 'Sub-pixel neural alpha matting',
+    competitorValue: 'Harsh, jagged, or blurred borders',
+    highlight: 'neutral',
+  },
+  {
+    feature: 'Official Background Options',
+    featureSub: 'US, UK, EU, Schengen compliance',
+    ourValue: 'Pure White, Neutral Gray, or Transparent',
+    competitorValue: 'Paid subscription required',
+    highlight: 'neutral',
+  },
+  {
+    feature: 'Passport Sheet Price',
+    featureSub: 'Cost per processed portrait',
+    ourValue: '$0 Free Forever',
+    competitorValue: '$12.00 – $25.00 per set',
+    highlight: 'positive',
+  },
+];
+
+const featuresList: FeatureItem[] = [
+  {
+    iconType: 'privacy',
+    title: 'Zero Biometric Data Harvesting',
+    description: 'Your facial photos and biometric credentials never touch external servers or cloud databases. All compute occurs locally in your browser sandbox.',
+  },
+  {
+    iconType: '4k',
+    title: 'Sub-Pixel Hair & Collar Precision',
+    description: 'Accurately separates fine flyaway hair, beard edges, and shirt collars from busy domestic backgrounds without synthetic halo artifacts.',
+  },
+  {
+    iconType: 'gpu',
+    title: '300 DPI High-Density Print Ready',
+    description: 'Retain your original full-sensor megapixels so passport photos print at crisp 300+ DPI physical dimensions (2x2" or 35x45mm).',
+  },
+];
+
+const faqItems: FaqItem[] = [
+  {
+    q: 'Is Unklip safe for sensitive government ID and visa photos?',
+    a: 'Yes, 100%. Because Unklip runs neural segmentation via WebGPU directly inside your browser on your device, your face and personal photos are never uploaded to any remote server or third-party AI provider.',
+  },
+  {
+    q: 'What passport background colors are supported?',
+    a: 'Most government agencies (including US State Dept, UK HM Passport Office, and Schengen visas) mandate plain white or light off-white/gray backgrounds. Unklip lets you toggle pure white (#FFFFFF), off-white, or transparent PNG for custom fills.',
+  },
+  {
+    q: 'Can I take a selfie against a cluttered home wall and clean it up?',
+    a: 'Yes. Simply stand facing a good light source to eliminate facial shadows, take a high-resolution photo with your smartphone or camera, and drop it into Unklip. The AI isolates your portrait from any cluttered room background.',
+  },
+  {
+    q: 'How do I ensure the final photo prints at 300 DPI without blur?',
+    a: 'Unklip maintains 100% of your camera’s original sensor resolution without downscaling. When printed onto photo paper at standard 2x2 inch (51x51 mm) or 35x45 mm passport sizes, the output will exceed standard 300 DPI government sharpness.',
+  },
+];
+---
+
+<BaseLayout
+  title="Passport & ID Photo Background Changer (White & Light Gray) | Unklip"
+  description="Change background for passport photos, visa applications, and official ID cards online. 100% private, on-device biometric compliance with white and light gray backgrounds."
+  canonicalUrl="https://unklip.pages.dev/for-id-photos"
+  ogLocale="en_US"
+  schemaHeadline="Official Passport and ID Photo Background Changer"
+>
+  <Navbar />
+
+  <main class="flex-grow">
+    <Hero
+      badgeText="Passport & Visa Photo Tool"
+      badgeHighlight="• 100% Private On-Device"
+      title="Official Passport & ID Photo Background Changer"
+      subtitle="Convert any selfie into an official passport or visa photo. Clean background replacement with zero cloud uploads—your biometric data never leaves your device."
+    />
+    <BgRemover />
+    <ComparisonTable
+      badge="Biometric Security"
+      title="Unklip vs Online ID Photo Generators"
+      subtitle="Why privacy-conscious individuals and government applicants avoid remote cloud image tools."
+      ourName="Unklip (Local WebGPU)"
+      competitorName="Cloud Photo Tools"
+      rows={comparisonRows}
+    />
+    <Features
+      badge="Biometric Accuracy"
+      title="Compliance-Grade Separation for Official Passports"
+      features={featuresList}
+    />
+    <Faq
+      badge="Passport Photo FAQ"
+      title="Frequently Asked Questions on ID & Visa Photos"
+      items={faqItems}
+    />
+  </main>
+
+  <Footer currentLocale="en" />
+</BaseLayout>

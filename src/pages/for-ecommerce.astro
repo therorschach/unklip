@@ -1,0 +1,125 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Hero from '../components/Hero.astro';
+import BgRemover from '../components/BgRemover.astro';
+import ComparisonTable, { type ComparisonRow } from '../components/ComparisonTable.astro';
+import Features, { type FeatureItem } from '../components/Features.astro';
+import Faq, { type FaqItem } from '../components/Faq.astro';
+import Footer from '../components/Footer.astro';
+
+const comparisonRows: ComparisonRow[] = [
+  {
+    feature: 'Catalog Cutout Cost',
+    featureSub: '1,000 product SKU photos',
+    ourValue: '$0 (100% Free Forever)',
+    competitorValue: '$200.00 – $1,990.00',
+    highlight: 'positive',
+  },
+  {
+    feature: 'Product Zoom Resolution',
+    featureSub: 'Customer inspection quality',
+    ourValue: 'Full 4K / 8K (Camera Native)',
+    competitorValue: 'Downscaled to 0.25 MP on free tiers',
+    highlight: 'neutral',
+  },
+  {
+    feature: 'Unreleased Product Privacy',
+    featureSub: 'Confidential commercial catalogs',
+    ourValue: '100% In-Browser (Zero Cloud Uploads)',
+    competitorValue: 'Uploaded to 3rd-party servers',
+    highlight: 'positive',
+  },
+  {
+    feature: 'Pure White Background (#FFFFFF)',
+    featureSub: 'Amazon marketplace requirement',
+    ourValue: '1-Click White, Cream, or Alpha',
+    competitorValue: 'Paywalled behind Pro editors',
+    highlight: 'neutral',
+  },
+  {
+    feature: 'SKU Processing Limits',
+    featureSub: 'Monthly quota',
+    ourValue: 'Unlimited (No credits or caps)',
+    competitorValue: '1 credit/mo then recurring fee',
+    highlight: 'neutral',
+  },
+];
+
+const featuresList: FeatureItem[] = [
+  {
+    iconType: '4k',
+    title: 'Pure White & Studio Backdrops',
+    description: 'Satisfy Amazon, eBay, and Google Shopping requirements with 1-click pure white (#FFFFFF) fills or transparent PNG export.',
+  },
+  {
+    iconType: 'privacy',
+    title: 'Zero Leak Catalog Confidentiality',
+    description: 'Your unreleased product launches and copyrighted designs stay on your machine. WebGPU executes inside your browser with zero server uploads.',
+  },
+  {
+    iconType: 'gpu',
+    title: 'High-DPI Zoom Inspection',
+    description: 'Retain camera-native pixels so shoppers can pinch and zoom to inspect garment textures, jewelry facets, and craftsmanship with zero blur.',
+  },
+];
+
+const faqItems: FaqItem[] = [
+  {
+    q: 'Does Unklip meet Amazon and Shopify marketplace photo standards?',
+    a: 'Yes! Amazon requires a pure white background (RGB 255, 255, 255) for all main product listings. Unklip allows you to toggle a pure white background fill or export transparent PNGs with full camera-native resolution.',
+  },
+  {
+    q: 'Can I safely process unreleased product lines and confidential commercial designs?',
+    a: 'Absolutely. Unklip runs 100% on-device using WebGPU. Your product photos are never uploaded to any remote server or stored in a database, ensuring full NDA compliance.',
+  },
+  {
+    q: 'Will my e-commerce product photos be downscaled or compressed?',
+    a: 'No. While competitors downscale free cutouts to 0.25 MP to force paid subscriptions, Unklip extracts the neural segmentation alpha matte at your original camera resolution.',
+  },
+  {
+    q: 'How many product photos can I process per day?',
+    a: 'Unlimited. There are no credits, no daily quotas, and no subscription fees. You can process your entire e-commerce catalog completely free.',
+  },
+];
+---
+
+<BaseLayout
+  title="E-Commerce Product Photo Background Remover (Amazon & Shopify) | Unklip"
+  description="Instantly remove backgrounds from e-commerce product photos for Amazon, Shopify, and eBay. 100% free, native 4K quality, pure white background studio tool."
+  canonicalUrl="https://unklip.pages.dev/for-ecommerce"
+  ogLocale="en_US"
+  schemaHeadline="E-Commerce Product Photo Background Remover for Amazon, Shopify, and eBay"
+>
+  <Navbar />
+
+  <main class="flex-grow">
+    <Hero
+      badgeText="E-Commerce Photo Studio"
+      badgeHighlight="• Amazon & Shopify Compliant"
+      title="Crisp White Backgrounds for Your E-Commerce Products"
+      subtitle="Create studio-grade Amazon, Shopify, and eBay compliant product images in seconds. 100% free, native 4K resolution, zero compression."
+    />
+    <BgRemover />
+    <ComparisonTable
+      badge="E-Commerce ROI"
+      title="Unklip vs Commercial Cutout APIs"
+      subtitle="Why online retailers and DTC brands are replacing expensive pay-per-image background removal services."
+      ourName="Unklip (Free On-Device)"
+      competitorName="remove.bg (Canva)"
+      rows={comparisonRows}
+    />
+    <Features
+      badge="E-Commerce Advantages"
+      title="Engineered for High-Converting Storefronts"
+      features={featuresList}
+    />
+    <Faq
+      badge="E-Commerce FAQ"
+      title="Frequently Asked Questions by Online Retailers"
+      items={faqItems}
+    />
+  </main>
+
+  <Footer currentLocale="en" />
+</BaseLayout>

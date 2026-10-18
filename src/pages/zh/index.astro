@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Hero from '../../components/Hero.astro';
+import BgRemover from '../../components/BgRemover.astro';
+import ComparisonTable, { type ComparisonRow } from '../../components/ComparisonTable.astro';
+import Features, { type FeatureItem } from '../../components/Features.astro';
+import Faq, { type FaqItem } from '../../components/Faq.astro';
+import Footer from '../../components/Footer.astro';
+
+const comparisonRows: ComparisonRow[] = [
+  {
+    feature: '使用价格',
+    featureSub: '每张抠图处理成本',
+    ourValue: '100% 永久免费 ($0)',
+    competitorValue: '单张高达 $0.20 – $1.99',
+    highlight: 'positive',
+  },
+  {
+    feature: '输出分辨率',
+    featureSub: '相机画质与清晰度保留',
+    ourValue: '原生 4K / 8K (100% 无损)',
+    competitorValue: '免费版强制压缩至 0.25 MP',
+    highlight: 'neutral',
+  },
+  {
+    feature: '隐私与数据安全',
+    featureSub: 'AI推理计算执行位置',
+    ourValue: '100% 浏览器本地 (WebGPU)',
+    competitorValue: '上传至远程第三方服务器',
+    highlight: 'positive',
+  },
+  {
+    feature: '使用次数限制',
+    featureSub: '每日处理额度',
+    ourValue: '完全无限制',
+    competitorValue: '免费仅 1 点，随后强制付费',
+    highlight: 'neutral',
+  },
+  {
+    feature: '影棚背景切换',
+    featureSub: '纯白底、纯色底、虚化背景',
+    ourValue: '标配免费 (纯白、奶油色、虚化)',
+    competitorValue: '需付费开通 Canva Pro',
+    highlight: 'neutral',
+  },
+];
+
+const featuresList: FeatureItem[] = [
+  {
+    iconType: '4k',
+    title: '完整保留原生相机画质',
+    description: 'Unklip将AI神经网络抠图蒙版直接融合在您的相机原图上，发丝细节丝丝分明，告别模糊失真。',
+  },
+  {
+    iconType: 'privacy',
+    title: '100% 本地端侧隐私安全',
+    description: '您的照片和商业机密永不离开本地设备。所有计算均在浏览器沙箱内通过WebGPU安全执行。',
+  },
+  {
+    iconType: 'gpu',
+    title: '现代WebGPU硬件加速',
+    description: '利用您电脑或手机的显卡并行计算着色器，毫秒级响应，无需排队等待远程云端服务器。',
+  },
+];
+
+const faqItems: FaqItem[] = [
+  {
+    q: '为什么Unklip能做到完全免费且无任何次数限制？',
+    a: '传统抠图工具依赖昂贵的云端GPU服务器集群。Unklip基于先进的WebGPU标准，直接利用您自己设备的显卡算力完成AI推理。由于不存在云端服务器成本，我们能够永久免费提供给全球用户。',
+  },
+  {
+    q: '我的个人肖像和商业设计照片安全吗？',
+    a: '绝对100%安全。您的图片绝不会被上传到互联网或存储在任何服务器数据库中，一切处理均在浏览器内存中闭环完成。',
+  },
+  {
+    q: '为什么remove.bg对高清图片收费，而Unklip完全免费？',
+    a: 'Remove.bg为了销售付费点数，故意将免费用户的输出画质压缩至0.25兆像素（约500x500）。Unklip采用端侧算力架构，无任何商业降质。',
+  },
+];
+---
+
+<BaseLayout
+  title="Unklip - 免费4K智能一键抠图背景去除工具 (Remove.bg替代品)"
+  description="基于WebGPU的纯浏览器端100%隐私免费抠图工具。无服务器上传，保留原生4K超高清分辨率。"
+  canonicalUrl="https://unklip.pages.dev/zh/"
+  lang="zh"
+  ogLocale="zh_CN"
+  schemaHeadline="基于WebGPU的端侧100%隐私免费4K背景去除抠图工具"
+>
+  <Navbar
+    homeUrl="/zh/"
+    labels={{
+      tool: '在线抠图',
+      comparison: '对比 Remove.bg',
+      features: '核心特性',
+      faq: '常见问题',
+    }}
+  />
+
+  <main class="flex-grow">
+    <Hero
+      badgeText="remove.bg 免费替代工具"
+      badgeHighlight="• 原生4K超高清分辨率"
+      title="瞬时AI一键抠图，保留原生超高分辨率。"
+      subtitle="免注册、免上传云端、不压缩画质。借助WebGPU在您的设备本地高速处理。"
+    />
+    <BgRemover />
+    <ComparisonTable
+      badge="透明客观对比"
+      title="Unklip 对比 remove.bg"
+      subtitle="为什么越来越多设计师、电商卖家选择告别高昂付费与模糊画质。"
+      ourName="Unklip (我们的工具)"
+      competitorName="remove.bg (Canva)"
+      rows={comparisonRows}
+    />
+    <Features
+      badge="核心特性"
+      title="专为高品质出图打造的精准工具"
+      features={featuresList}
+    />
+    <Faq
+      badge="常见问题解答"
+      title="关于 Unklip 的常见疑问"
+      items={faqItems}
+    />
+  </main>
+
+  <Footer currentLocale="zh" />
+</BaseLayout>
