@@ -19,6 +19,13 @@
           accept="image/png, image/jpeg, image/jpg, image/webp, image/avif, image/bmp"
           class="hidden"
         />
+        <input
+          type="file"
+          id="camera-input"
+          accept="image/*"
+          capture="environment"
+          class="hidden"
+        />
 
         <!-- Upload Icon -->
         <div class="w-13 h-13 sm:w-14 sm:h-14 lg:w-15 lg:h-15 rounded-full bg-white border border-[#E0D9CD] shadow-xs flex items-center justify-center mb-3 sm:mb-3.5 group-hover:scale-105 group-hover:border-[#24211E] transition-all duration-200">
@@ -35,6 +42,35 @@
         <p class="text-xs sm:text-sm text-[#736B61] max-w-md sm:max-w-lg">
           PNG, JPG, or WEBP up to 50MB • Or paste (<kbd class="px-1.5 py-0.5 rounded bg-[#EDE8DF] border border-[#DDD7CB] text-[11px] font-mono text-[#4A453E]">Ctrl+V</kbd>) from clipboard
         </p>
+
+        <!-- Mobile & Quick Actions Bar -->
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-2 relative z-10">
+          <button
+            type="button"
+            id="choose-library-btn"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-[#EDE8DF] border border-[#D5CDC0] text-xs font-semibold text-[#24211E] shadow-2xs transition-all cursor-pointer hover:border-[#24211E]"
+          >
+            <svg class="w-3.5 h-3.5 text-[#5C564E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+            <span>Choose Photo</span>
+          </button>
+          <button
+            type="button"
+            id="take-photo-btn"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-[#EDE8DF] border border-[#D5CDC0] text-xs font-semibold text-[#24211E] shadow-2xs transition-all cursor-pointer hover:border-[#24211E]"
+          >
+            <svg class="w-3.5 h-3.5 text-[#5C564E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+            <span>Take Photo</span>
+          </button>
+          <button
+            type="button"
+            id="paste-btn"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-[#EDE8DF] border border-[#D5CDC0] text-xs font-semibold text-[#24211E] shadow-2xs transition-all cursor-pointer hover:border-[#24211E]"
+            title="Paste image from clipboard"
+          >
+            <svg class="w-3.5 h-3.5 text-[#5C564E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            <span>Paste Image</span>
+          </button>
+        </div>
       </div>
 
       <!-- Quick Sample Images -->
@@ -181,10 +217,36 @@
             <button id="view-cutout-btn" class="h-full px-2.5 sm:px-3 rounded-lg text-[#665F55] hover:text-[#24211E] transition-all cursor-pointer flex items-center justify-center">Cutout</button>
             <button id="view-original-btn" class="h-full px-2.5 sm:px-3 rounded-lg text-[#665F55] hover:text-[#24211E] transition-all cursor-pointer flex items-center justify-center">Original</button>
           </div>
+
+          <!-- Hold to Compare Action -->
+          <button
+            id="hold-compare-btn"
+            type="button"
+            class="inline-flex items-center gap-1.5 h-[34px] sm:h-[36px] px-2.5 sm:px-3 rounded-xl bg-[#EDE8DF] hover:bg-[#E2DBCF] active:bg-[#24211E] active:text-[#F8F5F0] text-[#5C564E] text-xs font-semibold border border-[#DDD7CB] shadow-2xs transition-all cursor-pointer select-none"
+            title="Press and hold to view original image"
+          >
+            <svg class="w-3.5 h-3.5 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            <span class="pointer-events-none">Hold for Original</span>
+          </button>
         </div>
 
-        <!-- Right Column: Download Button (Locked to Right, Matched Height) -->
-        <div class="shrink-0 flex items-center justify-end self-center">
+        <!-- Right Column: Download & Share Buttons (Locked to Right, Matched Height) -->
+        <div class="shrink-0 flex items-center justify-end self-center gap-2">
+          <!-- Share / Save to Photos Button (Shown when Web Share API is available) -->
+          <button
+            id="share-btn"
+            type="button"
+            class="hidden items-center justify-center gap-1.5 h-[34px] sm:h-[36px] px-3 sm:px-3.5 rounded-xl text-xs font-semibold bg-white hover:bg-[#F3EFE7] text-[#24211E] border border-[#DDD7CB] transition-all cursor-pointer shadow-2xs hover:shadow-xs active:scale-95 whitespace-nowrap"
+            title="Share or Save directly to Photos"
+          >
+            <svg class="w-3.5 h-3.5 text-[#5C564E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+              <polyline points="16 6 12 2 8 6"/>
+              <line x1="12" x2="12" y1="2" y2="15"/>
+            </svg>
+            <span id="share-btn-text">Share</span>
+          </button>
+
           <button
             id="download-btn"
             type="button"
@@ -204,7 +266,7 @@
       <div class="relative w-full rounded-xl overflow-hidden bg-[#F5F2EB] border border-[#E6E1D6] min-h-[320px] sm:min-h-[440px] lg:min-h-[500px] flex items-center justify-center p-3 sm:p-4">
         
         <!-- Viewer Container -->
-        <div id="viewer-container" class="relative max-w-full max-h-[62vh] rounded-lg overflow-hidden shadow-md select-none">
+        <div id="viewer-container" class="relative max-w-full max-h-[62vh] rounded-lg overflow-hidden shadow-md select-none touch-pan-y">
           
           <!-- Background Layer (Solid, Blur, or Transparent Pattern) -->
           <div id="custom-bg-layer" class="absolute inset-0 checkerboard-pattern pointer-events-none transition-all"></div>
@@ -231,7 +293,7 @@
           </div>
 
           <!-- Divider Line & Slider Handle -->
-          <div id="slider-handle" class="absolute top-0 bottom-0 w-1 bg-[#24211E] shadow-md cursor-ew-resize flex items-center justify-center -translate-x-1/2" style="left: 50%;">
+          <div id="slider-handle" class="absolute top-0 bottom-0 w-1 bg-[#24211E] shadow-md cursor-ew-resize flex items-center justify-center -translate-x-1/2 touch-none" style="left: 50%;">
             <div class="w-7 h-7 rounded-full bg-[#24211E] text-[#F8F5F0] shadow-md flex items-center justify-center font-bold text-xs select-none relative">
               ↔
               <span id="slider-pill" class="absolute -top-7 px-1.5 py-0.5 rounded bg-[#24211E] text-[#F8F5F0] text-[10px] font-mono font-medium shadow-xs whitespace-nowrap pointer-events-none">50%</span>
@@ -395,6 +457,10 @@
 
   const dropzone = document.getElementById('dropzone');
   const fileInput = document.getElementById('file-input') as HTMLInputElement;
+  const cameraInput = document.getElementById('camera-input') as HTMLInputElement | null;
+  const chooseLibraryBtn = document.getElementById('choose-library-btn');
+  const takePhotoBtn = document.getElementById('take-photo-btn');
+  const pasteBtn = document.getElementById('paste-btn');
   const sampleBtns = document.querySelectorAll('.sample-btn');
 
   const processTitle = document.getElementById('process-title');
@@ -417,6 +483,7 @@
   const viewSliderBtn = document.getElementById('view-slider-btn');
   const viewCutoutBtn = document.getElementById('view-cutout-btn');
   const viewOriginalBtn = document.getElementById('view-original-btn');
+  const holdCompareBtn = document.getElementById('hold-compare-btn');
 
   const bgChoiceBtns = document.querySelectorAll('.bg-choice-btn');
   const customColorInput = document.getElementById('custom-color-input') as HTMLInputElement;
@@ -425,6 +492,8 @@
 
   const copyBtn = document.getElementById('copy-btn');
   const copyBtnText = document.getElementById('copy-btn-text');
+  const shareBtn = document.getElementById('share-btn');
+  const shareBtnText = document.getElementById('share-btn-text');
   const downloadBtn = document.getElementById('download-btn');
   const downloadBtnText = document.getElementById('download-btn-text');
   const resetBtn = document.getElementById('reset-btn');
@@ -449,6 +518,8 @@
   let activeBgColor = '#FFFFFF';
   let sliderPosition = 50;
   let isDraggingSlider = false;
+  let currentViewMode: 'slider' | 'cutout' | 'original' = 'slider';
+  let isHoldingOriginal = false;
 
   // Smooth Interactive 0-100% Progress Engine
   let progressAnimFrame: number | null = null;
@@ -619,6 +690,8 @@
     await finishProgress();
 
     showState('result');
+    currentViewMode = 'slider';
+    if (viewSliderBtn) setActiveViewBtn(viewSliderBtn);
 
     const initSlider = () => {
       syncSliderDimensions();
@@ -769,7 +842,7 @@
   }
 
   function handleSliderMove(e: MouseEvent | TouchEvent) {
-    if (!isDraggingSlider || !viewerContainer) return;
+    if (!isDraggingSlider || !viewerContainer || currentViewMode !== 'slider') return;
     const rect = viewerContainer.getBoundingClientRect();
     const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
     const offset = clientX - rect.left;
@@ -778,20 +851,34 @@
   }
 
   viewerContainer?.addEventListener('mousedown', (e) => {
-    isDraggingSlider = true;
-    handleSliderMove(e);
+    if (currentViewMode === 'slider') {
+      isDraggingSlider = true;
+      handleSliderMove(e);
+    }
   });
+  sliderHandle?.addEventListener('touchstart', (e) => {
+    if (currentViewMode === 'slider') {
+      isDraggingSlider = true;
+      handleSliderMove(e);
+    }
+  }, { passive: true });
   viewerContainer?.addEventListener('touchstart', (e) => {
-    isDraggingSlider = true;
-    handleSliderMove(e);
+    if (currentViewMode === 'slider') {
+      isDraggingSlider = true;
+      handleSliderMove(e);
+    } else if (currentViewMode === 'cutout') {
+      startHoldOriginal();
+    }
   }, { passive: true });
 
   window.addEventListener('mousemove', handleSliderMove);
   window.addEventListener('touchmove', handleSliderMove, { passive: true });
   window.addEventListener('mouseup', () => { isDraggingSlider = false; });
   window.addEventListener('touchend', () => { isDraggingSlider = false; });
+  window.addEventListener('touchcancel', () => { isDraggingSlider = false; });
 
   viewSliderBtn?.addEventListener('click', () => {
+    currentViewMode = 'slider';
     if (sliderOverlay) sliderOverlay.style.display = 'block';
     if (sliderHandle) sliderHandle.style.display = 'flex';
     updateSlider(50);
@@ -799,12 +886,14 @@
   });
 
   viewCutoutBtn?.addEventListener('click', () => {
+    currentViewMode = 'cutout';
     if (sliderOverlay) sliderOverlay.style.display = 'none';
     if (sliderHandle) sliderHandle.style.display = 'none';
     setActiveViewBtn(viewCutoutBtn);
   });
 
   viewOriginalBtn?.addEventListener('click', () => {
+    currentViewMode = 'original';
     if (sliderOverlay) {
       sliderOverlay.style.display = 'block';
       sliderOverlay.style.clipPath = 'polygon(0 0, 100% 0, 100% 100%, 0 100%)';
@@ -812,6 +901,50 @@
     if (sliderHandle) sliderHandle.style.display = 'none';
     setActiveViewBtn(viewOriginalBtn);
   });
+
+  function startHoldOriginal() {
+    if (isHoldingOriginal) return;
+    isHoldingOriginal = true;
+    if (sliderOverlay) {
+      sliderOverlay.style.display = 'block';
+      sliderOverlay.style.clipPath = 'polygon(0 0, 100% 0, 100% 100%, 0 100%)';
+    }
+    if (sliderHandle) sliderHandle.style.display = 'none';
+  }
+
+  function stopHoldOriginal() {
+    if (!isHoldingOriginal) return;
+    isHoldingOriginal = false;
+    if (currentViewMode === 'slider') {
+      if (sliderOverlay) {
+        sliderOverlay.style.display = 'block';
+        sliderOverlay.style.clipPath = `polygon(${sliderPosition}% 0, 100% 0, 100% 100%, ${sliderPosition}% 100%)`;
+      }
+      if (sliderHandle) sliderHandle.style.display = 'flex';
+    } else if (currentViewMode === 'cutout') {
+      if (sliderOverlay) sliderOverlay.style.display = 'none';
+      if (sliderHandle) sliderHandle.style.display = 'none';
+    } else if (currentViewMode === 'original') {
+      if (sliderOverlay) {
+        sliderOverlay.style.display = 'block';
+        sliderOverlay.style.clipPath = 'polygon(0 0, 100% 0, 100% 100%, 0 100%)';
+      }
+      if (sliderHandle) sliderHandle.style.display = 'none';
+    }
+  }
+
+  holdCompareBtn?.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    startHoldOriginal();
+  });
+  holdCompareBtn?.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    startHoldOriginal();
+  }, { passive: false });
+
+  window.addEventListener('mouseup', stopHoldOriginal);
+  window.addEventListener('touchend', stopHoldOriginal);
+  window.addEventListener('touchcancel', stopHoldOriginal);
 
   function setActiveViewBtn(activeBtn: HTMLElement) {
     [viewSliderBtn, viewCutoutBtn, viewOriginalBtn].forEach((btn) => {
@@ -950,6 +1083,39 @@
     }
   });
 
+  if (typeof navigator !== 'undefined' && 'share' in navigator && shareBtn) {
+    shareBtn.classList.remove('hidden');
+    shareBtn.classList.add('inline-flex');
+  }
+
+  shareBtn?.addEventListener('click', async () => {
+    if (!shareBtnText) return;
+    const oldText = shareBtnText.textContent;
+    shareBtnText.textContent = 'Preparing...';
+
+    try {
+      const finalBlob = await generateFinalComposite();
+      const file = new File([finalBlob], `${currentFilename}-unklip.png`, { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: `${currentFilename} - Background Removed`,
+        });
+      } else {
+        await navigator.share({
+          title: 'Unklip - Free 4K Background Remover',
+          url: window.location.href,
+        });
+      }
+    } catch (err: any) {
+      if (err.name !== 'AbortError') {
+        console.warn('Share error:', err);
+      }
+    } finally {
+      shareBtnText.textContent = oldText;
+    }
+  });
+
   copyBtn?.addEventListener('click', async () => {
     if (!copyBtnText) return;
     const oldText = copyBtnText.textContent;
@@ -976,10 +1142,56 @@
   resetBtn?.addEventListener('click', () => {
     showState('upload');
     if (fileInput) fileInput.value = '';
+    if (cameraInput) cameraInput.value = '';
   });
   errorRetryBtn?.addEventListener('click', () => {
     showState('upload');
     if (fileInput) fileInput.value = '';
+    if (cameraInput) cameraInput.value = '';
+  });
+
+  chooseLibraryBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    fileInput?.click();
+  });
+
+  takePhotoBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    cameraInput?.click();
+  });
+
+  cameraInput?.addEventListener('change', (e) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (file) processImage(file, 'camera-photo.jpg');
+  });
+
+  async function pasteFromClipboard() {
+    if (!navigator.clipboard) {
+      alert('Clipboard access is not supported in this browser.');
+      return;
+    }
+    try {
+      if (navigator.clipboard.read) {
+        const items = await navigator.clipboard.read();
+        for (const item of items) {
+          const imageType = item.types.find((t) => t.startsWith('image/'));
+          if (imageType) {
+            const blob = await item.getType(imageType);
+            processImage(blob, 'clipboard-image.png');
+            return;
+          }
+        }
+      }
+      alert('No image found in clipboard. Please copy an image first.');
+    } catch (err: any) {
+      console.warn('Clipboard read error:', err);
+      alert('Could not read clipboard. Please ensure clipboard permission is allowed.');
+    }
+  }
+
+  pasteBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    pasteFromClipboard();
   });
 
   dropzone?.addEventListener('click', () => fileInput?.click());
