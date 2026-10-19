@@ -543,26 +543,19 @@
     if (progressPercent) progressPercent.textContent = '0%';
   }
 
-  function startSmoothProgress(initialTarget = 15) {
+  function startSmoothProgress(initialTarget = 25) {
     resetProgressUI();
     targetProgressVal = initialTarget;
 
     const tick = () => {
       if (currentProgressVal < targetProgressVal) {
         const diff = targetProgressVal - currentProgressVal;
-        const step = Math.max(0.4, diff * 0.12);
+        const step = Math.max(0.8, diff * 0.18);
         currentProgressVal = Math.min(targetProgressVal, currentProgressVal + step);
-      } else if (isProcessing && targetProgressVal < 96) {
-        // Subtle, bounded creep during long operations (like neural inference):
-        // Only creep when active, and only up to the stage ceiling so the bar
-        // never leaps ahead of the actual pipeline stages.
-        let ceiling = 76;
-        if (targetProgressVal >= 90) ceiling = 96;
-        else if (targetProgressVal >= 80) ceiling = 88;
-
-        if (currentProgressVal < ceiling) {
-          currentProgressVal += 0.04;
-        }
+      } else if (isProcessing && targetProgressVal < 98) {
+        // Continuous, lively creeping motion so progress is constantly and smoothly advancing
+        currentProgressVal = Math.min(95, currentProgressVal + 0.10);
+        targetProgressVal = Math.min(95, targetProgressVal + 0.10);
       }
 
       const rounded = Math.min(100, Math.round(currentProgressVal));
@@ -592,7 +585,7 @@
 
       const finishTick = () => {
         if (currentProgressVal < 100) {
-          currentProgressVal = Math.min(100, currentProgressVal + 5.0);
+          currentProgressVal = Math.min(100, currentProgressVal + 8.0);
           const rounded = Math.round(currentProgressVal);
           if (progressBar) progressBar.style.width = `${rounded}%`;
           if (progressPercent) progressPercent.textContent = `${rounded}%`;
@@ -600,7 +593,7 @@
         } else {
           if (progressBar) progressBar.style.width = '100%';
           if (progressPercent) progressPercent.textContent = '100%';
-          setTimeout(resolve, 80); // Quick snappy 80ms completion
+          setTimeout(resolve, 40); // Instant snappy 40ms completion
         }
       };
       finishTick();
@@ -850,7 +843,7 @@
     }
 
     showState('processing');
-    startSmoothProgress(15);
+    startSmoothProgress(25);
     isProcessing = true;
 
     // Start timeout watchdog — if the worker doesn't respond within the

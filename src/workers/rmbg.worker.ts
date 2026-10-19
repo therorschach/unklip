@@ -25,14 +25,12 @@ for (let b = 0; b < 256; b++) {
   NORM_LUT[b] = (b / 255.0) - 0.5;
 }
 
-function isMobileOrLowMemory(): boolean {
+function isMobile(): boolean {
   if (typeof navigator === 'undefined') return false;
   const ua = navigator.userAgent || '';
   const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
   const isMobileData = Boolean((navigator as any).userAgentData?.mobile);
-  const deviceMemory = (navigator as any).deviceMemory;
-  const isLowMemory = typeof deviceMemory === 'number' && deviceMemory <= 4;
-  return isMobileUA || isMobileData || isLowMemory;
+  return isMobileUA || isMobileData;
 }
 
 interface ModelCandidate {
@@ -42,28 +40,26 @@ interface ModelCandidate {
 
 function getCandidateConfigs(gpuAdapter: any | null): ModelCandidate[] {
   if (gpuAdapter) {
-    const supportsF16 = gpuAdapter.features?.has?.('shader-f16') ?? false;
-    const isConstrained = isMobileOrLowMemory();
+    const supportsF16 = Boolean(gpuAdapter.features?.has?.('shader-f16'));
 
-    if (supportsF16 && !isConstrained) {
+    // Hardware WebGPU fp16 is ultra-fast (sub-second 0.3s-0.6s) on GPUs with shader-f16.
+    // Without shader-f16, WebGPU fp32 takes 300+ seconds on software/integrated GPUs,
+    // whereas CPU WASM q8 takes only 4-7 seconds with native SIMD int8 vectorization.
+    if (supportsF16) {
       return [
         { device: 'webgpu', dtype: 'fp16' },
-        { device: 'webgpu', dtype: 'q8' },
-        { device: 'webgpu', dtype: 'fp32' },
         { device: 'wasm', dtype: 'q8' },
-        { device: 'wasm', dtype: 'fp32' },
+        { device: 'webgpu', dtype: 'fp32' },
       ];
     } else {
       return [
-        { device: 'webgpu', dtype: 'q8' },
-        { device: 'webgpu', dtype: 'fp32' },
         { device: 'wasm', dtype: 'q8' },
-        { device: 'wasm', dtype: 'fp32' },
+        { device: 'webgpu', dtype: 'fp32' },
       ];
     }
   }
 
-  // WASM fallback candidates
+  // Pure CPU WASM environment: q8 uses int8 SIMD instructions (4-7s)
   return [
     { device: 'wasm', dtype: 'q8' },
     { device: 'wasm', dtype: 'fp32' },
@@ -165,7 +161,7 @@ self.addEventListener('message', async (event: MessageEvent) => {
         type: 'step',
         id,
         stage: 'init',
-        percent: 8,
+        percent: 20,
         title: 'Initializing AI Engine',
         detail: 'Loading RMBG weights into browser memory...',
       });
@@ -175,7 +171,7 @@ self.addEventListener('message', async (event: MessageEvent) => {
         type: 'step',
         id,
         stage: 'decoding',
-        percent: 14,
+        percent: 35,
         title: 'Decoding Image',
         detail: 'Reading pixel channels and geometry...',
       });
@@ -198,7 +194,7 @@ self.addEventListener('message', async (event: MessageEvent) => {
             type: 'step',
             id,
             stage: 'tensor',
-            percent: 22,
+            percent: 50,
             title: 'Preparing Neural Tensor',
             detail: 'Rescaling to 1024×1024 RGB input...',
           });
@@ -241,7 +237,7 @@ self.addEventListener('message', async (event: MessageEvent) => {
           type: 'step',
           id,
           stage: 'tensor',
-          percent: 22,
+          percent: 50,
           title: 'Preparing Neural Tensor',
           detail: 'Rescaling to 1024×1024 RGB input...',
         });
@@ -266,7 +262,7 @@ self.addEventListener('message', async (event: MessageEvent) => {
         type: 'step',
         id,
         stage: 'inference',
-        percent: 32,
+        percent: 65,
         title: 'Neural Edge Detection',
         detail: 'RMBG-1.4 segmenting subject and transparency...',
       });
@@ -282,7 +278,7 @@ self.addEventListener('message', async (event: MessageEvent) => {
         type: 'step',
         id,
         stage: 'matting',
-        percent: 82,
+        percent: 90,
         title: 'Refining Alpha Matting',
         detail: 'Cleaning background clutter and smoothing fine edges...',
       });
@@ -373,11 +369,11 @@ self.addEventListener('message', async (event: MessageEvent) => {
       const currentMask = cleanedMask;
 
       // 5. Convert to high-resolution mask and composite with original full-size pixels
-      // On mobile, cap output resolution to prevent OOM during compositing
-      const isMobile = isMobileOrLowMemory();
+      // On mobile devices, cap output resolution to prevent memory exhaustion
+      const isMobileDevice = isMobile();
       let outputWidth = originalWidth;
       let outputHeight = originalHeight;
-      if (isMobile && (originalWidth > MOBILE_MAX_DIM || originalHeight > MOBILE_MAX_DIM)) {
+      if (isMobileDevice && (originalWidth > MOBILE_MAX_DIM || originalHeight > MOBILE_MAX_DIM)) {
         const scale = MOBILE_MAX_DIM / Math.max(originalWidth, originalHeight);
         outputWidth = Math.round(originalWidth * scale);
         outputHeight = Math.round(originalHeight * scale);
@@ -387,7 +383,7 @@ self.addEventListener('message', async (event: MessageEvent) => {
         type: 'step',
         id,
         stage: 'composite',
-        percent: 92,
+        percent: 96,
         title: 'Generating Native Cutout',
         detail: `Compositing at ${outputWidth} × ${outputHeight}px...`,
       });
