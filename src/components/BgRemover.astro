@@ -520,6 +520,7 @@
   let isDraggingSlider = false;
   let currentViewMode: 'slider' | 'cutout' | 'original' = 'slider';
   let isHoldingOriginal = false;
+  let isProcessing = false; // true only when the user has actively started bg removal
 
   // Smooth Interactive 0-100% Progress Engine
   let progressAnimFrame: number | null = null;
@@ -644,10 +645,16 @@
       clearWorkerTimeout();
       worker?.terminate();
       worker = null;
-      handleError(
-        'Background removal failed — your device may not have enough memory for this image. ' +
-        'Try a smaller image or use a desktop browser.'
-      );
+      // Only show error UI if the user actively started processing.
+      // During warmup/preload, silently reset so the worker can be
+      // re-initialized when the user actually uploads an image.
+      if (isProcessing) {
+        isProcessing = false;
+        handleError(
+          'Background removal failed — your device may not have enough memory for this image. ' +
+          'Try a smaller image or use a desktop browser.'
+        );
+      }
     };
 
     worker.postMessage({ action: 'get_device' });
@@ -658,10 +665,13 @@
     console.error('Worker timed out after', WORKER_TIMEOUT_MS, 'ms');
     worker?.terminate();
     worker = null;
-    handleError(
-      'Processing took too long and was stopped. ' +
-      'Try a smaller image or use a desktop browser for large photos.'
-    );
+    if (isProcessing) {
+      isProcessing = false;
+      handleError(
+        'Processing took too long and was stopped. ' +
+        'Try a smaller image or use a desktop browser for large photos.'
+      );
+    }
   }
 
   function warmupWorker() {
@@ -698,6 +708,7 @@
   }
 
   async function handleSuccess(msg: any) {
+    isProcessing = false;
     cutoutImageBlob = msg.cutoutBlob;
     maskImageBlob = msg.maskBlob;
     nativeWidth = msg.originalWidth;
@@ -786,6 +797,7 @@
   }
 
   function handleError(err: string) {
+    isProcessing = false;
     resetProgressUI();
     if (errorMessage) errorMessage.textContent = err;
     showState('error');
@@ -842,6 +854,7 @@
 
     showState('processing');
     startSmoothProgress(18);
+    isProcessing = true;
 
     // Start timeout watchdog — if the worker doesn't respond within the
     // timeout window, we kill it and show an error instead of hanging forever.
@@ -858,6 +871,7 @@
   }
 
   processCancelBtn?.addEventListener('click', () => {
+    isProcessing = false;
     clearWorkerTimeout();
     resetProgressUI();
     showState('upload');
