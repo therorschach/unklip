@@ -638,21 +638,18 @@
       }
     };
 
-    // Catch uncaught worker crashes — OOM on mobile kills the worker
-    // silently without posting an error message back.
-    worker.onerror = (event) => {
-      console.error('Worker crashed:', event);
-      clearWorkerTimeout();
-      worker?.terminate();
-      worker = null;
-      // Only show error UI if the user actively started processing.
-      // During warmup/preload, silently reset so the worker can be
-      // re-initialized when the user actually uploads an image.
+    // Catch uncaught worker crashes
+    worker.onerror = (event: ErrorEvent) => {
+      console.error('Worker onerror:', event.message || event);
       if (isProcessing) {
+        clearWorkerTimeout();
+        worker?.terminate();
+        worker = null;
         isProcessing = false;
         handleError(
-          'Background removal failed — your device may not have enough memory for this image. ' +
-          'Try a smaller image or use a desktop browser.'
+          event.message
+            ? `Processing error: ${event.message}`
+            : 'Background removal failed. Please try another image or use a smaller file.'
         );
       }
     };

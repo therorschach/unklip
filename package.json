@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "prebuild": "mkdir -p public/vendor && cp node_modules/@huggingface/transformers/dist/transformers.web.min.js public/vendor/",
-    "predev": "mkdir -p public/vendor && cp node_modules/@huggingface/transformers/dist/transformers.web.min.js public/vendor/",
+    "prebuild": "mkdir -p public/vendor && cp node_modules/@huggingface/transformers/dist/transformers.min.js public/vendor/",
+    "predev": "mkdir -p public/vendor && cp node_modules/@huggingface/transformers/dist/transformers.min.js public/vendor/",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview"

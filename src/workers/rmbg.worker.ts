@@ -1,4 +1,4 @@
-import { AutoModel, RawImage, Tensor, env } from '/vendor/transformers.web.min.js';
+import { AutoModel, RawImage, Tensor, env } from '/vendor/transformers.min.js';
 
 // Configure environment for in-browser execution
 env.allowLocalModels = false;
@@ -401,7 +401,9 @@ self.addEventListener('message', async (event: MessageEvent) => {
 
       // Use OffscreenCanvas compositing path (reliable on mobile) when available,
       // falling back to RawImage-based compositing only when necessary.
-      const canUseCanvas = typeof OffscreenCanvas !== 'undefined' && typeof createImageBitmap === 'function';
+      const canUseCanvas = typeof OffscreenCanvas !== 'undefined' &&
+                           typeof createImageBitmap === 'function' &&
+                           typeof (OffscreenCanvas.prototype as any)?.convertToBlob === 'function';
 
       let cutoutBlob: Blob;
       let maskBlob: Blob;

@@ -18,7 +18,7 @@ export default defineConfig({
     worker: {
       format: 'es',
       rollupOptions: {
-        external: ['/vendor/transformers.web.min.js'],
+        external: ['/vendor/transformers.min.js', '/vendor/transformers.web.min.js'],
       },
     },
     optimizeDeps: {
