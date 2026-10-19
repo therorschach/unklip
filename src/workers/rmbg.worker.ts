@@ -6,6 +6,14 @@ env.useBrowserCache = typeof caches !== 'undefined';
 
 const MODEL_ID = 'briaai/RMBG-1.4';
 
+// Maximum output dimension on mobile to prevent OOM during compositing.
+// Phone cameras shoot 12MP+ (4032×3024) — resizing the mask back to that
+// resolution and then compositing RGBA in pure JS inside a worker causes
+// memory pressure that silently kills the worker on iOS Safari and low-RAM
+// Android devices.  Capping at 2048 keeps quality excellent while staying
+// within safe memory budgets.
+const MOBILE_MAX_DIM = 2048;
+
 type DeviceType = 'webgpu' | 'wasm';
 type DtypeType = 'fp16' | 'q8' | 'fp32';
 
@@ -372,25 +380,95 @@ self.addEventListener('message', async (event: MessageEvent) => {
       }
 
       // 5. Convert to high-resolution mask and composite with original full-size pixels
+      // On mobile, cap output resolution to prevent OOM during compositing
+      const isMobile = isMobileOrLowMemory();
+      let outputWidth = originalWidth;
+      let outputHeight = originalHeight;
+      if (isMobile && (originalWidth > MOBILE_MAX_DIM || originalHeight > MOBILE_MAX_DIM)) {
+        const scale = MOBILE_MAX_DIM / Math.max(originalWidth, originalHeight);
+        outputWidth = Math.round(originalWidth * scale);
+        outputHeight = Math.round(originalHeight * scale);
+      }
+
       self.postMessage({
         type: 'step',
         id,
         stage: 'composite',
         percent: 95,
         title: 'Generating Native Cutout',
-        detail: `Preserving full ${originalWidth} × ${originalHeight}px native resolution...`,
+        detail: `Compositing at ${outputWidth} × ${outputHeight}px...`,
       });
 
-      const mask1024 = new RawImage(currentMask, 1024, 1024, 1);
-      const maskRaw = await mask1024.resize(originalWidth, originalHeight);
-      const rawImg = await rawImgPromise;
-      const cutoutRaw = rawImg.clone().putAlpha(maskRaw);
+      // Use OffscreenCanvas compositing path (reliable on mobile) when available,
+      // falling back to RawImage-based compositing only when necessary.
+      const canUseCanvas = typeof OffscreenCanvas !== 'undefined' && typeof createImageBitmap === 'function';
 
-      // Convert to Blobs
-      const [cutoutBlob, maskBlob] = await Promise.all([
-        cutoutRaw.toBlob(),
-        maskRaw.toBlob(),
-      ]);
+      let cutoutBlob: Blob;
+      let maskBlob: Blob;
+
+      if (canUseCanvas) {
+        // --- Canvas-based compositing (mobile-safe) ---
+        // Decode the original image via createImageBitmap (hardware-accelerated,
+        // works reliably even on low-memory mobile devices)
+        const origBitmap = await createImageBitmap(imageBlob);
+
+        // Resize 1024×1024 mask to output dimensions via canvas
+        const maskCanvas = new OffscreenCanvas(outputWidth, outputHeight);
+        const maskCtx = maskCanvas.getContext('2d', { willReadFrequently: true });
+        if (!maskCtx) throw new Error('Could not create mask canvas context');
+
+        // Draw the raw 1024×1024 grayscale mask onto an ImageData, then paint it
+        const mask1024Canvas = new OffscreenCanvas(1024, 1024);
+        const mask1024Ctx = mask1024Canvas.getContext('2d');
+        if (!mask1024Ctx) throw new Error('Could not create mask1024 canvas context');
+        const maskImageData = mask1024Ctx.createImageData(1024, 1024);
+        for (let i = 0; i < 1024 * 1024; i++) {
+          const a = currentMask[i];
+          maskImageData.data[i * 4] = 255;
+          maskImageData.data[i * 4 + 1] = 255;
+          maskImageData.data[i * 4 + 2] = 255;
+          maskImageData.data[i * 4 + 3] = a;
+        }
+        mask1024Ctx.putImageData(maskImageData, 0, 0);
+
+        // Scale mask to output resolution
+        maskCtx.drawImage(mask1024Canvas, 0, 0, outputWidth, outputHeight);
+
+        // Generate mask blob
+        maskBlob = await maskCanvas.convertToBlob({ type: 'image/png' });
+
+        // Composite: draw original, then apply mask via destination-in
+        const compCanvas = new OffscreenCanvas(outputWidth, outputHeight);
+        const compCtx = compCanvas.getContext('2d');
+        if (!compCtx) throw new Error('Could not create composite canvas context');
+
+        compCtx.drawImage(origBitmap, 0, 0, outputWidth, outputHeight);
+        compCtx.globalCompositeOperation = 'destination-in';
+        compCtx.drawImage(maskCanvas, 0, 0);
+
+        cutoutBlob = await compCanvas.convertToBlob({ type: 'image/png' });
+
+        // Clean up bitmap
+        if (typeof origBitmap.close === 'function') origBitmap.close();
+      } else {
+        // --- RawImage fallback (non-mobile / environments without OffscreenCanvas) ---
+        const mask1024 = new RawImage(currentMask, 1024, 1024, 1);
+        const maskRaw = await mask1024.resize(outputWidth, outputHeight);
+        const rawImg = await rawImgPromise;
+
+        // If output was downscaled, resize the source image too
+        let srcImg = rawImg;
+        if (outputWidth !== originalWidth || outputHeight !== originalHeight) {
+          srcImg = await rawImg.resize(outputWidth, outputHeight);
+        }
+
+        const cutoutRaw = srcImg.clone().putAlpha(maskRaw);
+
+        [cutoutBlob, maskBlob] = await Promise.all([
+          cutoutRaw.toBlob(),
+          maskRaw.toBlob(),
+        ]);
+      }
 
       const elapsedMs = Math.round(performance.now() - startTime);
 
@@ -408,10 +486,10 @@ self.addEventListener('message', async (event: MessageEvent) => {
         id,
         cutoutBlob,
         maskBlob,
-        maskWidth: maskRaw.width,
-        maskHeight: maskRaw.height,
-        originalWidth,
-        originalHeight,
+        maskWidth: outputWidth,
+        maskHeight: outputHeight,
+        originalWidth: outputWidth,
+        originalHeight: outputHeight,
         elapsedMs,
         device: activeDevice,
         dtype: activeDtype,

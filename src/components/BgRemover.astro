@@ -547,9 +547,11 @@
         const step = Math.max(0.35, diff * 0.1);
         currentProgressVal = Math.min(targetProgressVal, currentProgressVal + step);
       } else if (targetProgressVal < 98) {
-        // Continuous gentle creeping motion so the bar is always lively and active
-        currentProgressVal = Math.min(96, currentProgressVal + 0.12);
-        targetProgressVal = Math.min(96, targetProgressVal + 0.12);
+        // Continuous gentle creeping motion so the bar is always lively and active.
+        // Cap at 90% so the bar doesn't appear frozen near completion while
+        // the worker finishes heavy compositing work (especially on mobile).
+        currentProgressVal = Math.min(90, currentProgressVal + 0.06);
+        targetProgressVal = Math.min(90, targetProgressVal + 0.06);
       }
 
       const rounded = Math.min(100, Math.round(currentProgressVal));
@@ -595,6 +597,16 @@
   }
 
   // Initialize Web Worker
+  let workerTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  const WORKER_TIMEOUT_MS = 120_000; // 2 minutes — generous for slow mobile WASM inference
+
+  function clearWorkerTimeout() {
+    if (workerTimeoutId !== null) {
+      clearTimeout(workerTimeoutId);
+      workerTimeoutId = null;
+    }
+  }
+
   function initWorker() {
     if (worker) return worker;
 
@@ -611,17 +623,45 @@
       } else if (msg.type === 'progress') {
         handleProgress(msg.data);
       } else if (msg.type === 'step') {
+        // Any step message means the worker is alive — reset timeout
+        clearWorkerTimeout();
+        workerTimeoutId = setTimeout(onWorkerTimeout, WORKER_TIMEOUT_MS);
         setProgressTarget(msg.percent, msg.title, msg.detail);
         if (progressText) progressText.textContent = msg.detail;
       } else if (msg.type === 'success') {
+        clearWorkerTimeout();
         handleSuccess(msg);
       } else if (msg.type === 'error') {
+        clearWorkerTimeout();
         handleError(msg.error);
       }
     };
 
+    // Catch uncaught worker crashes — OOM on mobile kills the worker
+    // silently without posting an error message back.
+    worker.onerror = (event) => {
+      console.error('Worker crashed:', event);
+      clearWorkerTimeout();
+      worker?.terminate();
+      worker = null;
+      handleError(
+        'Background removal failed — your device may not have enough memory for this image. ' +
+        'Try a smaller image or use a desktop browser.'
+      );
+    };
+
     worker.postMessage({ action: 'get_device' });
     return worker;
+  }
+
+  function onWorkerTimeout() {
+    console.error('Worker timed out after', WORKER_TIMEOUT_MS, 'ms');
+    worker?.terminate();
+    worker = null;
+    handleError(
+      'Processing took too long and was stopped. ' +
+      'Try a smaller image or use a desktop browser for large photos.'
+    );
   }
 
   function warmupWorker() {
@@ -803,6 +843,11 @@
     showState('processing');
     startSmoothProgress(18);
 
+    // Start timeout watchdog — if the worker doesn't respond within the
+    // timeout window, we kill it and show an error instead of hanging forever.
+    clearWorkerTimeout();
+    workerTimeoutId = setTimeout(onWorkerTimeout, WORKER_TIMEOUT_MS);
+
     const w = initWorker();
     w.postMessage({
       action: 'remove_bg',
@@ -813,6 +858,7 @@
   }
 
   processCancelBtn?.addEventListener('click', () => {
+    clearWorkerTimeout();
     resetProgressUI();
     showState('upload');
     if (fileInput) fileInput.value = '';
