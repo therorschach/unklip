@@ -15,20 +15,20 @@ const {
 } = Astro.props;
 ---
 
-<section class="pt-6 sm:pt-8 lg:pt-9 pb-3 sm:pb-4 text-center max-w-3xl lg:max-w-4xl mx-auto px-4 sm:px-6">
+<section class="pt-2 sm:pt-6 lg:pt-8 pb-1.5 sm:pb-3.5 text-center max-w-3xl lg:max-w-4xl mx-auto px-3.5 sm:px-6">
   <!-- Minimal Badge -->
-  <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EFECE4] border border-[#DDD7CB] text-[#5C564E] text-xs font-semibold mb-2.5 sm:mb-3">
+  <div class="inline-flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 px-3 py-1 sm:py-0.5 rounded-full bg-[#EFECE4] border border-[#DDD7CB] text-[#5C564E] text-[11px] sm:text-xs font-semibold mb-1.5 sm:mb-2.5 max-w-full text-center shadow-2xs">
     <span>{badgeText}</span>
-    {badgeHighlight && <span class="text-[#8C542A]">{badgeHighlight}</span>}
+    {badgeHighlight && <span class="text-[#8C542A] font-medium">{badgeHighlight}</span>}
   </div>
 
   <!-- Title -->
-  <h1 class="text-3xl sm:text-4xl lg:text-[42px] font-extrabold tracking-tight text-[#24211E] leading-tight max-w-2xl lg:max-w-3xl mx-auto">
+  <h1 class="text-[21px] sm:text-3xl lg:text-[42px] font-extrabold tracking-tight text-[#24211E] leading-snug sm:leading-tight max-w-2xl lg:max-w-3xl mx-auto">
     {title}
   </h1>
 
   <!-- Subtitle -->
-  <p class="mt-2 sm:mt-2.5 text-sm sm:text-base text-[#6B655D] max-w-lg sm:max-w-xl mx-auto leading-normal">
+  <p class="mt-1 sm:mt-2 text-[12px] sm:text-sm lg:text-base text-[#6B655D] max-w-xs sm:max-w-xl mx-auto leading-snug sm:leading-normal">
     {subtitle}
   </p>
 </section>

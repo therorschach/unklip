@@ -6,13 +6,10 @@ env.useBrowserCache = typeof caches !== 'undefined';
 
 const MODEL_ID = 'briaai/RMBG-1.4';
 
-// Maximum output dimension on mobile to prevent OOM during compositing.
-// Phone cameras shoot 12MP+ (4032×3024) — resizing the mask back to that
-// resolution and then compositing RGBA in pure JS inside a worker causes
-// memory pressure that silently kills the worker on iOS Safari and low-RAM
-// Android devices.  Capping at 2048 keeps quality excellent while staying
-// within safe memory budgets.
-const MOBILE_MAX_DIM = 2048;
+// Maximum output dimension on mobile to prevent OOM and speed up PNG encoding.
+// Phone cameras shoot 12MP+ (4032×3024) — capping mobile output to 1600px
+// keeps retina quality crisp while cutting compositing and PNG encode times in half.
+const MOBILE_MAX_DIM = 1600;
 
 type DeviceType = 'webgpu' | 'wasm';
 type DtypeType = 'fp16' | 'q8' | 'fp32';
@@ -21,6 +18,12 @@ let modelPromise: Promise<any> | null = null;
 let model: any = null;
 let activeDevice: DeviceType = 'wasm';
 let activeDtype: DtypeType = 'q8';
+
+// Precomputed normalization lookup table for RMBG-1.4: (pixel / 255.0) - 0.5
+const NORM_LUT = new Float32Array(256);
+for (let b = 0; b < 256; b++) {
+  NORM_LUT[b] = (b / 255.0) - 0.5;
+}
 
 function isMobileOrLowMemory(): boolean {
   if (typeof navigator === 'undefined') return false;
@@ -156,12 +159,13 @@ self.addEventListener('message', async (event: MessageEvent) => {
 
   if (action === 'remove_bg') {
     const startTime = performance.now();
+    let origBitmap: ImageBitmap | null = null;
     try {
       self.postMessage({
         type: 'step',
         id,
         stage: 'init',
-        percent: 12,
+        percent: 8,
         title: 'Initializing AI Engine',
         detail: 'Loading RMBG weights into browser memory...',
       });
@@ -171,7 +175,7 @@ self.addEventListener('message', async (event: MessageEvent) => {
         type: 'step',
         id,
         stage: 'decoding',
-        percent: 28,
+        percent: 14,
         title: 'Decoding Image',
         detail: 'Reading pixel channels and geometry...',
       });
@@ -181,29 +185,20 @@ self.addEventListener('message', async (event: MessageEvent) => {
       let floatData: Float32Array | null = null;
       let rawImgFallback: any = null;
 
-      // 1. Hardware-accelerated native downscale to 1024x1024 via createImageBitmap & OffscreenCanvas
+      // 1. Hardware-accelerated native decode & downscale to 1024x1024 via createImageBitmap & OffscreenCanvas
       const canUseOffscreen = typeof createImageBitmap === 'function' && typeof OffscreenCanvas !== 'undefined';
 
       if (canUseOffscreen) {
         try {
-          const [origBitmap, resizedBitmap] = await Promise.all([
-            createImageBitmap(imageBlob),
-            createImageBitmap(imageBlob, {
-              resizeWidth: 1024,
-              resizeHeight: 1024,
-              resizeQuality: 'high',
-            }),
-          ]);
-
+          origBitmap = await createImageBitmap(imageBlob);
           originalWidth = origBitmap.width;
           originalHeight = origBitmap.height;
-          if (typeof origBitmap.close === 'function') origBitmap.close();
 
           self.postMessage({
             type: 'step',
             id,
             stage: 'tensor',
-            percent: 42,
+            percent: 22,
             title: 'Preparing Neural Tensor',
             detail: 'Rescaling to 1024×1024 RGB input...',
           });
@@ -212,24 +207,27 @@ self.addEventListener('message', async (event: MessageEvent) => {
           const ctx = canvas.getContext('2d', { willReadFrequently: true });
           if (!ctx) throw new Error('Could not obtain OffscreenCanvas 2D context');
 
-          ctx.drawImage(resizedBitmap, 0, 0, 1024, 1024);
-          if (typeof resizedBitmap.close === 'function') resizedBitmap.close();
+          ctx.drawImage(origBitmap, 0, 0, 1024, 1024);
 
           const imageData = ctx.getImageData(0, 0, 1024, 1024);
           const { data } = imageData; // RGBA Uint8ClampedArray
 
-          // RMBG-1.4 normalization: (pixel / 255.0) - 0.5, CHW format
+          // RMBG-1.4 normalization via precomputed LUT: (pixel / 255.0) - 0.5, CHW format
           floatData = new Float32Array(3 * 1024 * 1024);
           const channelSize = 1024 * 1024;
           for (let i = 0; i < channelSize; i++) {
             const offset = i * 4;
-            floatData[i] = (data[offset] / 255.0) - 0.5;
-            floatData[channelSize + i] = (data[offset + 1] / 255.0) - 0.5;
-            floatData[2 * channelSize + i] = (data[offset + 2] / 255.0) - 0.5;
+            floatData[i] = NORM_LUT[data[offset]];
+            floatData[channelSize + i] = NORM_LUT[data[offset + 1]];
+            floatData[2 * channelSize + i] = NORM_LUT[data[offset + 2]];
           }
         } catch (downscaleErr) {
           console.warn('Hardware downscaling failed, falling back to RawImage:', downscaleErr);
           floatData = null;
+          if (origBitmap && typeof origBitmap.close === 'function') {
+            try { origBitmap.close(); } catch (_) {}
+            origBitmap = null;
+          }
         }
       }
 
@@ -243,7 +241,7 @@ self.addEventListener('message', async (event: MessageEvent) => {
           type: 'step',
           id,
           stage: 'tensor',
-          percent: 42,
+          percent: 22,
           title: 'Preparing Neural Tensor',
           detail: 'Rescaling to 1024×1024 RGB input...',
         });
@@ -255,9 +253,9 @@ self.addEventListener('message', async (event: MessageEvent) => {
         floatData = new Float32Array(3 * 1024 * 1024);
         const channelSize = 1024 * 1024;
         for (let i = 0; i < channelSize; i++) {
-          floatData[i] = (data[i * 3] / 255.0) - 0.5;
-          floatData[channelSize + i] = (data[i * 3 + 1] / 255.0) - 0.5;
-          floatData[2 * channelSize + i] = (data[i * 3 + 2] / 255.0) - 0.5;
+          floatData[i] = NORM_LUT[data[i * 3]];
+          floatData[channelSize + i] = NORM_LUT[data[i * 3 + 1]];
+          floatData[2 * channelSize + i] = NORM_LUT[data[i * 3 + 2]];
         }
       }
 
@@ -268,7 +266,7 @@ self.addEventListener('message', async (event: MessageEvent) => {
         type: 'step',
         id,
         stage: 'inference',
-        percent: 65,
+        percent: 32,
         title: 'Neural Edge Detection',
         detail: 'RMBG-1.4 segmenting subject and transparency...',
       });
@@ -284,7 +282,7 @@ self.addEventListener('message', async (event: MessageEvent) => {
         type: 'step',
         id,
         stage: 'matting',
-        percent: 86,
+        percent: 82,
         title: 'Refining Alpha Matting',
         detail: 'Cleaning background clutter and smoothing fine edges...',
       });
@@ -325,57 +323,54 @@ self.addEventListener('message', async (event: MessageEvent) => {
         }
       }
 
-      // Morphological salt-and-pepper / pinhole cleanup pass:
-      // Fills isolated blank holes inside dark subjects (e.g. navy hoodies)
-      // and eliminates stray noise specks in the background while preserving natural edges.
+      // Fast single-pass morphological pinhole filter:
+      // Fills isolated pinholes inside dark solid subjects and eliminates stray specks in the background.
+      // Skips uniform foreground/background regions where all cardinal neighbors match.
       const cleanedMask = new Uint8Array(1024 * 1024);
       const w = 1024;
-      let currentMask = rawMask;
-      for (let pass = 0; pass < 2; pass++) {
-        const nextMask = (pass === 0) ? cleanedMask : rawMask;
-        for (let y = 0; y < w; y++) {
-          const row = y * w;
-          for (let x = 0; x < w; x++) {
-            const idx = row + x;
-            const v = currentMask[idx];
-            if (y === 0 || y === w - 1 || x === 0 || x === w - 1) {
-              nextMask[idx] = v;
-              continue;
-            }
-            let solidCount = 0;
-            let emptyCount = 0;
-            const n1 = currentMask[idx - w - 1];
-            const n2 = currentMask[idx - w];
-            const n3 = currentMask[idx - w + 1];
-            const n4 = currentMask[idx - 1];
-            const n5 = currentMask[idx + 1];
-            const n6 = currentMask[idx + w - 1];
-            const n7 = currentMask[idx + w];
-            const n8 = currentMask[idx + w + 1];
+      for (let y = 1; y < w - 1; y++) {
+        const row = y * w;
+        for (let x = 1; x < w - 1; x++) {
+          const idx = row + x;
+          const v = rawMask[idx];
+          const top = rawMask[idx - w];
+          const bottom = rawMask[idx + w];
+          const left = rawMask[idx - 1];
+          const right = rawMask[idx + 1];
 
-            if (n1 > 200) solidCount++; else if (n1 < 50) emptyCount++;
-            if (n2 > 200) solidCount++; else if (n2 < 50) emptyCount++;
-            if (n3 > 200) solidCount++; else if (n3 < 50) emptyCount++;
-            if (n4 > 200) solidCount++; else if (n4 < 50) emptyCount++;
-            if (n5 > 200) solidCount++; else if (n5 < 50) emptyCount++;
-            if (n6 > 200) solidCount++; else if (n6 < 50) emptyCount++;
-            if (n7 > 200) solidCount++; else if (n7 < 50) emptyCount++;
-            if (n8 > 200) solidCount++; else if (n8 < 50) emptyCount++;
+          // Fast path: if pixel is 0 and all 4 cardinal neighbors are < 50, it is pure background
+          if (v < 50 && top < 50 && bottom < 50 && left < 50 && right < 50) {
+            cleanedMask[idx] = 0;
+            continue;
+          }
+          // Fast path: if pixel is 255 and all 4 cardinal neighbors are > 200, it is pure foreground
+          if (v > 200 && top > 200 && bottom > 200 && left > 200 && right > 200) {
+            cleanedMask[idx] = 255;
+            continue;
+          }
 
-            // If a pixel is transparent/low alpha (< 180) inside a solid subject (>= 6 solid neighbors), heal it
-            if (v < 180 && solidCount >= 6) {
-              nextMask[idx] = 255;
-            }
-            // If a pixel is opaque/semi-opaque (> 50) inside an empty background (>= 6 empty neighbors), clean it
-            else if (v > 50 && emptyCount >= 6) {
-              nextMask[idx] = 0;
-            } else {
-              nextMask[idx] = v;
-            }
+          // Boundary or suspect pixel: check all 8 neighbors
+          let solidCount = (top > 200 ? 1 : 0) + (bottom > 200 ? 1 : 0) + (left > 200 ? 1 : 0) + (right > 200 ? 1 : 0);
+          let emptyCount = (top < 50 ? 1 : 0) + (bottom < 50 ? 1 : 0) + (left < 50 ? 1 : 0) + (right < 50 ? 1 : 0);
+          const tl = rawMask[idx - w - 1];
+          const tr = rawMask[idx - w + 1];
+          const bl = rawMask[idx + w - 1];
+          const br = rawMask[idx + w + 1];
+          if (tl > 200) solidCount++; else if (tl < 50) emptyCount++;
+          if (tr > 200) solidCount++; else if (tr < 50) emptyCount++;
+          if (bl > 200) solidCount++; else if (bl < 50) emptyCount++;
+          if (br > 200) solidCount++; else if (br < 50) emptyCount++;
+
+          if (v < 180 && solidCount >= 6) {
+            cleanedMask[idx] = 255;
+          } else if (v > 50 && emptyCount >= 6) {
+            cleanedMask[idx] = 0;
+          } else {
+            cleanedMask[idx] = v;
           }
         }
-        currentMask = nextMask;
       }
+      const currentMask = cleanedMask;
 
       // 5. Convert to high-resolution mask and composite with original full-size pixels
       // On mobile, cap output resolution to prevent OOM during compositing
@@ -392,7 +387,7 @@ self.addEventListener('message', async (event: MessageEvent) => {
         type: 'step',
         id,
         stage: 'composite',
-        percent: 95,
+        percent: 92,
         title: 'Generating Native Cutout',
         detail: `Compositing at ${outputWidth} × ${outputHeight}px...`,
       });
@@ -404,52 +399,40 @@ self.addEventListener('message', async (event: MessageEvent) => {
                            typeof (OffscreenCanvas.prototype as any)?.convertToBlob === 'function';
 
       let cutoutBlob: Blob;
-      let maskBlob: Blob;
+      let maskBlob: Blob | null = null;
 
       if (canUseCanvas) {
-        // --- Canvas-based compositing (mobile-safe) ---
-        // Decode the original image via createImageBitmap (hardware-accelerated,
-        // works reliably even on low-memory mobile devices)
-        const origBitmap = await createImageBitmap(imageBlob);
+        // --- Fast hardware-accelerated Canvas compositing ---
+        if (!origBitmap) {
+          origBitmap = await createImageBitmap(imageBlob);
+        }
 
-        // Resize 1024×1024 mask to output dimensions via canvas
-        const maskCanvas = new OffscreenCanvas(outputWidth, outputHeight);
-        const maskCtx = maskCanvas.getContext('2d', { willReadFrequently: true });
-        if (!maskCtx) throw new Error('Could not create mask canvas context');
-
-        // Draw the raw 1024×1024 grayscale mask onto an ImageData, then paint it
+        // Fast 32-bit write of 1024×1024 grayscale mask
         const mask1024Canvas = new OffscreenCanvas(1024, 1024);
         const mask1024Ctx = mask1024Canvas.getContext('2d');
         if (!mask1024Ctx) throw new Error('Could not create mask1024 canvas context');
         const maskImageData = mask1024Ctx.createImageData(1024, 1024);
-        for (let i = 0; i < 1024 * 1024; i++) {
-          const a = currentMask[i];
-          maskImageData.data[i * 4] = 255;
-          maskImageData.data[i * 4 + 1] = 255;
-          maskImageData.data[i * 4 + 2] = 255;
-          maskImageData.data[i * 4 + 3] = a;
+        const data32 = new Uint32Array(maskImageData.data.buffer);
+        for (let i = 0; i < 1048576; i++) {
+          data32[i] = (currentMask[i] << 24) | 0x00FFFFFF;
         }
         mask1024Ctx.putImageData(maskImageData, 0, 0);
 
-        // Scale mask to output resolution
-        maskCtx.drawImage(mask1024Canvas, 0, 0, outputWidth, outputHeight);
-
-        // Generate mask blob
-        maskBlob = await maskCanvas.convertToBlob({ type: 'image/png' });
-
-        // Composite: draw original, then apply mask via destination-in
+        // Composite: draw original, then apply mask directly via destination-in
+        // Avoids allocating a second full-size intermediate mask canvas
         const compCanvas = new OffscreenCanvas(outputWidth, outputHeight);
         const compCtx = compCanvas.getContext('2d');
         if (!compCtx) throw new Error('Could not create composite canvas context');
 
         compCtx.drawImage(origBitmap, 0, 0, outputWidth, outputHeight);
         compCtx.globalCompositeOperation = 'destination-in';
-        compCtx.drawImage(maskCanvas, 0, 0);
+        compCtx.drawImage(mask1024Canvas, 0, 0, outputWidth, outputHeight);
 
+        // Single PNG encode (cutout only, skipping redundant mask PNG encode)
         cutoutBlob = await compCanvas.convertToBlob({ type: 'image/png' });
 
-        // Clean up bitmap
         if (typeof origBitmap.close === 'function') origBitmap.close();
+        origBitmap = null;
       } else {
         // --- RawImage fallback (non-mobile / environments without OffscreenCanvas) ---
         const mask1024 = new RawImage(currentMask, 1024, 1024, 1);
@@ -495,6 +478,10 @@ self.addEventListener('message', async (event: MessageEvent) => {
         dtype: activeDtype,
       });
     } catch (error: any) {
+      if (origBitmap && typeof (origBitmap as any).close === 'function') {
+        try { (origBitmap as any).close(); } catch (_) {}
+        origBitmap = null;
+      }
       console.error('Background removal error in worker:', error);
       self.postMessage({
         type: 'error',
