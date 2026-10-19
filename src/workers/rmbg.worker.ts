@@ -176,12 +176,10 @@ self.addEventListener('message', async (event: MessageEvent) => {
         detail: 'Reading pixel channels and geometry...',
       });
 
-      // Start full-resolution RawImage decoding concurrently for high-resolution compositing
-      const rawImgPromise = RawImage.fromBlob(imageBlob);
-
       let originalWidth = 0;
       let originalHeight = 0;
       let floatData: Float32Array | null = null;
+      let rawImgFallback: any = null;
 
       // 1. Hardware-accelerated native downscale to 1024x1024 via createImageBitmap & OffscreenCanvas
       const canUseOffscreen = typeof createImageBitmap === 'function' && typeof OffscreenCanvas !== 'undefined';
@@ -237,7 +235,7 @@ self.addEventListener('message', async (event: MessageEvent) => {
 
       // Fallback: CPU JavaScript array resizing via RawImage
       if (!floatData) {
-        const rawImgFallback = await rawImgPromise;
+        rawImgFallback = await RawImage.fromBlob(imageBlob);
         originalWidth = rawImgFallback.width;
         originalHeight = rawImgFallback.height;
 
@@ -456,7 +454,7 @@ self.addEventListener('message', async (event: MessageEvent) => {
         // --- RawImage fallback (non-mobile / environments without OffscreenCanvas) ---
         const mask1024 = new RawImage(currentMask, 1024, 1024, 1);
         const maskRaw = await mask1024.resize(outputWidth, outputHeight);
-        const rawImg = await rawImgPromise;
+        const rawImg = rawImgFallback || (await RawImage.fromBlob(imageBlob));
 
         // If output was downscaled, resize the source image too
         let srcImg = rawImg;

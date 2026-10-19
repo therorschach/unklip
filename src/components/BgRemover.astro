@@ -638,20 +638,9 @@
       }
     };
 
-    // Catch uncaught worker crashes
-    worker.onerror = (event: ErrorEvent) => {
-      console.error('Worker onerror:', event.message || event);
-      if (isProcessing) {
-        clearWorkerTimeout();
-        worker?.terminate();
-        worker = null;
-        isProcessing = false;
-        handleError(
-          event.message
-            ? `Processing error: ${event.message}`
-            : 'Background removal failed. Please try another image or use a smaller file.'
-        );
-      }
+    // Log worker errors without prematurely killing the worker during model fallback/probe
+    worker.onerror = (event) => {
+      console.warn('Worker error event (non-fatal):', (event as any)?.message || event);
     };
 
     worker.postMessage({ action: 'get_device' });
@@ -692,15 +681,16 @@
   function handleProgress(info: any) {
     if (!info) return;
     if (info.status === 'progress' && typeof info.progress === 'number') {
-      const pct = Math.min(Math.round(info.progress), 99);
-      setProgressTarget(pct);
+      // Scale model download (0..100) to 5..25% of overall pipeline
+      const downloadPct = Math.min(25, 5 + Math.round((info.progress / 100) * 20));
+      setProgressTarget(downloadPct);
       if (progressText) {
         const file = info.file ? ` (${info.file.split('/').pop()})` : '';
         progressText.textContent = `Downloading neural weights${file}...`;
       }
     } else if (info.status === 'done') {
       if (progressText) progressText.textContent = 'Neural weights loaded!';
-      setProgressTarget(30);
+      setProgressTarget(25);
     }
   }
 
