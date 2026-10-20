@@ -4,14 +4,14 @@
 
 <section id="tool" class="max-w-5xl xl:max-w-[1180px] mx-auto px-3.5 sm:px-6 lg:px-8 pt-0.5 sm:pt-1 pb-8 sm:pb-14 lg:pb-16">
   <!-- Container Card -->
-  <div class="relative rounded-xl sm:rounded-2xl bg-white border border-[#E6E1D6] shadow-sm overflow-hidden p-3.5 sm:p-6 lg:p-7">
+  <div class="relative rounded-2xl sm:rounded-2xl bg-white border border-[#E6E1D6] shadow-sm overflow-hidden p-3 sm:p-6 lg:p-7">
     
     <!-- STATE 1: UPLOAD / DROPZONE (Top Priority) -->
     <div id="upload-state" class="flex flex-col items-center">
       <!-- Drag & Drop Area -->
       <div
         id="dropzone"
-        class="w-full min-h-[175px] sm:min-h-[270px] lg:min-h-[290px] rounded-xl border-2 border-dashed border-[#D5CDC0] hover:border-[#24211E] bg-[#FAF7F2] hover:bg-[#F3EFE7] transition-all duration-200 flex flex-col items-center justify-center p-3.5 sm:p-6 lg:p-8 text-center cursor-pointer group relative overflow-hidden"
+        class="w-full min-h-[195px] sm:min-h-[270px] lg:min-h-[290px] rounded-xl border border-[#D5CDC0] sm:border-2 sm:border-dashed sm:border-[#D5CDC0] hover:border-[#24211E] bg-gradient-to-b from-[#FAF7F2] to-[#F5EFE6] sm:bg-[#FAF7F2] hover:bg-[#F3EFE7] transition-all duration-200 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 text-center cursor-pointer group relative overflow-hidden shadow-2xs sm:shadow-none"
       >
         <input
           type="file"
@@ -28,39 +28,44 @@
         />
 
         <!-- Upload Icon -->
-        <div class="w-11 h-11 sm:w-14 sm:h-14 lg:w-15 lg:h-15 rounded-full bg-white border border-[#E0D9CD] shadow-xs flex items-center justify-center mb-2 sm:mb-3.5 group-hover:scale-105 group-hover:border-[#24211E] transition-all duration-200">
-          <svg class="w-5.5 h-5.5 sm:w-7 sm:h-7 text-[#4A453E] group-hover:text-[#24211E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-15 lg:h-15 rounded-2xl bg-white border border-[#DDD7CB] shadow-xs flex items-center justify-center mb-2.5 sm:mb-3.5 group-hover:scale-105 group-hover:border-[#24211E] transition-all duration-200 ring-4 ring-[#FAF7F2]">
+          <svg class="w-6 h-6 sm:w-7 sm:h-7 text-[#24211E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
             <polyline points="17 8 12 3 7 8"/>
             <line x1="12" x2="12" y1="3" y2="15"/>
           </svg>
         </div>
 
-        <h3 class="text-base sm:text-2xl font-bold text-[#24211E] mb-1 sm:mb-1.5">
+        <h3 class="text-lg sm:text-2xl font-extrabold text-[#24211E] mb-1 sm:mb-1.5 tracking-tight">
           <span class="hidden sm:inline">Drop your image here, or <span class="underline underline-offset-4 decoration-[#B8AEA0] group-hover:decoration-[#24211E]">browse</span></span>
-          <span class="sm:hidden">Select or take a photo</span>
+          <span class="sm:hidden">Upload an image</span>
         </h3>
-        <p class="text-[11px] sm:text-sm text-[#736B61] max-w-md sm:max-w-lg">
-          <span class="sm:hidden">PNG, JPG, WEBP • 100% on-device private</span>
+        <p class="text-[12px] sm:text-sm text-[#736B61] max-w-md sm:max-w-lg mb-0.5">
+          <span class="sm:hidden inline-flex items-center gap-1.5 font-medium text-[#5C564E]">
+            <svg class="w-3.5 h-3.5 text-emerald-600 inline shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>100% Private On-Device</span>
+            <span class="text-[#A3998D] select-none">•</span>
+            <span>Full 4K Quality</span>
+          </span>
           <span class="hidden sm:inline">PNG, JPG, or WEBP up to 50MB • Or paste (<kbd class="px-1.5 py-0.5 rounded bg-[#EDE8DF] border border-[#DDD7CB] text-[11px] font-mono text-[#4A453E]">Ctrl+V</kbd>) from clipboard</span>
         </p>
 
         <!-- Mobile & Quick Actions Bar -->
-        <div class="mt-3 sm:mt-4 w-full sm:w-auto flex items-center justify-center gap-2 relative z-10">
+        <div class="mt-3.5 sm:mt-4 w-full sm:w-auto flex items-center justify-center gap-2.5 relative z-10">
           <button
             type="button"
             id="choose-library-btn"
-            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 h-9 sm:h-auto px-3.5 py-1.5 rounded-xl bg-white hover:bg-[#EDE8DF] border border-[#D5CDC0] text-xs font-semibold text-[#24211E] shadow-2xs transition-all cursor-pointer hover:border-[#24211E]"
+            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 h-11.5 sm:h-9 px-4 sm:px-3.5 py-2.5 rounded-xl bg-[#24211E] hover:bg-[#38332E] active:scale-[0.98] text-white text-[13px] sm:text-xs font-bold shadow-xs transition-all cursor-pointer"
           >
-            <svg class="w-3.5 h-3.5 text-[#5C564E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
             <span>Choose Photo</span>
           </button>
           <button
             type="button"
             id="take-photo-btn"
-            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 h-9 sm:h-auto px-3.5 py-1.5 rounded-xl bg-white hover:bg-[#EDE8DF] border border-[#D5CDC0] text-xs font-semibold text-[#24211E] shadow-2xs transition-all cursor-pointer hover:border-[#24211E]"
+            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 h-11.5 sm:h-9 px-4 sm:px-3.5 py-2.5 rounded-xl bg-white hover:bg-[#FAF7F2] active:bg-[#EDE8DF] active:scale-[0.98] border border-[#D5CDC0] text-[13px] sm:text-xs font-semibold text-[#24211E] shadow-2xs transition-all cursor-pointer hover:border-[#24211E]"
           >
-            <svg class="w-3.5 h-3.5 text-[#5C564E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+            <svg class="w-4 h-4 text-[#5C564E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
             <span>Take Photo</span>
           </button>
           <button
@@ -77,67 +82,67 @@
 
       <!-- Quick Sample Images -->
       <div class="mt-3.5 sm:mt-5 w-full">
-        <div class="flex items-center justify-between mb-1.5 sm:mb-2.5">
-          <span class="text-[11px] sm:text-xs font-semibold text-[#736B61] uppercase tracking-wider">
-            <span class="sm:hidden">Try a sample photo:</span>
+        <div class="flex items-center justify-between mb-2 sm:mb-2.5">
+          <span class="text-[11px] sm:text-xs font-bold text-[#5C564E] uppercase tracking-wider">
+            <span class="sm:hidden">Or try a sample photo:</span>
             <span class="hidden sm:inline">Try one of these instant test photos:</span>
           </span>
-          <span class="text-[10px] sm:text-[11px] text-[#8C847A]">Click to run</span>
+          <span class="text-[10px] sm:text-[11px] text-[#8C847A]">Instant 1-tap</span>
         </div>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2.5 lg:gap-3">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 lg:gap-3">
           <!-- Sample 1: Portrait / Fine Hair -->
           <button
             type="button"
-            class="sample-btn flex items-center gap-2 p-1.5 sm:p-2.5 rounded-xl bg-[#FAF7F2] border border-[#E6E1D6] hover:border-[#24211E] hover:bg-[#F3EFE7] transition-all text-left cursor-pointer group"
+            class="sample-btn flex items-center gap-2 p-2 sm:p-2.5 rounded-xl bg-[#FAF7F2] border border-[#E6E1D6] hover:border-[#24211E] hover:bg-[#F3EFE7] active:scale-[0.98] transition-all text-left cursor-pointer group"
             data-sample="/samples/portrait.webp"
             data-name="Portrait (Hair)"
           >
             <img src="/samples/portrait.webp" alt="Portrait" class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg object-cover bg-white border border-[#DDD7CB] shrink-0" />
-            <div>
-              <p class="text-xs sm:text-sm font-bold text-[#24211E] group-hover:text-black">Portrait</p>
-              <p class="text-[10px] text-[#736B61]">Wispy hair</p>
+            <div class="min-w-0">
+              <p class="text-xs sm:text-sm font-bold text-[#24211E] group-hover:text-black truncate">Portrait</p>
+              <p class="text-[10px] text-[#736B61] truncate">Wispy hair</p>
             </div>
           </button>
 
           <!-- Sample 2: Sneaker / Product -->
           <button
             type="button"
-            class="sample-btn flex items-center gap-2 p-1.5 sm:p-2.5 rounded-xl bg-[#FAF7F2] border border-[#E6E1D6] hover:border-[#24211E] hover:bg-[#F3EFE7] transition-all text-left cursor-pointer group"
+            class="sample-btn flex items-center gap-2 p-2 sm:p-2.5 rounded-xl bg-[#FAF7F2] border border-[#E6E1D6] hover:border-[#24211E] hover:bg-[#F3EFE7] active:scale-[0.98] transition-all text-left cursor-pointer group"
             data-sample="/samples/sneaker.jpg"
             data-name="Sneaker (Product)"
           >
             <img src="/samples/sneaker.jpg" alt="Sneaker" class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg object-cover bg-white border border-[#DDD7CB] shrink-0" />
-            <div>
-              <p class="text-xs sm:text-sm font-bold text-[#24211E] group-hover:text-black">Product</p>
-              <p class="text-[10px] text-[#736B61]">E-commerce</p>
+            <div class="min-w-0">
+              <p class="text-xs sm:text-sm font-bold text-[#24211E] group-hover:text-black truncate">Product</p>
+              <p class="text-[10px] text-[#736B61] truncate">E-commerce</p>
             </div>
           </button>
 
           <!-- Sample 3: Fluffy Cat / Fur -->
           <button
             type="button"
-            class="sample-btn flex items-center gap-2 p-1.5 sm:p-2.5 rounded-xl bg-[#FAF7F2] border border-[#E6E1D6] hover:border-[#24211E] hover:bg-[#F3EFE7] transition-all text-left cursor-pointer group"
+            class="sample-btn flex items-center gap-2 p-2 sm:p-2.5 rounded-xl bg-[#FAF7F2] border border-[#E6E1D6] hover:border-[#24211E] hover:bg-[#F3EFE7] active:scale-[0.98] transition-all text-left cursor-pointer group"
             data-sample="/samples/cat.png"
             data-name="Cat (Fluffy Fur)"
           >
             <img src="/samples/cat.png" alt="Cat" class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg object-cover bg-white border border-[#DDD7CB] shrink-0" />
-            <div>
-              <p class="text-xs sm:text-sm font-bold text-[#24211E] group-hover:text-black">Pet / Fur</p>
-              <p class="text-[10px] text-[#736B61]">Fluffy edges</p>
+            <div class="min-w-0">
+              <p class="text-xs sm:text-sm font-bold text-[#24211E] group-hover:text-black truncate">Pet / Fur</p>
+              <p class="text-[10px] text-[#736B61] truncate">Fluffy edges</p>
             </div>
           </button>
 
           <!-- Sample 4: Sports / Athlete -->
           <button
             type="button"
-            class="sample-btn flex items-center gap-2 p-1.5 sm:p-2.5 rounded-xl bg-[#FAF7F2] border border-[#E6E1D6] hover:border-[#24211E] hover:bg-[#F3EFE7] transition-all text-left cursor-pointer group"
+            class="sample-btn flex items-center gap-2 p-2 sm:p-2.5 rounded-xl bg-[#FAF7F2] border border-[#E6E1D6] hover:border-[#24211E] hover:bg-[#F3EFE7] active:scale-[0.98] transition-all text-left cursor-pointer group"
             data-sample="/samples/football.jpg"
             data-name="Athlete (Sports)"
           >
             <img src="/samples/football.jpg" alt="Sports" class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg object-cover bg-white border border-[#DDD7CB] shrink-0" />
-            <div>
-              <p class="text-xs sm:text-sm font-bold text-[#24211E] group-hover:text-black">Sports</p>
-              <p class="text-[10px] text-[#736B61]">Complex back</p>
+            <div class="min-w-0">
+              <p class="text-xs sm:text-sm font-bold text-[#24211E] group-hover:text-black truncate">Sports</p>
+              <p class="text-[10px] text-[#736B61] truncate">Complex back</p>
             </div>
           </button>
         </div>

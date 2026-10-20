@@ -13,22 +13,30 @@ const {
   title = "Instant Background Removal. Full Resolution.",
   subtitle = "No sign-ups, no cloud uploads, no 0.25 MP downscaling. Processed on your device via WebGPU."
 } = Astro.props;
+
+const cleanHighlight = badgeHighlight ? badgeHighlight.replace(/^[•·\s]+/, '').trim() : '';
 ---
 
-<section class="pt-2 sm:pt-6 lg:pt-8 pb-1.5 sm:pb-3.5 text-center max-w-3xl lg:max-w-4xl mx-auto px-3.5 sm:px-6">
+<section class="pt-3 sm:pt-6 lg:pt-8 pb-2 sm:pb-3.5 text-center max-w-3xl lg:max-w-4xl mx-auto px-4 sm:px-6">
   <!-- Minimal Badge -->
-  <div class="inline-flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 px-3 py-1 sm:py-0.5 rounded-full bg-[#EFECE4] border border-[#DDD7CB] text-[#5C564E] text-[11px] sm:text-xs font-semibold mb-1.5 sm:mb-2.5 max-w-full text-center shadow-2xs">
-    <span>{badgeText}</span>
-    {badgeHighlight && <span class="text-[#8C542A] font-medium">{badgeHighlight}</span>}
+  <div class="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1 rounded-full bg-[#EFECE4] border border-[#DDD7CB] text-[#5C564E] text-[10.5px] sm:text-xs font-semibold mb-2 sm:mb-3 max-w-full text-center shadow-2xs">
+    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
+    <span class="whitespace-nowrap">{badgeText}</span>
+    {cleanHighlight && (
+      <>
+        <span class="text-[#A3998D] select-none shrink-0">•</span>
+        <span class="text-[#8C542A] font-medium whitespace-nowrap">{cleanHighlight}</span>
+      </>
+    )}
   </div>
 
   <!-- Title -->
-  <h1 class="text-[21px] sm:text-3xl lg:text-[42px] font-extrabold tracking-tight text-[#24211E] leading-snug sm:leading-tight max-w-2xl lg:max-w-3xl mx-auto">
+  <h1 class="text-[25px] sm:text-3xl lg:text-[42px] font-black tracking-tight text-[#24211E] leading-[1.18] sm:leading-tight max-w-2xl lg:max-w-3xl mx-auto text-balance">
     {title}
   </h1>
 
   <!-- Subtitle -->
-  <p class="mt-1 sm:mt-2 text-[12px] sm:text-sm lg:text-base text-[#6B655D] max-w-xs sm:max-w-xl mx-auto leading-snug sm:leading-normal">
+  <p class="mt-2 sm:mt-2.5 text-[13px] sm:text-sm lg:text-base text-[#6B655D] max-w-sm sm:max-w-xl mx-auto leading-relaxed text-balance">
     {subtitle}
   </p>
 </section>
