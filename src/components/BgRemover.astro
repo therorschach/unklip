@@ -210,43 +210,61 @@
     </div>
 
     <!-- STATE 3: STUDIO RESULTS VIEW (Hidden by default) -->
-    <div id="result-state" class="hidden flex-col gap-4 sm:gap-5">
-      <!-- Top Specs & Status Bar (Two-Column Layout: Left Controls, Right Download) -->
-      <div class="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 sm:gap-4 pb-3.5 border-b border-[#E6E1D6] w-full">
-        <!-- Left Column: Specs, Badges & View Controls -->
-        <div class="flex flex-wrap items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
-          <span class="inline-flex items-center gap-1.5 h-[34px] sm:h-[36px] px-3 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200/90 shrink-0">
-            <svg class="w-3.5 h-3.5 text-emerald-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-            Background Removed
-          </span>
-          <span id="resolution-badge" class="inline-flex items-center h-[34px] sm:h-[36px] px-2.5 rounded-xl bg-[#EDE8DF] text-[#4A453E] text-xs font-mono font-medium border border-[#DDD7CB] shrink-0 whitespace-nowrap">1920 × 1080 px (100% Native)</span>
-
-          <!-- View Mode Switcher -->
-          <div class="inline-flex items-center h-[34px] sm:h-[36px] p-0.5 bg-[#EDE8DF] border border-[#DDD7CB] rounded-xl text-xs font-medium text-[#736B61] shrink-0 shadow-2xs">
-            <button id="view-slider-btn" class="h-full px-2.5 sm:px-3 rounded-lg bg-white text-[#24211E] shadow-2xs font-semibold transition-all cursor-pointer flex items-center justify-center">Slider</button>
-            <button id="view-cutout-btn" class="h-full px-2.5 sm:px-3 rounded-lg text-[#665F55] hover:text-[#24211E] transition-all cursor-pointer flex items-center justify-center">Cutout</button>
-            <button id="view-original-btn" class="h-full px-2.5 sm:px-3 rounded-lg text-[#665F55] hover:text-[#24211E] transition-all cursor-pointer flex items-center justify-center">Original</button>
+    <div id="result-state" class="hidden flex-col gap-3 sm:gap-5">
+      <!-- Top Specs & Status Bar -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 sm:gap-4 pb-2.5 sm:pb-3.5 border-b border-[#E6E1D6] w-full">
+        <!-- Row 1 on Mobile: Status Chip & Quick Actions -->
+        <div class="flex items-center justify-between w-full sm:w-auto gap-2">
+          <!-- Unified Status & Resolution Badge -->
+          <div class="inline-flex items-center gap-2 h-8 sm:h-9 px-3 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/90 text-xs font-semibold shadow-2xs">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+            <span class="hidden sm:inline">Background Removed</span>
+            <span class="hidden sm:inline text-emerald-300">•</span>
+            <span id="resolution-badge" class="font-mono text-[11px] sm:text-xs text-emerald-900 font-bold whitespace-nowrap">1920 × 1080 px (100% Native)</span>
           </div>
 
-          <!-- Hold to Compare Action -->
+          <!-- Quick Reset / New Button (Mobile header right) -->
+          <div class="flex items-center gap-1.5 sm:hidden">
+            <button
+              id="mobile-new-btn"
+              type="button"
+              class="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg bg-white border border-[#DDD7CB] text-[11px] font-semibold text-[#5C564E] hover:text-[#24211E] active:bg-[#FAF7F2] transition-all shadow-2xs cursor-pointer"
+              title="Upload new image"
+            >
+              <svg class="w-3.5 h-3.5 text-[#5C564E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+              <span>New</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Row 2 on Mobile / Center on Desktop: View Mode Switcher -->
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <!-- 3-Segmented View Switcher (Slider | Cutout | Original) -->
+          <div class="w-full sm:w-auto inline-flex items-center h-9 p-0.5 bg-[#EDE8DF] border border-[#DDD7CB] rounded-xl text-xs font-medium text-[#736B61] shadow-2xs">
+            <button id="view-slider-btn" class="h-full flex-1 sm:flex-none px-3.5 sm:px-3 rounded-lg bg-white text-[#24211E] shadow-2xs font-bold transition-all cursor-pointer flex items-center justify-center text-xs">Slider</button>
+            <button id="view-cutout-btn" class="h-full flex-1 sm:flex-none px-3.5 sm:px-3 rounded-lg text-[#665F55] hover:text-[#24211E] transition-all cursor-pointer flex items-center justify-center text-xs font-medium">Cutout</button>
+            <button id="view-original-btn" class="h-full flex-1 sm:flex-none px-3.5 sm:px-3 rounded-lg text-[#665F55] hover:text-[#24211E] transition-all cursor-pointer flex items-center justify-center text-xs font-medium">Original</button>
+          </div>
+
+          <!-- Hold to Compare Action (Desktop only) -->
           <button
             id="hold-compare-btn"
             type="button"
-            class="inline-flex items-center gap-1.5 h-[34px] sm:h-[36px] px-2.5 sm:px-3 rounded-xl bg-[#EDE8DF] hover:bg-[#E2DBCF] active:bg-[#24211E] active:text-[#F8F5F0] text-[#5C564E] text-xs font-semibold border border-[#DDD7CB] shadow-2xs transition-all cursor-pointer select-none"
+            class="hidden sm:inline-flex items-center gap-1.5 h-9 px-3 rounded-xl bg-[#EDE8DF] hover:bg-[#E2DBCF] active:bg-[#24211E] active:text-[#F8F5F0] text-[#5C564E] text-xs font-semibold border border-[#DDD7CB] shadow-2xs transition-all cursor-pointer select-none"
             title="Press and hold to view original image"
           >
-            <svg class="w-3.5 h-3.5 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="w-3.5 h-3.5 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
             <span class="pointer-events-none">Hold for Original</span>
           </button>
         </div>
 
-        <!-- Right Column: Download & Share Buttons (Locked to Right, Matched Height) -->
-        <div class="shrink-0 flex items-center justify-end self-center gap-2">
+        <!-- Desktop Right Column: Download & Share Buttons -->
+        <div class="hidden sm:flex shrink-0 items-center justify-end gap-2">
           <!-- Share / Save to Photos Button (Shown when Web Share API is available) -->
           <button
             id="share-btn"
             type="button"
-            class="hidden items-center justify-center gap-1.5 h-[34px] sm:h-[36px] px-3 sm:px-3.5 rounded-xl text-xs font-semibold bg-white hover:bg-[#F3EFE7] text-[#24211E] border border-[#DDD7CB] transition-all cursor-pointer shadow-2xs hover:shadow-xs active:scale-95 whitespace-nowrap"
+            class="hidden items-center justify-center gap-1.5 h-9 px-3.5 rounded-xl text-xs font-semibold bg-white hover:bg-[#F3EFE7] text-[#24211E] border border-[#DDD7CB] transition-all cursor-pointer shadow-2xs hover:shadow-xs active:scale-95 whitespace-nowrap"
             title="Share or Save directly to Photos"
           >
             <svg class="w-3.5 h-3.5 text-[#5C564E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -260,7 +278,7 @@
           <button
             id="download-btn"
             type="button"
-            class="inline-flex items-center justify-center gap-2 h-[34px] sm:h-[36px] px-3.5 sm:px-4 rounded-xl text-xs font-bold bg-[#24211E] hover:bg-[#38332E] text-[#F8F5F0] transition-all cursor-pointer shadow-2xs hover:shadow-xs active:scale-95 whitespace-nowrap"
+            class="inline-flex items-center justify-center gap-2 h-9 px-4 rounded-xl text-xs font-bold bg-[#24211E] hover:bg-[#38332E] text-[#F8F5F0] transition-all cursor-pointer shadow-2xs hover:shadow-xs active:scale-95 whitespace-nowrap"
           >
             <svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -310,6 +328,36 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Mobile Primary Action Bar (Prominent Thumb-Friendly CTA) -->
+      <div class="flex sm:hidden items-center gap-2.5 w-full">
+        <button
+          id="mobile-download-btn"
+          type="button"
+          class="flex-1 inline-flex items-center justify-center gap-2 h-12 px-4 rounded-xl text-[13px] font-bold bg-[#24211E] hover:bg-[#38332E] active:scale-[0.98] text-white shadow-sm transition-all cursor-pointer"
+        >
+          <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" x2="12" y1="2" y2="15"/>
+          </svg>
+          <span id="mobile-download-btn-text">Download (PNG)</span>
+        </button>
+
+        <button
+          id="mobile-share-btn"
+          type="button"
+          class="hidden items-center justify-center gap-1.5 h-12 px-4 rounded-xl text-xs font-semibold bg-white hover:bg-[#FAF7F2] active:bg-[#EDE8DF] active:scale-[0.98] text-[#24211E] border border-[#DDD7CB] shadow-2xs transition-all cursor-pointer"
+          title="Share image"
+        >
+          <svg class="w-4 h-4 text-[#5C564E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+            <polyline points="16 6 12 2 8 6"/>
+            <line x1="12" x2="12" y1="2" y2="15"/>
+          </svg>
+          <span>Share</span>
+        </button>
       </div>
 
       <!-- Studio Custom Background & Actions Bar -->
@@ -458,6 +506,25 @@
 </section>
 
 <!-- Client-side Engine Script -->
+<script is:inline>
+  // Developer preview hook for visual regression testing
+  if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('view_result_demo')) {
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const u = document.getElementById('upload-state');
+        const r = document.getElementById('result-state');
+        if (u) { u.classList.add('hidden'); u.classList.remove('flex'); }
+        if (r) { r.classList.remove('hidden'); r.classList.add('flex'); }
+        const c = document.getElementById('cutout-img');
+        const o = document.getElementById('original-img');
+        if (c) c.src = '/samples/portrait.webp';
+        if (o) o.src = '/samples/portrait.webp';
+        const b = document.getElementById('resolution-badge');
+        if (b) b.textContent = '1254 × 1254 px (100% Native)';
+      }, 80);
+    });
+  }
+</script>
 <script>
   // Elements
   const uploadState = document.getElementById('upload-state');
@@ -504,6 +571,10 @@
   const copyBtnText = document.getElementById('copy-btn-text');
   const shareBtn = document.getElementById('share-btn');
   const shareBtnText = document.getElementById('share-btn-text');
+  const mobileDownloadBtn = document.getElementById('mobile-download-btn');
+  const mobileDownloadBtnText = document.getElementById('mobile-download-btn-text');
+  const mobileShareBtn = document.getElementById('mobile-share-btn');
+  const mobileNewBtn = document.getElementById('mobile-new-btn');
   const downloadBtn = document.getElementById('download-btn');
   const downloadBtnText = document.getElementById('download-btn-text');
   const resetBtn = document.getElementById('reset-btn');
@@ -1005,8 +1076,8 @@
     [viewSliderBtn, viewCutoutBtn, viewOriginalBtn].forEach((btn) => {
       if (!btn) return;
       btn.className = btn === activeBtn
-        ? 'h-full px-2.5 sm:px-3 rounded-lg bg-white text-[#24211E] shadow-2xs font-semibold transition-all cursor-pointer flex items-center justify-center'
-        : 'h-full px-2.5 sm:px-3 rounded-lg text-[#665F55] hover:text-[#24211E] transition-all cursor-pointer flex items-center justify-center';
+        ? 'h-full flex-1 sm:flex-none px-3.5 sm:px-3 rounded-lg bg-white text-[#24211E] shadow-2xs font-bold transition-all cursor-pointer flex items-center justify-center text-xs'
+        : 'h-full flex-1 sm:flex-none px-3.5 sm:px-3 rounded-lg text-[#665F55] hover:text-[#24211E] transition-all cursor-pointer flex items-center justify-center text-xs font-medium';
     });
   }
 
@@ -1116,10 +1187,15 @@
     });
   }
 
+  mobileDownloadBtn?.addEventListener('click', () => downloadBtn?.click());
+  mobileShareBtn?.addEventListener('click', () => shareBtn?.click());
+  mobileNewBtn?.addEventListener('click', () => resetBtn?.click());
+
   downloadBtn?.addEventListener('click', async () => {
     if (!downloadBtnText) return;
     const oldText = downloadBtnText.textContent;
     downloadBtnText.textContent = 'Generating...';
+      if (mobileDownloadBtnText) mobileDownloadBtnText.textContent = 'Generating...';
 
     try {
       const finalBlob = await generateFinalComposite();
@@ -1135,12 +1211,17 @@
       console.error('Download error:', e);
     } finally {
       downloadBtnText.textContent = oldText;
+      if (mobileDownloadBtnText) mobileDownloadBtnText.textContent = oldText;
     }
   });
 
   if (typeof navigator !== 'undefined' && 'share' in navigator && shareBtn) {
     shareBtn.classList.remove('hidden');
     shareBtn.classList.add('inline-flex');
+    if (mobileShareBtn) {
+      mobileShareBtn.classList.remove('hidden');
+      mobileShareBtn.classList.add('inline-flex');
+    }
   }
 
   shareBtn?.addEventListener('click', async () => {
